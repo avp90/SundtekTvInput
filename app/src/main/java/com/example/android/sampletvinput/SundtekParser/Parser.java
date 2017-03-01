@@ -3,10 +3,10 @@ package com.example.android.sampletvinput.SundtekParser;
 import android.content.Context;
 import android.util.Log;
 
-import com.example.android.sampletvinput.SundtekParser.Model.SundtekProgram;
+import com.google.android.exoplayer.util.Util;
 import com.google.android.media.tv.companionlibrary.model.Channel;
 import com.google.android.media.tv.companionlibrary.model.InternalProviderData;
-import com.google.gson.GsonBuilder;
+import com.google.android.media.tv.companionlibrary.model.Program;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -65,6 +65,14 @@ public class Parser {
     final static int CHANNEL_LOGO = 2;
     final static int CHANNEL_ID = 4;
 
+    final static int PROG_START = 0;
+    final static int PROG_ICON_SRC = 0;
+    final static int PROG_DURATION = 1;
+    final static int PROG_ID = 2;
+    final static int PROG_TITLE = 3;
+    final static int PROG_SUBTITLE = 4;
+    final static String PROG_BASE_STREAM_URL = "http://192.168.3.1:22000/stream/";
+
 
     Context context;
 
@@ -72,18 +80,11 @@ public class Parser {
     public Parser(Context context){ this.context = context; }
 
 
-    public Object test(){
-        GsonBuilder builder = new GsonBuilder();
-        Object o = builder.create().fromJson(CHANNELS, Object.class);
-
-        return o;
-    }
-
     public List<Channel> getChannels()  {
         List<Channel> channelList = new ArrayList<>();
 
         InternalProviderData internalProviderData = new InternalProviderData();
-
+        internalProviderData.setRepeatable(true);
         JSONArray jsonResponse = null;
         JSONArray jsonChannel;
 
@@ -97,14 +98,16 @@ public class Parser {
 
         try {
             jsonResponse = new JSONArray(getJson("http://192.168.3.1:22000/channels.json"));
+//            Log.d("CHANNEL", jsonResponse.get(0).toString());
 
-            for (int i = 0; i < jsonResponse.length(); i++) {
+
+            for (int i = 0; i < 1; i++) {
                 jsonChannel = jsonResponse.getJSONArray(i);
-                channelName = jsonChannel.getString(CHANNEL_NAME);
-                channelDisplayNumber = Integer.toString(i);
-                channelLogo = jsonChannel.getString(CHANNEL_LOGO);
+                channelName = jsonChannel.get(CHANNEL_NAME).toString();
+                channelDisplayNumber = Integer.toString(i+1);
+                channelLogo = jsonChannel.get(CHANNEL_LOGO).toString();
 
-                String serviceIdString = jsonChannel.getString(CHANNEL_ID);
+                String serviceIdString = jsonChannel.get(CHANNEL_ID).toString();
                 serviceIdString = serviceIdString.substring(0, serviceIdString.indexOf("_"));
                 serviceId = Integer.parseInt(serviceIdString);
             }
@@ -119,31 +122,123 @@ public class Parser {
                 .setOriginalNetworkId(originalNetworkId)
                 .setInternalProviderData(internalProviderData)
                 .setServiceId(serviceId)
-//                            .setPackageName(context.getPackageName())
+                .setPackageName(context.getPackageName())
                 .build();
 
         channelList.add(channel);
 
-        Log.d("CHANNEL", channel.toString());
-
-//        for ( int j = 0; j < jArray.getJSONArray(i).length(); j++){
-//            Log.d("JSON" ,  jArray.getJSONArray(i).get(j).toString());
-//        }
-
-
-
-//        for (Channel ch : channelList)
-//            Log.d("CHANNEL", ch.toString());
 
         return channelList;
     }
 
-    private String getJson(String surl) {
+
+    public List<Program> getPrograms(Channel channel){
+        List<Program> programList = new ArrayList<>();
+
+//        JSONArray jsonResponse = null;
+//        JSONArray jsonChannel;
+//
+//        try {
+//            jsonResponse = new JSONArray(getJson("http://192.168.3.1:22000/channels.json"));
+////            Log.d("CHANNEL", jsonResponse.get(0).toString());
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+
+
+
+
+        JSONArray prog;
+        String progTitle = null;
+        String progSubtitle = null;
+        String progIconSrc = null;
+        int progId;
+        long progStart = 0;
+        long progEnd = 0;
+        long progDuration = 0;
+        String progStreamUrl = null;
+        int progNum = 1;
+//
+//        long unixStart = 0;
+//        long duration = 0;
+//        long unixEnd = 0;
+
+        InternalProviderData internalProviderData = new InternalProviderData();
+        internalProviderData.setVideoType(Util.TYPE_OTHER);
+
+        try {
+            JSONArray channelJson = new JSONArray(one);
+
+
+            for(int i = 0; i < channelJson.length(); i++){
+                if(channelJson.get(i) instanceof  JSONArray) {
+                    prog = new JSONArray(channelJson.get(i).toString());
+
+                    progNum = progNum++;
+                    progTitle = prog.get(PROG_TITLE).toString();
+                    progSubtitle = prog.get(PROG_SUBTITLE).toString();
+                    progId = (Integer) prog.get(PROG_ID);
+                    progStart = prog.getLong(PROG_START);
+                    progDuration = prog.getLong(PROG_DURATION);
+                    progEnd = progStart + progDuration;
+
+                    Log.d( "JSON PROGRAM",  "progNum: " + progNum);
+                    Log.d( "JSON PROGRAM",  "progId: " + progId);
+                    Log.d( "JSON PROGRAM" , "progTitle: " + progTitle );
+                    Log.d( "JSON PROGRAM" , "progSubtitle: " + progSubtitle );
+                    Log.d( "JSON PROGRAM" , "progStart: " + progStart );
+                    Log.d( "JSON PROGRAM" , "progDuration: " + progDuration);
+                    Log.d( "JSON PROGRAM" , "progEnd: " + progEnd );
+                }else{
+                    progIconSrc = channelJson.get(PROG_ICON_SRC).toString();
+                    progStreamUrl = PROG_BASE_STREAM_URL + channelJson.get(1).toString().replace( " " , "_" );
+                }
+            }
+            Log.d( "JSON CHANNEL" , "progStreamUrl: " + progStreamUrl );
+            Log.d( "JSON CHANNEL" , "progIconSrc: " + progIconSrc );
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+
+        internalProviderData.setVideoUrl(progStreamUrl);
+        programList.add(new Program.Builder()
+                .setTitle(progTitle)
+                .setStartTimeUtcMillis(progStart)
+                .setEndTimeUtcMillis(progEnd)
+                .setDescription(progSubtitle)
+//                .setCanonicalGenres(new String[] {TvContract.Programs.Genres.TECH_SCIENCE,
+//                        TvContract.Programs.Genres.MOVIES})
+//                .setPosterArtUri(progIconSrc)
+//                .setThumbnailUri(progIconSrc)
+                .setInternalProviderData(internalProviderData)
+                .build());
+
+
+
+
+//        try {
+//            Log.d("JSON NAME" , prog.getString(3) + " " + prog.getString(4) + " -- " + startTime.toString() + " bis " +  endTime.toString());
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+
+//
+
+
+
+
+        return programList;
+    }
+
+
+    private String getJson(String jUrl) {
         HttpURLConnection connection;
         BufferedReader reader;
 
         try {
-            URL url = new URL(surl);
+            URL url = new URL(jUrl);
             connection = (HttpURLConnection) url.openConnection();
             connection.connect();
 
@@ -168,50 +263,4 @@ public class Parser {
         }
         return null;
     }
-
-    public List<SundtekProgram> getPrograms(){
-        List<SundtekProgram> ProgramList = new ArrayList<>();
-
-        JSONArray prog = null;
-        java.util.Date endTime;
-        java.util.Date startTime;
-        long unixStart = 0;
-        long duration = 0;
-        long unixEnd = 0;
-        try {
-            JSONArray all = new JSONArray(one);
-
-            for(int i = 0; i < all.length(); i++){
-                if(all.get(i) instanceof  JSONArray) {
-                    prog = new JSONArray(all.get(i).toString());
-                    for(int j = 0; j < prog.length(); j++)
-                        Log.d("JSON PROG IN ARRAY", prog.get(j).toString());
-                }else
-                    Log.d("JSON VAL", all.get(i).toString());
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            unixStart = prog.getLong(0);
-            unixEnd = prog.getLong(0) + prog.getLong(1);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-            startTime = new java.util.Date(unixStart*1000);
-            endTime = new java.util.Date(unixEnd*1000);
-
-        try {
-            Log.d("JSON NAME" , prog.getString(3) + " " + prog.getString(4) + " -- " + startTime.toString() + " bis " +  endTime.toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-
-
-        return ProgramList;
-    }
-
 }

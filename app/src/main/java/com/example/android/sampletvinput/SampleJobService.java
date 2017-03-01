@@ -17,16 +17,16 @@ package com.example.android.sampletvinput;
 
 import android.media.tv.TvContract;
 import android.net.Uri;
+import android.util.Log;
 
+import com.example.android.sampletvinput.SundtekParser.Parser;
 import com.example.android.sampletvinput.rich.RichFeedUtil;
-
 import com.google.android.exoplayer.util.Util;
-import com.google.android.media.tv.companionlibrary.model.Advertisement;
+import com.google.android.media.tv.companionlibrary.EpgSyncJobService;
+import com.google.android.media.tv.companionlibrary.XmlTvParser;
 import com.google.android.media.tv.companionlibrary.model.Channel;
 import com.google.android.media.tv.companionlibrary.model.InternalProviderData;
 import com.google.android.media.tv.companionlibrary.model.Program;
-import com.google.android.media.tv.companionlibrary.EpgSyncJobService;
-import com.google.android.media.tv.companionlibrary.XmlTvParser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,61 +70,64 @@ public class SampleJobService extends EpgSyncJobService {
     @Override
     public List<Channel> getChannels() {
         // Add channels through an XMLTV file
-        XmlTvParser.TvListing listings = RichFeedUtil.getRichTvListings(this);
-        List<Channel> channelList = new ArrayList<>(listings.getChannels());
-
-        // Build advertisement list for the channel.
-        Advertisement channelAd = new Advertisement.Builder()
-                .setType(Advertisement.TYPE_VAST)
-                .setRequestUrl(TEST_AD_REQUEST_URL)
-                .build();
-        List<Advertisement> channelAdList = new ArrayList<>();
-        channelAdList.add(channelAd);
+//        XmlTvParser.TvListing listings = RichFeedUtil.getRichTvListings(this);
+//        List<Channel> channelList = new ArrayList<>(listings.getChannels());
+        List<Channel> channelList = new Parser(this.getApplicationContext()).getChannels();
+        Log.d("CHANNEL", channelList.toString());
+//        // Build advertisement list for the channel.
+//        Advertisement channelAd = new Advertisement.Builder()
+//                .setType(Advertisement.TYPE_VAST)
+//                .setRequestUrl(TEST_AD_REQUEST_URL)
+//                .build();
+//        List<Advertisement> channelAdList = new ArrayList<>();
+//        channelAdList.add(channelAd);
 
         // Add a channel programmatically
-        InternalProviderData internalProviderData = new InternalProviderData();
-        internalProviderData.setRepeatable(true);
-        internalProviderData.setAds(channelAdList);
-        Channel channelTears = new Channel.Builder()
-                .setDisplayName(MPEG_DASH_CHANNEL_NAME)
-                .setDisplayNumber(MPEG_DASH_CHANNEL_NUMBER)
-                .setChannelLogo(MPEG_DASH_CHANNEL_LOGO)
-                .setOriginalNetworkId(MPEG_DASH_ORIGINAL_NETWORK_ID)
-                .setInternalProviderData(internalProviderData)
-                .build();
-        channelList.add(channelTears);
+//        InternalProviderData internalProviderData = new InternalProviderData();
+//        internalProviderData.setRepeatable(true);
+////        internalProviderData.setAds(channelAdList);
+//        Channel channelTears = new Channel.Builder()
+//                .setDisplayName(MPEG_DASH_CHANNEL_NAME)
+//                .setDisplayNumber(MPEG_DASH_CHANNEL_NUMBER)
+//                .setChannelLogo(MPEG_DASH_CHANNEL_LOGO)
+//                .setOriginalNetworkId(MPEG_DASH_ORIGINAL_NETWORK_ID)
+//                .setInternalProviderData(internalProviderData)
+//                .build();
+//        channelList.add(channelTears);
+        new Parser(this.getApplicationContext()).getPrograms(null);
         return channelList;
     }
 
     @Override
     public List<Program> getProgramsForChannel(Uri channelUri, Channel channel, long startMs,
             long endMs) {
-        if (!channel.getDisplayName().equals(MPEG_DASH_CHANNEL_NAME)) {
+        if (!channel.getDisplayName().equals("MDR Sachsen")) {
             // Is an XMLTV Channel
             XmlTvParser.TvListing listings = RichFeedUtil.getRichTvListings(getApplicationContext());
+   //         Log.d("CHANNEL PROGRAM", listings.getPrograms(channel).toString());
             return listings.getPrograms(channel);
         } else {
             // Build Advertisement list for the program.
-            Advertisement programAd1 = new Advertisement.Builder()
-                    .setStartTimeUtcMillis(TEST_AD_1_START_TIME_MS)
-                    .setStopTimeUtcMillis(TEST_AD_1_START_TIME_MS + TEST_AD_DURATION_MS)
-                    .setType(Advertisement.TYPE_VAST)
-                    .setRequestUrl(TEST_AD_REQUEST_URL)
-                    .build();
-            Advertisement programAd2 = new Advertisement.Builder(programAd1)
-                    .setStartTimeUtcMillis(TEST_AD_2_START_TIME_MS)
-                    .setStopTimeUtcMillis(TEST_AD_2_START_TIME_MS + TEST_AD_DURATION_MS)
-                    .build();
-            List<Advertisement> programAdList = new ArrayList<>();
-            programAdList.add(programAd1);
-            programAdList.add(programAd2);
+//            Advertisement programAd1 = new Advertisement.Builder()
+//                    .setStartTimeUtcMillis(TEST_AD_1_START_TIME_MS)
+//                    .setStopTimeUtcMillis(TEST_AD_1_START_TIME_MS + TEST_AD_DURATION_MS)
+//                    .setType(Advertisement.TYPE_VAST)
+//                    .setRequestUrl(TEST_AD_REQUEST_URL)
+//                    .build();
+//            Advertisement programAd2 = new Advertisement.Builder(programAd1)
+//                    .setStartTimeUtcMillis(TEST_AD_2_START_TIME_MS)
+//                    .setStopTimeUtcMillis(TEST_AD_2_START_TIME_MS + TEST_AD_DURATION_MS)
+//                    .build();
+//            List<Advertisement> programAdList = new ArrayList<>();
+//            programAdList.add(programAd1);
+//            programAdList.add(programAd2);
 
             // Programatically add channel
             List<Program> programsTears = new ArrayList<>();
             InternalProviderData internalProviderData = new InternalProviderData();
-            internalProviderData.setVideoType(Util.TYPE_DASH);
-            internalProviderData.setVideoUrl(TEARS_OF_STEEL_SOURCE);
-            internalProviderData.setAds(programAdList);
+            internalProviderData.setVideoType(Util.TYPE_OTHER);
+            internalProviderData.setVideoUrl("http://192.168.3.1:22000/stream/MDR_Sachsen");
+//            internalProviderData.setAds(programAdList);
             programsTears.add(new Program.Builder()
                     .setTitle(TEARS_OF_STEEL_TITLE)
                     .setStartTimeUtcMillis(TEARS_OF_STEEL_START_TIME_MS)
@@ -138,5 +141,6 @@ public class SampleJobService extends EpgSyncJobService {
                     .build());
             return programsTears;
         }
+
     }
 }

@@ -1,7 +1,6 @@
 package com.example.android.sampletvinput.SundtekParser;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.android.sampletvinput.SundtekParser.Model.SundtekProgram;
@@ -28,7 +27,6 @@ import java.util.List;
  */
 
 public class Parser {
-
 
     final static String CHANNELS = "[[\"MDR Sachsen\",\"http://192.168.3.1:22000/stream/MDR_Sachsen\",\"http://sundtek.de/picons/?p=MDR_Sachsen\",\"1\",\"28228_6e44\"],[\"NDR FS HH\",\"http://192.168.3.1:22000/stream/NDR_FS_HH\",\"http://sundtek.de/picons/?p=NDR_FS_HH\",\"1\",\"28225_6e41\"],[\"rbb Berlin\",\"http://192.168.3.1:22000/stream/rbb_Berlin\",\"http://sundtek.de/picons/?p=rbb_Berlin\",\"1\",\"28206_6e2e\"],[\"SWR Fernsehen BW\",\"http://192.168.3.1:22000/stream/SWR_Fernsehen_BW\",\"http://sundtek.de/picons/?p=SWR_Fernsehen_BW\",\"1\",\"28113_6dd1\"],[\"WDR Kln\",\"http://192.168.3.1:22000/stream/WDR_Kln\",\"http://sundtek.de/picons/?p=WDR_Koeln\",\"1\",\"28111_6dcf\"]]";
 
@@ -62,70 +60,87 @@ public class Parser {
             "]"
             ;
 
-    Context context;
-    public Parser(Context context){
-        this.context = context;
 
-    }
+    final static int CHANNEL_NAME = 0;
+    final static int CHANNEL_LOGO = 2;
+    final static int CHANNEL_ID = 4;
+
+
+    Context context;
+
+
+    public Parser(Context context){ this.context = context; }
 
 
     public Object test(){
         GsonBuilder builder = new GsonBuilder();
         Object o = builder.create().fromJson(CHANNELS, Object.class);
-        Log.d("GSON", o.toString());
 
         return o;
     }
 
     public List<Channel> getChannels()  {
         List<Channel> channelList = new ArrayList<>();
+
         InternalProviderData internalProviderData = new InternalProviderData();
-        Log.d("TESTEST" , "internalProviderData");
-        JSONArray jArray;
+
+        JSONArray jsonResponse = null;
+        JSONArray jsonChannel;
+
+        String channelName = null;
+        String channelDisplayNumber = null;
+        String channelLogo = null;
+        int originalNetworkId = 101;
+        int serviceId = 0;
+
+        Channel channel;
+
         try {
-            Log.d("TESTEST" , "try");
+            jsonResponse = new JSONArray(getJson("http://192.168.3.1:22000/channels.json"));
 
-   //         jArray = new JSONArray(new JsonTask().execute("http://192.168.3.1:22000/channels.json").get());
-            jArray = new JSONArray(getJson("http://192.168.3.1:22000/channels.json"));
-            Log.d("TESTEST" , "JsonTask");
+            for (int i = 0; i < jsonResponse.length(); i++) {
+                jsonChannel = jsonResponse.getJSONArray(i);
+                channelName = jsonChannel.getString(CHANNEL_NAME);
+                channelDisplayNumber = Integer.toString(i);
+                channelLogo = jsonChannel.getString(CHANNEL_LOGO);
 
-            for (int i = 0; i < 2; i++) {
-                Log.d("TESTEST" , "for");
-
-                //     channelList.add(new SundtekChannel(jArray.getJSONArray(i)));
-                channelList.add(
-                        new Channel.Builder()
-                                .setDisplayName(jArray.getJSONArray(i).get(0).toString())
-                                .setDisplayNumber(Integer.toString(i))
-                                .setChannelLogo(jArray.getJSONArray(i).get(2).toString())
-                                .setOriginalNetworkId(101)
-                                .setInternalProviderData(internalProviderData)
-                                .setServiceId(Integer.parseInt(jArray.getJSONArray(i).get(4).toString().substring(0 ,jArray.getJSONArray(i).get(4).toString().indexOf("_"))))
-                                .setPackageName(context.getPackageName())
-                                .build());
-                Log.d("TESTEST" , " channelList.add");
-
-//                for ( int j = 0; j < jArray.getJSONArray(i).length(); j++){
-//                    Log.d("JSON" ,  jArray.getJSONArray(i).get(j).toString());
-//                }
-
+                String serviceIdString = jsonChannel.getString(CHANNEL_ID);
+                serviceIdString = serviceIdString.substring(0, serviceIdString.indexOf("_"));
+                serviceId = Integer.parseInt(serviceIdString);
             }
-
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        for (Channel channel : channelList) {
-            Log.d("CHANNEL", channel.toString());
-        }
+        channel = new Channel.Builder()
+                .setDisplayName(channelName)
+                .setDisplayNumber(channelDisplayNumber)
+                .setChannelLogo(channelLogo)
+                .setOriginalNetworkId(originalNetworkId)
+                .setInternalProviderData(internalProviderData)
+                .setServiceId(serviceId)
+//                            .setPackageName(context.getPackageName())
+                .build();
+
+        channelList.add(channel);
+
+        Log.d("CHANNEL", channel.toString());
+
+//        for ( int j = 0; j < jArray.getJSONArray(i).length(); j++){
+//            Log.d("JSON" ,  jArray.getJSONArray(i).get(j).toString());
+//        }
+
+
+
+//        for (Channel ch : channelList)
+//            Log.d("CHANNEL", ch.toString());
 
         return channelList;
     }
 
     private String getJson(String surl) {
-        HttpURLConnection connection = null;
-        BufferedReader reader = null;
+        HttpURLConnection connection;
+        BufferedReader reader;
 
         try {
             URL url = new URL(surl);
@@ -152,54 +167,6 @@ public class Parser {
             e.printStackTrace();
         }
         return null;
-    }
-        private class JsonTask extends AsyncTask<String, String, String> {
-
-
-        protected String doInBackground(String... params) {
-
-
-            HttpURLConnection connection = null;
-            BufferedReader reader = null;
-
-            try {
-                URL url = new URL(params[0]);
-                connection = (HttpURLConnection) url.openConnection();
-                connection.connect();
-
-
-                InputStream stream = connection.getInputStream();
-
-                reader = new BufferedReader(new InputStreamReader(stream));
-
-                StringBuffer buffer = new StringBuffer();
-                String line;
-
-                while ((line = reader.readLine()) != null) {
-                    buffer.append(line+"\n");
-                }
-
-                return buffer.toString();
-
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (connection != null) {
-                    connection.disconnect();
-                }
-                try {
-                    if (reader != null) {
-                        reader.close();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            return null;
-        }
-
     }
 
     public List<SundtekProgram> getPrograms(){

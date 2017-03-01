@@ -15,20 +15,14 @@
  */
 package com.example.android.sampletvinput;
 
-import android.media.tv.TvContract;
 import android.net.Uri;
 import android.util.Log;
 
 import com.example.android.sampletvinput.SundtekParser.Parser;
-import com.example.android.sampletvinput.rich.RichFeedUtil;
-import com.google.android.exoplayer.util.Util;
 import com.google.android.media.tv.companionlibrary.EpgSyncJobService;
-import com.google.android.media.tv.companionlibrary.XmlTvParser;
 import com.google.android.media.tv.companionlibrary.model.Channel;
-import com.google.android.media.tv.companionlibrary.model.InternalProviderData;
 import com.google.android.media.tv.companionlibrary.model.Program;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -94,19 +88,21 @@ public class SampleJobService extends EpgSyncJobService {
 //                .setInternalProviderData(internalProviderData)
 //                .build();
 //        channelList.add(channelTears);
-        new Parser(this.getApplicationContext()).getPrograms(null);
+  //      new Parser(this.getApplicationContext()).getPrograms(null);
         return channelList;
     }
 
     @Override
     public List<Program> getProgramsForChannel(Uri channelUri, Channel channel, long startMs,
             long endMs) {
-        if (!channel.getDisplayName().equals("MDR Sachsen")) {
-            // Is an XMLTV Channel
-            XmlTvParser.TvListing listings = RichFeedUtil.getRichTvListings(getApplicationContext());
+//        if (channel.getDisplayName().equals("MDR Sachsen")) {
+//            Log.d("getProgramsForChannel" , channel.getDisplayName() + " " +  startMs + " " + endMs);
+//            // Is an XMLTV Channel
+//            XmlTvParser.TvListing listings = RichFeedUtil.getRichTvListings(getApplicationContext());
    //         Log.d("CHANNEL PROGRAM", listings.getPrograms(channel).toString());
-            return listings.getPrograms(channel);
-        } else {
+            return new Parser(this.getApplicationContext()).getPrograms(channel);
+
+//        } else {
             // Build Advertisement list for the program.
 //            Advertisement programAd1 = new Advertisement.Builder()
 //                    .setStartTimeUtcMillis(TEST_AD_1_START_TIME_MS)
@@ -123,24 +119,24 @@ public class SampleJobService extends EpgSyncJobService {
 //            programAdList.add(programAd2);
 
             // Programatically add channel
-            List<Program> programsTears = new ArrayList<>();
-            InternalProviderData internalProviderData = new InternalProviderData();
-            internalProviderData.setVideoType(Util.TYPE_OTHER);
-            internalProviderData.setVideoUrl("http://192.168.3.1:22000/stream/MDR_Sachsen");
-//            internalProviderData.setAds(programAdList);
-            programsTears.add(new Program.Builder()
-                    .setTitle(TEARS_OF_STEEL_TITLE)
-                    .setStartTimeUtcMillis(TEARS_OF_STEEL_START_TIME_MS)
-                    .setEndTimeUtcMillis(TEARS_OF_STEEL_START_TIME_MS + TEARS_OF_STEEL_DURATION_MS)
-                    .setDescription(TEARS_OF_STEEL_DESCRIPTION)
-                    .setCanonicalGenres(new String[] {TvContract.Programs.Genres.TECH_SCIENCE,
-                            TvContract.Programs.Genres.MOVIES})
-                    .setPosterArtUri(TEARS_OF_STEEL_ART)
-                    .setThumbnailUri(TEARS_OF_STEEL_ART)
-                    .setInternalProviderData(internalProviderData)
-                    .build());
-            return programsTears;
-        }
+//            List<Program> programsTears = new ArrayList<>();
+//            InternalProviderData internalProviderData = new InternalProviderData();
+//            internalProviderData.setVideoType(Util.TYPE_OTHER);
+//            internalProviderData.setVideoUrl("http://192.168.3.1:22000/stream/MDR_Sachsen");
+////            internalProviderData.setAds(programAdList);
+//            programsTears.add(new Program.Builder()
+//                    .setTitle(TEARS_OF_STEEL_TITLE)
+//                    .setStartTimeUtcMillis(TEARS_OF_STEEL_START_TIME_MS)
+//                    .setEndTimeUtcMillis(TEARS_OF_STEEL_START_TIME_MS + TEARS_OF_STEEL_DURATION_MS)
+//                    .setDescription(TEARS_OF_STEEL_DESCRIPTION)
+//                    .setCanonicalGenres(new String[] {TvContract.Programs.Genres.TECH_SCIENCE,
+//                            TvContract.Programs.Genres.MOVIES})
+//                    .setPosterArtUri(TEARS_OF_STEEL_ART)
+//                    .setThumbnailUri(TEARS_OF_STEEL_ART)
+//                    .setInternalProviderData(internalProviderData)
+//                    .build());
+//            return programsTears;
+//        }
 
     }
 }

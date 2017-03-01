@@ -1,6 +1,7 @@
 package com.example.android.sampletvinput.SundtekParser;
 
 import android.content.Context;
+import android.media.tv.TvContract;
 import android.util.Log;
 
 import com.google.android.exoplayer.util.Util;
@@ -101,7 +102,7 @@ public class Parser {
 //            Log.d("CHANNEL", jsonResponse.get(0).toString());
 
 
-            for (int i = 0; i < 1; i++) {
+            for (int i = 0; i < jsonResponse.length()  ; i++) {
                 jsonChannel = jsonResponse.getJSONArray(i);
                 channelName = jsonChannel.get(CHANNEL_NAME).toString();
                 channelDisplayNumber = Integer.toString(i+1);
@@ -135,100 +136,84 @@ public class Parser {
     public List<Program> getPrograms(Channel channel){
         List<Program> programList = new ArrayList<>();
 
-//        JSONArray jsonResponse = null;
-//        JSONArray jsonChannel;
-//
-//        try {
-//            jsonResponse = new JSONArray(getJson("http://192.168.3.1:22000/channels.json"));
-////            Log.d("CHANNEL", jsonResponse.get(0).toString());
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-
-
-
 
         JSONArray prog;
-        String progTitle = null;
-        String progSubtitle = null;
+        String progTitle;
+        String progSubtitle;
+        progSubtitle = null;
         String progIconSrc = null;
         int progId;
         long progStart = 0;
         long progEnd = 0;
         long progDuration = 0;
         String progStreamUrl = null;
+        String progChannelName = null;
         int progNum = 1;
-//
-//        long unixStart = 0;
-//        long duration = 0;
-//        long unixEnd = 0;
+
 
         InternalProviderData internalProviderData = new InternalProviderData();
         internalProviderData.setVideoType(Util.TYPE_OTHER);
 
         try {
-            JSONArray channelJson = new JSONArray(one);
 
+            JSONArray responseJson = new JSONArray(getJson("http://192.168.3.1:22000/servercmd.xhx?epgmode=now&epgfilter=now-today-publictv-privatetv&epgstart=1&epgstop=2&channels=1%2C2%2C3%2C4%2C5"));
+//            for(int i = 0; i < channelJson.length(); i++)
+//                Log.d("CHANNELJSON " + i , channelJson.get(i).toString());
+//
+            for (int resp = 0; resp < responseJson.length(); resp++) {
+                JSONArray channelJson = responseJson.getJSONArray(resp);
 
-            for(int i = 0; i < channelJson.length(); i++){
-                if(channelJson.get(i) instanceof  JSONArray) {
-                    prog = new JSONArray(channelJson.get(i).toString());
+                for (int i = 0; i < channelJson.length(); i++) {
+                    if (channelJson.get(i) instanceof JSONArray) {
+                        Log.d("CHANNELNAME", channel.getDisplayName() + " " + progChannelName + " " + resp );
+                        Log.d("CHANNELNAME", (progChannelName.equals(channel.getDisplayName())+""));
+                        if(progChannelName.equals(channel.getDisplayName())) {
+                            prog = new JSONArray(channelJson.get(i).toString());
 
-                    progNum = progNum++;
-                    progTitle = prog.get(PROG_TITLE).toString();
-                    progSubtitle = prog.get(PROG_SUBTITLE).toString();
-                    progId = (Integer) prog.get(PROG_ID);
-                    progStart = prog.getLong(PROG_START);
-                    progDuration = prog.getLong(PROG_DURATION);
-                    progEnd = progStart + progDuration;
+                            progNum = progNum++;
 
-                    Log.d( "JSON PROGRAM",  "progNum: " + progNum);
-                    Log.d( "JSON PROGRAM",  "progId: " + progId);
-                    Log.d( "JSON PROGRAM" , "progTitle: " + progTitle );
-                    Log.d( "JSON PROGRAM" , "progSubtitle: " + progSubtitle );
-                    Log.d( "JSON PROGRAM" , "progStart: " + progStart );
-                    Log.d( "JSON PROGRAM" , "progDuration: " + progDuration);
-                    Log.d( "JSON PROGRAM" , "progEnd: " + progEnd );
-                }else{
-                    progIconSrc = channelJson.get(PROG_ICON_SRC).toString();
-                    progStreamUrl = PROG_BASE_STREAM_URL + channelJson.get(1).toString().replace( " " , "_" );
+                            progTitle = prog.get(PROG_TITLE).toString();
+                            progSubtitle = prog.get(PROG_SUBTITLE).toString();
+                            progId = (Integer) prog.get(PROG_ID);
+                            progStart = (prog.getLong(PROG_START) * 1000);
+                            progDuration = (prog.getLong(PROG_DURATION) * 1000);
+                            progEnd = progStart + progDuration;
+
+                            Log.d("JSON PROGRAM", "progNum: " + progNum);
+                            Log.d("JSON PROGRAM", "progId: " + progId);
+                            Log.d("JSON PROGRAM", "progTitle: " + progTitle);
+                            Log.d("JSON PROGRAM", "progSubtitle: " + progSubtitle);
+                            Log.d("JSON PROGRAM", "progStart: " + progStart);
+                            Log.d("JSON PROGRAM", "progDuration: " + progDuration);
+                            Log.d("JSON PROGRAM", "progEnd: " + progEnd);
+
+                            internalProviderData.setVideoUrl(progStreamUrl);
+                            programList.add(new Program.Builder()
+                                    .setTitle(progTitle)
+                                    .setStartTimeUtcMillis(progStart)
+                                    .setEndTimeUtcMillis(progEnd)
+                                    .setDescription(progSubtitle)
+                                    .setCanonicalGenres(new String[]{TvContract.Programs.Genres.TECH_SCIENCE,
+                                            TvContract.Programs.Genres.MOVIES})
+                                    .setPosterArtUri(progIconSrc)
+                                    .setThumbnailUri(progIconSrc)
+                                    .setInternalProviderData(internalProviderData)
+                                    .build());
+                        }
+                    } else {
+                        progIconSrc = channelJson.get(PROG_ICON_SRC).toString();
+                        progStreamUrl = PROG_BASE_STREAM_URL + channelJson.get(1).toString().replace(" ", "_");
+                        progChannelName = channelJson.get(1).toString();
+
+                    }
                 }
-            }
-            Log.d( "JSON CHANNEL" , "progStreamUrl: " + progStreamUrl );
-            Log.d( "JSON CHANNEL" , "progIconSrc: " + progIconSrc );
-        } catch (JSONException e) {
+//                Log.d("JSON CHANNEL", "progStreamUrl: " + progStreamUrl);
+//                Log.d("JSON CHANNEL", "progIconSrc: " + progIconSrc);
+
+        }
+        } catch(JSONException e){
             e.printStackTrace();
         }
-
-
-
-        internalProviderData.setVideoUrl(progStreamUrl);
-        programList.add(new Program.Builder()
-                .setTitle(progTitle)
-                .setStartTimeUtcMillis(progStart)
-                .setEndTimeUtcMillis(progEnd)
-                .setDescription(progSubtitle)
-//                .setCanonicalGenres(new String[] {TvContract.Programs.Genres.TECH_SCIENCE,
-//                        TvContract.Programs.Genres.MOVIES})
-//                .setPosterArtUri(progIconSrc)
-//                .setThumbnailUri(progIconSrc)
-                .setInternalProviderData(internalProviderData)
-                .build());
-
-
-
-
-//        try {
-//            Log.d("JSON NAME" , prog.getString(3) + " " + prog.getString(4) + " -- " + startTime.toString() + " bis " +  endTime.toString());
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-
-//
-
-
-
-
         return programList;
     }
 

@@ -15,6 +15,11 @@ contents. For details, please see the documentation of XmlTvParser class.
         <display-number>2</display-number>
         <icon src="http://sundtek.de/picons/?p=ZDF"/>
     </channel>
+    <channel id="MDR Sachsen" repeat-programs="true">
+        <display-name>MDR Sachsen</display-name>
+        <display-number>2</display-number>
+        <icon src="http://sundtek.de/picons/?p=MDR_Sachsen"/>
+    </channel>
     <programme
         channel="ZDF Neo HD"
         start="20150817000000 +0000"
@@ -156,6 +161,24 @@ contents. For details, please see the documentation of XmlTvParser class.
         <category>EDUCATION</category>
         <category>TECH_SCIENCE</category>
         <icon src="http://sundtek.de/picons/?p=ZDF"/>
+        <rating system="com.android.tv">
+            <value>com.android.tv/US_TV/US_TV_14/US_TV_D/US_TV_L</value>
+        </rating>
+        <video>
+            <aspect>16:9</aspect>
+        </video>
+    </programme>
+    <programme
+        channel="MDR Sachsen"
+        start="20150817000000 +0000"
+        stop="20150817000147 +0000"
+        video-src="http://192.168.3.1:22000/stream/MDR_Sachsen"
+        video-type="HTTP_PROGRESSIVE">
+        <title>http://192.168.3.1:22000/stream/MDR_Sachsen</title>
+        <desc>http://192.168.3.1:22000/stream/MDR_Sachsen</desc>
+        <category>EDUCATION</category>
+        <category>TECH_SCIENCE</category>
+        <icon src="http://sundtek.de/picons/?p=MDR_Sachsen"/>
         <rating system="com.android.tv">
             <value>com.android.tv/US_TV/US_TV_14/US_TV_D/US_TV_L</value>
         </rating>

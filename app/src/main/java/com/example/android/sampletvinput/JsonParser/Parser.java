@@ -34,8 +34,9 @@ public class Parser {
     private final static int PROG_TITLE = 3;
     private final static int PROG_SUBTITLE = 4;
 
-    private final static String BASE_STREAM_URL = "http://192.168.3.1:22000/stream/";
-    private final static String BASE_QUERY_URL = "http://192.168.3.1:22000/servercmd.xhx?";
+    private final static String BASE_URL = "http://192.168.3.1:22000";
+    private final static String BASE_STREAM_URL = BASE_URL + "/stream/";
+    private final static String BASE_SERVERCMD_URL = BASE_URL + "/servercmd.xhx?";
     private final static String QUERY_CHANNELS_SD = "chantype=sdtv&filter=publictv-privatetv";
     private final static String QUERY_CHANNELS_HD = "chantype=hdtv&filter=publictv-privatetv";
     private final static String QUERY_PROGRAMS_NOW = "epgmode=now&epgfilter=now-publictv-privatetv&channels=1%2C2%2C3%2C4%2C5";
@@ -55,9 +56,9 @@ public class Parser {
         List<Channel> channelList = new ArrayList<>();
 
         if (responseChannlesHdJson == null)
-            responseChannlesHdJson = new JSONArray(getJson(BASE_QUERY_URL + QUERY_CHANNELS_HD));
+            responseChannlesHdJson = new JSONArray(getJson(BASE_SERVERCMD_URL + QUERY_CHANNELS_HD));
         if (responseChannlesSdJson == null)
-            responseChannlesSdJson = new JSONArray(getJson(BASE_QUERY_URL + QUERY_CHANNELS_SD));
+            responseChannlesSdJson = new JSONArray(getJson(BASE_SERVERCMD_URL + QUERY_CHANNELS_SD));
 
         channelList.addAll(parseChannles(responseChannlesHdJson));
         channelList.addAll(parseChannles(responseChannlesSdJson));
@@ -105,14 +106,14 @@ public class Parser {
     public List<Program> getPrograms(Channel channel) throws JSONException, IOException {
         List<Program> programList = new ArrayList<>();
 
-        if (responseProgramsNowJson == null)
-            responseProgramsNowJson = new JSONArray(getJson(BASE_QUERY_URL + QUERY_PROGRAMS_NOW));
+//        if (responseProgramsNowJson == null)
+//            responseProgramsNowJson = new JSONArray(getJson(BASE_SERVERCMD_URL + QUERY_PROGRAMS_NOW));
         if (responseProgramsTodayJson == null)
-            responseProgramsTodayJson = new JSONArray(getJson(BASE_QUERY_URL + QUERY_PROGRAMS_TODAY));
+            responseProgramsTodayJson = new JSONArray(getJson(BASE_SERVERCMD_URL + QUERY_PROGRAMS_TODAY));
         if (responseProgramsTomorrowJson == null)
-            responseProgramsTomorrowJson = new JSONArray(getJson(BASE_QUERY_URL + QUERY_PROGRAMS_TOMORROW));
+            responseProgramsTomorrowJson = new JSONArray(getJson(BASE_SERVERCMD_URL + QUERY_PROGRAMS_TOMORROW));
 
-        programList.addAll(parsePrograms(channel, responseProgramsNowJson));
+//        programList.addAll(parsePrograms(channel, responseProgramsNowJson));
         programList.addAll(parsePrograms(channel, responseProgramsTodayJson));
         programList.addAll(parsePrograms(channel, responseProgramsTomorrowJson));
 

@@ -1,4 +1,4 @@
-package com.example.android.sampletvinput.SundtekParser.Model;
+package com.example.android.sampletvinput.Model;
 
 /**
  * Created by Tamim Baschour on 27.02.2017.

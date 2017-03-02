@@ -1,4 +1,4 @@
-package com.example.android.sampletvinput.SundtekParser.Model;
+package com.example.android.sampletvinput.Model;
 
 import org.json.JSONArray;
 

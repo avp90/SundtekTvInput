@@ -17,7 +17,6 @@ package com.example.android.sampletvinput.player;
 
 import android.net.Uri;
 import android.os.SystemClock;
-import android.util.Log;
 import android.util.SparseArray;
 
 import com.google.android.exoplayer.C;
@@ -250,7 +249,7 @@ public final class ExtractorSampleSource implements SampleSource, SampleSourceRe
         if (extractors == null || extractors.length == 0) {
             extractors = new Extractor[DEFAULT_EXTRACTOR_CLASSES.size()];
             for (int i = 0; i < extractors.length; i++) {
-                Log.d("EXTRACTOR", (DEFAULT_EXTRACTOR_CLASSES.get(i).getSimpleName()));
+//                Log.d("EXTRACTOR", (DEFAULT_EXTRACTOR_CLASSES.get(i).getSimpleName()));
                 try {
                     if (DEFAULT_EXTRACTOR_CLASSES.get(i).getSimpleName().equals("TsExtractor"))
                         extractors[i] = DEFAULT_EXTRACTOR_CLASSES.get(i)

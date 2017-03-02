@@ -88,6 +88,7 @@ public class Parser {
             internalProviderData = new InternalProviderData();
             internalProviderData.setRepeatable(false);
 
+            //TODO: Find workaround for some channeles with strange serviceids (BBL, Eishockey..)
             channelList.add(new Channel.Builder()
                     .setDisplayName(channelName)
                     .setDisplayNumber(String.valueOf(channelNumber++))

@@ -16,13 +16,15 @@
 package com.example.android.sampletvinput;
 
 import android.net.Uri;
-import android.util.Log;
 
-import com.example.android.sampletvinput.SundtekParser.Parser;
+import com.example.android.sampletvinput.JsonParser.Parser;
 import com.google.android.media.tv.companionlibrary.EpgSyncJobService;
 import com.google.android.media.tv.companionlibrary.model.Channel;
 import com.google.android.media.tv.companionlibrary.model.Program;
 
+import org.json.JSONException;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -57,86 +59,53 @@ public class SampleJobService extends EpgSyncJobService {
      */
     private static String TEST_AD_REQUEST_URL =
             "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/" +
-            "single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast" +
-            "&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct" +
-            "%3Dlinear&correlator=";
+                    "single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast" +
+                    "&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct" +
+                    "%3Dlinear&correlator=";
+    private Parser parser;
 
     @Override
     public List<Channel> getChannels() {
-        // Add channels through an XMLTV file
-//        XmlTvParser.TvListing listings = RichFeedUtil.getRichTvListings(this);
-//        List<Channel> channelList = new ArrayList<>(listings.getChannels());
-        List<Channel> channelList = new Parser(this.getApplicationContext()).getChannels();
-        Log.d("CHANNEL", channelList.toString());
-//        // Build advertisement list for the channel.
-//        Advertisement channelAd = new Advertisement.Builder()
-//                .setType(Advertisement.TYPE_VAST)
-//                .setRequestUrl(TEST_AD_REQUEST_URL)
-//                .build();
-//        List<Advertisement> channelAdList = new ArrayList<>();
-//        channelAdList.add(channelAd);
+//      Add channels through an XMLTV file
+//        List<Channel> channelList;
+ //       XmlTvParser.TvListing listings = RichFeedUtil.getRichTvListings(this);
+ //       channelList = new ArrayList<>(listings.getChannels());
+//        Log.d("CHANNELLIST", channelList.toString());
+ //       Log.d("CHANNELLIST", "--------------------------------------------------------------");
 
-        // Add a channel programmatically
-//        InternalProviderData internalProviderData = new InternalProviderData();
-//        internalProviderData.setRepeatable(true);
-////        internalProviderData.setAds(channelAdList);
-//        Channel channelTears = new Channel.Builder()
-//                .setDisplayName(MPEG_DASH_CHANNEL_NAME)
-//                .setDisplayNumber(MPEG_DASH_CHANNEL_NUMBER)
-//                .setChannelLogo(MPEG_DASH_CHANNEL_LOGO)
-//                .setOriginalNetworkId(MPEG_DASH_ORIGINAL_NETWORK_ID)
-//                .setInternalProviderData(internalProviderData)
-//                .build();
-//        channelList.add(channelTears);
-  //      new Parser(this.getApplicationContext()).getPrograms(null);
+        if(parser == null)
+            parser = new Parser();
+        List<Channel> channelList = null;
+        try {
+            channelList = new ArrayList<>(parser.getChannels());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+//      Log.d("CHANNELLISTXML", channelList.toString());
+//      Log.d("CHANNELLISTCODE", channelList2.toString());
+
         return channelList;
     }
 
     @Override
     public List<Program> getProgramsForChannel(Uri channelUri, Channel channel, long startMs,
-            long endMs) {
-//        if (channel.getDisplayName().equals("MDR Sachsen")) {
-//            Log.d("getProgramsForChannel" , channel.getDisplayName() + " " +  startMs + " " + endMs);
-//            // Is an XMLTV Channel
-//            XmlTvParser.TvListing listings = RichFeedUtil.getRichTvListings(getApplicationContext());
-   //         Log.d("CHANNEL PROGRAM", listings.getPrograms(channel).toString());
-            return new Parser(this.getApplicationContext()).getPrograms(channel);
+                                               long endMs) {
+        List<Program> programsList = null;
 
-//        } else {
-            // Build Advertisement list for the program.
-//            Advertisement programAd1 = new Advertisement.Builder()
-//                    .setStartTimeUtcMillis(TEST_AD_1_START_TIME_MS)
-//                    .setStopTimeUtcMillis(TEST_AD_1_START_TIME_MS + TEST_AD_DURATION_MS)
-//                    .setType(Advertisement.TYPE_VAST)
-//                    .setRequestUrl(TEST_AD_REQUEST_URL)
-//                    .build();
-//            Advertisement programAd2 = new Advertisement.Builder(programAd1)
-//                    .setStartTimeUtcMillis(TEST_AD_2_START_TIME_MS)
-//                    .setStopTimeUtcMillis(TEST_AD_2_START_TIME_MS + TEST_AD_DURATION_MS)
-//                    .build();
-//            List<Advertisement> programAdList = new ArrayList<>();
-//            programAdList.add(programAd1);
-//            programAdList.add(programAd2);
+//        //Is an XMLTV Channel
+//        XmlTvParser.TvListing listings = RichFeedUtil.getRichTvListings(getApplicationContext());
+//        return listings.getPrograms(channel);
 
-            // Programatically add channel
-//            List<Program> programsTears = new ArrayList<>();
-//            InternalProviderData internalProviderData = new InternalProviderData();
-//            internalProviderData.setVideoType(Util.TYPE_OTHER);
-//            internalProviderData.setVideoUrl("http://192.168.3.1:22000/stream/MDR_Sachsen");
-////            internalProviderData.setAds(programAdList);
-//            programsTears.add(new Program.Builder()
-//                    .setTitle(TEARS_OF_STEEL_TITLE)
-//                    .setStartTimeUtcMillis(TEARS_OF_STEEL_START_TIME_MS)
-//                    .setEndTimeUtcMillis(TEARS_OF_STEEL_START_TIME_MS + TEARS_OF_STEEL_DURATION_MS)
-//                    .setDescription(TEARS_OF_STEEL_DESCRIPTION)
-//                    .setCanonicalGenres(new String[] {TvContract.Programs.Genres.TECH_SCIENCE,
-//                            TvContract.Programs.Genres.MOVIES})
-//                    .setPosterArtUri(TEARS_OF_STEEL_ART)
-//                    .setThumbnailUri(TEARS_OF_STEEL_ART)
-//                    .setInternalProviderData(internalProviderData)
-//                    .build());
-//            return programsTears;
-//        }
+        if(parser == null)
+            parser = new Parser();
+        try {
+            programsList = new ArrayList<>(parser.getPrograms(channel));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return programsList;
 
     }
 }

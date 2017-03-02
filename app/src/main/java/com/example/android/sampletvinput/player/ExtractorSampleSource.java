@@ -77,15 +77,15 @@ import java.util.List;
  * constructor. When reading a new stream, the first {@link Extractor} that returns {@code true}
  * from {@link Extractor#sniff(ExtractorInput)} will be used.
  */
-public final class ExtractorSampleSource implements SampleSource, SampleSourceReader,
+final class ExtractorSampleSource implements SampleSource, SampleSourceReader,
         ExtractorOutput, Loader.Callback {
 
     /**
      * Thrown if the input format could not recognized.
      */
-    public static final class UnrecognizedInputFormatException extends ParserException {
+    private static final class UnrecognizedInputFormatException extends ParserException {
 
-        public UnrecognizedInputFormatException(Extractor[] extractors) {
+        UnrecognizedInputFormatException(Extractor[] extractors) {
             super("None of the available extractors ("
                     + Util.getCommaDelimitedSimpleClassNames(extractors) + ") could read the stream.");
         }
@@ -95,12 +95,12 @@ public final class ExtractorSampleSource implements SampleSource, SampleSourceRe
     /**
      * The default minimum number of times to retry loading prior to failing for on-demand streams.
      */
-    public static final int DEFAULT_MIN_LOADABLE_RETRY_COUNT_ON_DEMAND = 3;
+    private static final int DEFAULT_MIN_LOADABLE_RETRY_COUNT_ON_DEMAND = 3;
 
     /**
      * The default minimum number of times to retry loading prior to failing for live streams.
      */
-    public static final int DEFAULT_MIN_LOADABLE_RETRY_COUNT_LIVE = 6;
+    private static final int DEFAULT_MIN_LOADABLE_RETRY_COUNT_LIVE = 6;
 
     private static final int MIN_RETRY_COUNT_DEFAULT_FOR_MEDIA = -1;
     private static final long NO_RESET_PENDING = Long.MIN_VALUE;
@@ -222,8 +222,8 @@ public final class ExtractorSampleSource implements SampleSource, SampleSourceRe
      * @param extractors {@link Extractor}s to extract the media stream, in order of decreasing
      *     priority. If omitted, the default extractors will be used.
      */
-    public ExtractorSampleSource(Uri uri, DataSource dataSource, Allocator allocator,
-                                 int requestedBufferSize, Extractor... extractors) {
+    ExtractorSampleSource(Uri uri, DataSource dataSource, Allocator allocator,
+                          int requestedBufferSize, Extractor... extractors) {
         this(uri, dataSource, allocator, requestedBufferSize, MIN_RETRY_COUNT_DEFAULT_FOR_MEDIA,
                 extractors);
     }
@@ -239,8 +239,8 @@ public final class ExtractorSampleSource implements SampleSource, SampleSourceRe
      * @param extractors {@link Extractor}s to extract the media stream, in order of decreasing
      *     priority. If omitted, the default extractors will be used.
      */
-    public ExtractorSampleSource(Uri uri, DataSource dataSource, Allocator allocator,
-                                 int requestedBufferSize, int minLoadableRetryCount, Extractor... extractors) {
+    private ExtractorSampleSource(Uri uri, DataSource dataSource, Allocator allocator,
+                                  int requestedBufferSize, int minLoadableRetryCount, Extractor... extractors) {
         this.uri = uri;
         this.dataSource = dataSource;
         this.allocator = allocator;
@@ -255,7 +255,7 @@ public final class ExtractorSampleSource implements SampleSource, SampleSourceRe
                         extractors[i] = DEFAULT_EXTRACTOR_CLASSES.get(i)
                                         .getConstructor(PtsTimestampAdjuster.class, int.class)
                                         .newInstance(new PtsTimestampAdjuster(0),
-                                                TsExtractor.WORKAROUND_ALLOW_NON_IDR_KEYFRAMES);
+                                                TsExtractor.WORKAROUND_ALLOW_NON_IDR_KEYFRAMES| TsExtractor.WORKAROUND_IGNORE_AAC_STREAM);
                     else
                         extractors[i] = DEFAULT_EXTRACTOR_CLASSES.get(i).newInstance();
                 } catch (InstantiationException | IllegalAccessException e) {
@@ -678,7 +678,7 @@ public final class ExtractorSampleSource implements SampleSource, SampleSourceRe
      */
     private class InternalTrackOutput extends DefaultTrackOutput {
 
-        public InternalTrackOutput(Allocator allocator) {
+        InternalTrackOutput(Allocator allocator) {
             super(allocator);
         }
 
@@ -706,8 +706,8 @@ public final class ExtractorSampleSource implements SampleSource, SampleSourceRe
 
         private boolean pendingExtractorSeek;
 
-        public ExtractingLoadable(Uri uri, DataSource dataSource, ExtractorHolder extractorHolder,
-                                  Allocator allocator, int requestedBufferSize, long position) {
+        ExtractingLoadable(Uri uri, DataSource dataSource, ExtractorHolder extractorHolder,
+                           Allocator allocator, int requestedBufferSize, long position) {
             this.uri = Assertions.checkNotNull(uri);
             this.dataSource = Assertions.checkNotNull(dataSource);
             this.extractorHolder = Assertions.checkNotNull(extractorHolder);
@@ -778,7 +778,7 @@ public final class ExtractorSampleSource implements SampleSource, SampleSourceRe
          * @param extractors One or more extractors to choose from.
          * @param extractorOutput The output that will be used to initialize the selected extractor.
          */
-        public ExtractorHolder(Extractor[] extractors, ExtractorOutput extractorOutput) {
+        ExtractorHolder(Extractor[] extractors, ExtractorOutput extractorOutput) {
             this.extractors = extractors;
             this.extractorOutput = extractorOutput;
         }
@@ -792,7 +792,7 @@ public final class ExtractorSampleSource implements SampleSource, SampleSourceRe
          * @throws IOException Thrown if the input could not be read.
          * @throws InterruptedException Thrown if the thread was interrupted.
          */
-        public Extractor selectExtractor(ExtractorInput input)
+        Extractor selectExtractor(ExtractorInput input)
                 throws UnrecognizedInputFormatException, IOException, InterruptedException {
             if (extractor != null) {
                 return extractor;

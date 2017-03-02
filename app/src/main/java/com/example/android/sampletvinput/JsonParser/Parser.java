@@ -1,7 +1,5 @@
 package com.example.android.sampletvinput.JsonParser;
 
-import android.content.Context;
-
 import com.google.android.exoplayer.util.Util;
 import com.google.android.media.tv.companionlibrary.model.Channel;
 import com.google.android.media.tv.companionlibrary.model.InternalProviderData;
@@ -15,7 +13,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,76 +24,40 @@ import java.util.List;
 
 public class Parser {
 
-    final static String CHANNELS = "[[\"MDR Sachsen\",\"http://192.168.3.1:22000/stream/MDR_Sachsen\",\"http://sundtek.de/picons/?p=MDR_Sachsen\",\"1\",\"28228_6e44\"],[\"NDR FS HH\",\"http://192.168.3.1:22000/stream/NDR_FS_HH\",\"http://sundtek.de/picons/?p=NDR_FS_HH\",\"1\",\"28225_6e41\"],[\"rbb Berlin\",\"http://192.168.3.1:22000/stream/rbb_Berlin\",\"http://sundtek.de/picons/?p=rbb_Berlin\",\"1\",\"28206_6e2e\"],[\"SWR Fernsehen BW\",\"http://192.168.3.1:22000/stream/SWR_Fernsehen_BW\",\"http://sundtek.de/picons/?p=SWR_Fernsehen_BW\",\"1\",\"28113_6dd1\"],[\"WDR Kln\",\"http://192.168.3.1:22000/stream/WDR_Kln\",\"http://sundtek.de/picons/?p=WDR_Koeln\",\"1\",\"28111_6dcf\"]]";
+    private final static int CHANNEL_NAME = 0;
+    private final static int CHANNEL_LOGO = 2;
+    private final static int CHANNEL_ID = 4;
 
-    final static String DETAILPROGRAM = "[\"http://sundtek.de/picons/?p=MDR_Sachsen\", \"MDR Sachsen\",\"28228\",[1488124800, 600, 34266,\"MDR aktuell\",\"mit Wetter\",\"In komprimierter Fassung von anderthalb Minuten informieren wir Sie &uuml;ber die aktuellen Nachrichten des Tages.<p>Produziert in HD\"]]";
+    private final static int PROG_START = 0;
+    private final static int PROG_ICON_SRC = 0;
+    private final static int PROG_DURATION = 1;
+    private final static int PROG_TITLE = 3;
+    private final static int PROG_SUBTITLE = 4;
 
-//    final static String CHANNELPROGRAM = "[[\"http://sundtek.de/picons/?p=MDR_Sachsen\", \"MDR Sachsen\",\"28228\", \"1\",[1488113100, 11700, 34264,\"Sport im Osten\",\"Fu&szlig;ball 3. Liga live\",\"\"],[1488124800, 600, 34266,\"MDR aktuell\",\"mit Wetter\",\"\"],[1488125400, 3000, 34268,\"In aller Freundschaft - Die jungen &Auml;rzte (44)\",\"Neustart\",\"\"],[1488128400, 300, 34270,\"MDR aktuell\",\"\",\"\"],[1488128700, 2700, 34272,\"In aller Freundschaft (760)\",\"Ein schmaler Grat\",\"\"],[1488131400, 120, 34275,\"Wetter f&uuml;r 3\",\"Die Wetterschau f&uuml;r Mitteldeutschland\",\"\"],[1488131520, 480, 34277,\"Unser Sandm&auml;nnchen\",\"Pittiplatsch - Die hei&szlig;en Socken\",\"\"]]";
-
-
-    final static String one =
-            "[" +
-                    "\"http://sundtek.de/picons/?p=MDR_Sachsen\"," +
-                    "\"MDR Sachsen\"," +
-                    "\"28228\"," +
-                    "\"1\"," +
-                    "[" +
-                    "1488113100," +
-                    "11700," +
-                    "34264," +
-                    "\"Sport im Osten\"," +
-                    "\"Fu&szlig;ball 3. Liga live\"," +
-                    "\"\"" +
-                    "]," +
-                    "[" +
-                    "1488124800," +
-                    "600," +
-                    "34266," +
-                    "\"MDR aktuell\"," +
-                    "\"mit Wetter\"," +
-                    "\"\"" +
-                    "]" +
-                    "]";
+    private final static String BASE_STREAM_URL = "http://192.168.3.1:22000/stream/";
+    private final static String BASE_QUERY_URL = "http://192.168.3.1:22000/servercmd.xhx?";
+    private final static String QUERY_CHANNELS_SD = "chantype=sdtv&filter=publictv-privatetv";
+    private final static String QUERY_CHANNELS_HD = "chantype=hdtv&filter=publictv-privatetv";
+    private final static String QUERY_PROGRAMS_NOW = "epgmode=now&epgfilter=now-publictv-privatetv&channels=1%2C2%2C3%2C4%2C5";
+    private final static String QUERY_PROGRAMS_TODAY = "epgmode=today&epgfilter=today-publictv-privatetv&channels=1%2C2%2C3%2C4%2C5";
+    private final static String QUERY_PROGRAMS_TOMORROW = "epgmode=tomorrow&epgfilter=tomorrow-publictv-privatetv&channels=1%2C2%2C3%2C4%2C5";
 
 
-    final static int CHANNEL_NAME = 0;
-    final static int CHANNEL_LOGO = 2;
-    final static int CHANNEL_ID = 4;
+    private static JSONArray responseChannlesSdJson;
+    private static JSONArray responseChannlesHdJson;
+    private static JSONArray responseProgramsNowJson;
+    private static JSONArray responseProgramsTodayJson;
+    private static JSONArray responseProgramsTomorrowJson;
 
-    final static int PROG_START = 0;
-    final static int PROG_ICON_SRC = 0;
-    final static int PROG_DURATION = 1;
-    final static int PROG_ID = 2;
-    final static int PROG_TITLE = 3;
-    final static int PROG_SUBTITLE = 4;
-    final static String PROG_BASE_STREAM_URL = "http://192.168.3.1:22000/stream/";
-
-    private JSONArray responseChannlesSdJson;
-    private JSONArray responseChannlesHdJson;
-    private JSONArray responseProgramsTodayJson;
-    private JSONArray responseProgramsTomorrowJson;
     private int channelNumber = 1;
 
-
-    Context context;
-
-    public Parser() {
-    }
-
-    ;
-
-    public Parser(Context context) {
-        this.context = context;
-    }
-
-
-    public List<Channel> getChannels() throws JSONException {
+    public List<Channel> getChannels() throws JSONException, IOException {
         List<Channel> channelList = new ArrayList<>();
 
         if (responseChannlesHdJson == null)
-            responseChannlesHdJson = new JSONArray(getJson("http://192.168.3.1:22000/servercmd.xhx?chantype=hdtv&filter=publictv-privatetv"));
+            responseChannlesHdJson = new JSONArray(getJson(BASE_QUERY_URL + QUERY_CHANNELS_HD));
         if (responseChannlesSdJson == null)
-            responseChannlesSdJson = new JSONArray(getJson("http://192.168.3.1:22000/servercmd.xhx?chantype=sdtv&filter=publictv-privatetv"));
+            responseChannlesSdJson = new JSONArray(getJson(BASE_QUERY_URL + QUERY_CHANNELS_SD));
 
         channelList.addAll(parseChannles(responseChannlesHdJson));
         channelList.addAll(parseChannles(responseChannlesSdJson));
@@ -104,7 +65,7 @@ public class Parser {
         return channelList;
     }
 
-    public List<Channel> parseChannles(JSONArray channelsJson) throws JSONException {
+    private List<Channel> parseChannles(JSONArray channelsJson) throws JSONException {
         List<Channel> channelList = new ArrayList<>();
 
         InternalProviderData internalProviderData;
@@ -113,8 +74,6 @@ public class Parser {
         String channelName;
         String channelLogo;
         int serviceId;
-
-        Channel channel;
 
         for (int i = 0; i < channelsJson.length(); i++) {
             jsonChannel = channelsJson.getJSONArray(i);
@@ -143,20 +102,25 @@ public class Parser {
     }
 
 
-    public List<Program> getPrograms(Channel channel) throws JSONException {
+    public List<Program> getPrograms(Channel channel) throws JSONException, IOException {
         List<Program> programList = new ArrayList<>();
 
-        responseProgramsTodayJson = new JSONArray(getJson("http://192.168.3.1:22000/servercmd.xhx?epgmode=today&epgfilter=today-publictv-privatetv&channels=1%2C2%2C3%2C4%2C5"));
-        responseProgramsTomorrowJson = new JSONArray(getJson("http://192.168.3.1:22000/servercmd.xhx?epgmode=today&epgfilter=today-publictv-privatetv&channels=1%2C2%2C3%2C4%2C5"));
+        if (responseProgramsNowJson == null)
+            responseProgramsNowJson = new JSONArray(getJson(BASE_QUERY_URL + QUERY_PROGRAMS_NOW));
+        if (responseProgramsTodayJson == null)
+            responseProgramsTodayJson = new JSONArray(getJson(BASE_QUERY_URL + QUERY_PROGRAMS_TODAY));
+        if (responseProgramsTomorrowJson == null)
+            responseProgramsTomorrowJson = new JSONArray(getJson(BASE_QUERY_URL + QUERY_PROGRAMS_TOMORROW));
 
+        programList.addAll(parsePrograms(channel, responseProgramsNowJson));
         programList.addAll(parsePrograms(channel, responseProgramsTodayJson));
-     //   programList.addAll(parsePrograms(channel, responseProgramsTomorrowJson));
+        programList.addAll(parsePrograms(channel, responseProgramsTomorrowJson));
 
         return programList;
     }
 
 
-    public List<Program> parsePrograms(Channel channel, JSONArray programsJson) throws JSONException {
+    private List<Program> parsePrograms(Channel channel, JSONArray programsJson) throws JSONException {
 
         List<Program> programList = new ArrayList<>();
 
@@ -178,6 +142,7 @@ public class Parser {
             for (int i = 0; i < channelJson.length(); i++) {
                 if (channelJson.get(i) instanceof JSONArray) {
 
+                    assert progChannelName != null;
                     if (progChannelName.equals(channel.getDisplayName())) {
                         prog = new JSONArray(channelJson.get(i).toString());
                         progTitle = prog.get(PROG_TITLE).toString();
@@ -199,7 +164,7 @@ public class Parser {
                     }
                 } else {
                     progIconSrc = channelJson.get(PROG_ICON_SRC).toString();
-                    progStreamUrl = PROG_BASE_STREAM_URL + channelJson.get(1).toString().replace(" ", "_");
+                    progStreamUrl = BASE_STREAM_URL + channelJson.get(1).toString().replace(" ", "_");
                     progChannelName = channelJson.get(1).toString();
                 }
             }
@@ -209,34 +174,29 @@ public class Parser {
     }
 
 
-    private String getJson(String jUrl) {
+    private String getJson(String jUrl) throws IOException {
         HttpURLConnection connection;
         BufferedReader reader;
 
-        try {
-            URL url = new URL(jUrl);
-            connection = (HttpURLConnection) url.openConnection();
-            connection.connect();
+
+        URL url = new URL(jUrl);
+        connection = (HttpURLConnection) url.openConnection();
+        connection.setConnectTimeout(300000);
+        connection.setReadTimeout(300000);
+        connection.connect();
 
 
-            InputStream stream = connection.getInputStream();
+        InputStream stream = connection.getInputStream();
 
-            reader = new BufferedReader(new InputStreamReader(stream));
+        reader = new BufferedReader(new InputStreamReader(stream));
 
-            StringBuffer buffer = new StringBuffer();
-            String line;
+        StringBuilder buffer = new StringBuilder();
+        String line;
 
-            while ((line = reader.readLine()) != null) {
-                buffer.append(line + "\n");
-            }
-
-            return buffer.toString();
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        while ((line = reader.readLine()) != null) {
+            buffer.append(line).append("\n");
         }
-        return null;
+
+        return buffer.toString();
     }
 }

@@ -20,7 +20,7 @@ import java.util.List;
 
 public class ChannelsDB {
 
-    private static String TAG = ChannelsDB.class.getSimpleName();
+    private static final String TAG = ChannelsDB.class.getSimpleName();
 
     private static long MAX_AGE = 43200000;
     private static ChannelsDB myChannelsDB;

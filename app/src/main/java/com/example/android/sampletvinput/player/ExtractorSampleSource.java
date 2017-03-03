@@ -255,7 +255,7 @@ final class ExtractorSampleSource implements SampleSource, SampleSourceReader,
                         extractors[i] = DEFAULT_EXTRACTOR_CLASSES.get(i)
                                         .getConstructor(PtsTimestampAdjuster.class, int.class)
                                         .newInstance(new PtsTimestampAdjuster(0),
-                                                TsExtractor.WORKAROUND_ALLOW_NON_IDR_KEYFRAMES| TsExtractor.WORKAROUND_IGNORE_AAC_STREAM);
+                                                TsExtractor.WORKAROUND_ALLOW_NON_IDR_KEYFRAMES);
                     else
                         extractors[i] = DEFAULT_EXTRACTOR_CLASSES.get(i).newInstance();
                 } catch (InstantiationException | IllegalAccessException e) {

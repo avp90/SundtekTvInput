@@ -16,7 +16,7 @@ import java.util.List;
 
 public class ProgramsDB {
 
-    private static String TAG = ProgramsDB.class.getSimpleName();
+    private static final String TAG = ProgramsDB.class.getSimpleName();
 
     private Context context;
 

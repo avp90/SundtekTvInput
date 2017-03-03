@@ -29,36 +29,36 @@ import java.util.List;
 public class Parser {
 
 
-    private static String TAG = Parser.class.getSimpleName();
+    private static final String TAG = Parser.class.getSimpleName();
 
-    private final static int CHANNEL_NAME = 0;
-    private final static int CHANNEL_LOGO = 2;
-    private final static int CHANNEL_ID = 4;
+    private static final int CHANNEL_NAME = 0;
+    private static final int CHANNEL_LOGO = 2;
+    private static final int CHANNEL_ID = 4;
 
-    private final static int PROG_START = 0;
-    private final static int PROG_DURATION = 1;
-    private final static int PROG_EVENTID = 2;
-    private final static int PROG_TITLE = 3;
-    private final static int PROG_SUBTITLE = 4;
+    private static final int PROG_START = 0;
+    private static final int PROG_DURATION = 1;
+    private static final int PROG_EVENTID = 2;
+    private static final int PROG_TITLE = 3;
+    private static final int PROG_SUBTITLE = 4;
 
-    private final static int PROG_ICON_SRC = 0;
-    private final static int PROG_CHANNEL_NAME = 1;
-    private final static int PROG_SERVICE_ID = 2;
+    private static final int PROG_ICON_SRC = 0;
+    private static final int PROG_CHANNEL_NAME = 1;
+    private static final int PROG_SERVICE_ID = 2;
 
 
-    private final static String BASE_URL = "http://192.168.3.1:22000";
-    private final static String BASE_STREAM_URL = BASE_URL + "/stream/";
-    private final static String BASE_SERVERCMD_URL = BASE_URL + "/servercmd.xhx?";
-    private final static String QUERY_CHANNELS_SD = "chantype=sdtv&filter=publictv-privatetv";
-    private final static String QUERY_CHANNELS_HD = "chantype=hdtv&filter=publictv-privatetv";
-    private final static String QUERY_PROGRAMS_NOW = "epgmode=now&epgfilter=now-publictv-privatetv&channels=1%2C2%2C3%2C4%2C5";
-    private final static String QUERY_PROGRAMS_TODAY = "epgmode=today&epgfilter=today-publictv-privatetv&channels=1%2C2%2C3%2C4%2C5";
-    private final static String QUERY_PROGRAMS_TOMORROW = "epgmode=tomorrow&epgfilter=tomorrow-publictv-privatetv&channels=1%2C2%2C3%2C4%2C5";
+    private static final String BASE_URL = "http://192.168.3.1:22000";
+    private static final String BASE_STREAM_URL = BASE_URL + "/stream/";
+    private static final String BASE_SERVERCMD_URL = BASE_URL + "/servercmd.xhx?";
+    private static final String QUERY_CHANNELS_SD = "chantype=sdtv&filter=publictv-privatetv";
+    private static final String QUERY_CHANNELS_HD = "chantype=hdtv&filter=publictv-privatetv";
+    private static final String QUERY_PROGRAMS_NOW = "epgmode=now&epgfilter=now-publictv-privatetv&channels=1%2C2%2C3%2C4%2C5";
+    private static final String QUERY_PROGRAMS_TODAY = "epgmode=today&epgfilter=today-publictv-privatetv&channels=1%2C2%2C3%2C4%2C5";
+    private static final String QUERY_PROGRAMS_TOMORROW = "epgmode=tomorrow&epgfilter=tomorrow-publictv-privatetv&channels=1%2C2%2C3%2C4%2C5";
 
-    private final static String PROG_IPD_EPG_EVENT_ID = "epgEventId";
-    private final static String PROG_IPD_SERVICE_ID = "serviceId";
-    private final static String PROG_IPD_ORIGINAL_NETWORK_ID = "originalNetworkId";
-    private final static String PROG_IPD_CHANNEL = "channel";
+    private static final String PROG_IPD_EPG_EVENT_ID = "epgEventId";
+    private static final String PROG_IPD_SERVICE_ID = "serviceId";
+    private static final String PROG_IPD_ORIGINAL_NETWORK_ID = "originalNetworkId";
+    private static final String PROG_IPD_CHANNEL = "channel";
 
     private JSONArray responseChannlesSdJson;
     private JSONArray responseChannlesHdJson;
@@ -122,13 +122,13 @@ public class Parser {
             internalProviderData.setRepeatable(false);
 
             channelList.add(new Channel.Builder()
-                            .setDisplayName(channelName)
-                            .setDisplayNumber(String.valueOf(channelNumber++))
-                            .setChannelLogo(channelLogo)
-                            .setOriginalNetworkId(channelLogo.hashCode())
-                            .setInternalProviderData(internalProviderData)
-                            .setServiceId(serviceId)
-                            .build()
+                    .setDisplayName(channelName)
+                    .setDisplayNumber(String.valueOf(channelNumber++))
+                    .setChannelLogo(channelLogo)
+                    .setOriginalNetworkId(channelLogo.hashCode())
+                    .setInternalProviderData(internalProviderData)
+                    .setServiceId(serviceId)
+                    .build()
             );
         }
 
@@ -232,7 +232,7 @@ public class Parser {
                                 .setInternalProviderData(internalProviderData)
 //                                .setDescription(description.length() > 256 ? description.substring(0, 255) : description)
 //                                .setLongDescription(description)
-                                .setCanonicalGenres(new String[] {TvContract.Programs.Genres.ENTERTAINMENT,
+                                .setCanonicalGenres(new String[]{TvContract.Programs.Genres.ENTERTAINMENT,
                                         TvContract.Programs.Genres.MOVIES, TvContract.Programs.Genres.TECH_SCIENCE})
                                 .setPosterArtUri(logo)
                                 .setThumbnailUri(logo)
@@ -270,7 +270,7 @@ public class Parser {
     }
 
 
-    public String getJson(String jUrl) throws IOException {
+    private String getJson(String jUrl) throws IOException {
         HttpURLConnection connection;
         BufferedReader reader;
 

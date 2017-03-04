@@ -46,7 +46,7 @@ public class SampleJobService extends EpgSyncJobService {
 
         Log.d(TAG, "Trying to get programs for " + channel.getDisplayName());
 
-        ArrayList<Program> programs = new ArrayList<>(ProgramsDB.getInstance(getApplicationContext()).getPrograms(channel));
+        ArrayList<Program> programs = new ArrayList<>(ProgramsDB.getInstance().getPrograms(channel));
 
         Log.d(TAG, "Got " + programs.size() + " channels for " + channel.getDisplayName());
 

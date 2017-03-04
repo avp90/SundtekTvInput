@@ -16,15 +16,14 @@
 package com.example.android.sampletvinput;
 
 import android.net.Uri;
+import android.util.Log;
 
-import com.example.android.sampletvinput.JsonParser.Parser;
+import com.example.android.sampletvinput.Model.ChannelsDB;
+import com.example.android.sampletvinput.Model.ProgramsDB;
 import com.google.android.media.tv.companionlibrary.EpgSyncJobService;
 import com.google.android.media.tv.companionlibrary.model.Channel;
 import com.google.android.media.tv.companionlibrary.model.Program;
 
-import org.json.JSONException;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,50 +32,25 @@ import java.util.List;
  */
 public class SampleJobService extends EpgSyncJobService {
 
-    private Parser parser;
+    private static String TAG = SampleJobService.class.getSimpleName();
+
 
     @Override
     public List<Channel> getChannels() {
-//      Add channels through an XMLTV file
-//        List<Channel> channelList;
- //       XmlTvParser.TvListing listings = RichFeedUtil.getRichTvListings(this);
- //       channelList = new ArrayList<>(listings.getChannels());
-//        Log.d("CHANNELLIST", channelList.toString());
- //       Log.d("CHANNELLIST", "--------------------------------------------------------------");
-
-        if(parser == null)
-            parser = new Parser();
-        List<Channel> channelList = null;
-        try {
-            channelList = new ArrayList<>(parser.getChannels());
-        } catch (JSONException | IOException e) {
-            e.printStackTrace();
-        }
-
-//      Log.d("CHANNELLISTXML", channelList.toString());
-//      Log.d("CHANNELLISTCODE", channelList2.toString());
-
-        return channelList;
+        return ChannelsDB.getInstance(getApplicationContext()).getChannels();
     }
 
     @Override
     public List<Program> getProgramsForChannel(Uri channelUri, Channel channel, long startMs,
                                                long endMs) {
-        List<Program> programsList = null;
 
-//        //Is an XMLTV Channel
-//        XmlTvParser.TvListing listings = RichFeedUtil.getRichTvListings(getApplicationContext());
-//        return listings.getPrograms(channel);
+        Log.d(TAG, "Trying to get programs for " + channel.getDisplayName());
 
-        if(parser == null)
-            parser = new Parser();
-        try {
-            programsList = new ArrayList<>(parser.getPrograms(channel));
-        } catch (JSONException | IOException e) {
-            e.printStackTrace();
-        }
+        ArrayList<Program> programs = new ArrayList<>(ProgramsDB.getInstance().getPrograms(channel));
 
-        return programsList;
+        Log.d(TAG, "Got " + programs.size() + " channels for " + channel.getDisplayName());
 
+        return programs;
     }
+
 }

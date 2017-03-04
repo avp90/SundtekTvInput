@@ -20,7 +20,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.graphics.Point;
 import android.media.tv.TvContentRating;
-import android.media.tv.TvContract;
 import android.media.tv.TvInputManager;
 import android.media.tv.TvInputService;
 import android.media.tv.TvTrackInfo;
@@ -38,23 +37,22 @@ import android.view.WindowManager;
 import android.view.accessibility.CaptioningManager;
 
 import com.example.android.sampletvinput.R;
+import com.example.android.sampletvinput.SampleJobService;
 import com.example.android.sampletvinput.player.DemoPlayer;
 import com.example.android.sampletvinput.player.RendererBuilderFactory;
-
-import com.example.android.sampletvinput.SampleJobService;
 import com.google.android.exoplayer.ExoPlayer;
 import com.google.android.exoplayer.MediaFormat;
 import com.google.android.exoplayer.text.CaptionStyleCompat;
 import com.google.android.exoplayer.text.Cue;
 import com.google.android.exoplayer.text.SubtitleLayout;
+import com.google.android.media.tv.companionlibrary.BaseTvInputService;
+import com.google.android.media.tv.companionlibrary.EpgSyncJobService;
 import com.google.android.media.tv.companionlibrary.TvPlayer;
 import com.google.android.media.tv.companionlibrary.model.Advertisement;
 import com.google.android.media.tv.companionlibrary.model.Channel;
 import com.google.android.media.tv.companionlibrary.model.InternalProviderData;
 import com.google.android.media.tv.companionlibrary.model.Program;
 import com.google.android.media.tv.companionlibrary.model.RecordedProgram;
-import com.google.android.media.tv.companionlibrary.BaseTvInputService;
-import com.google.android.media.tv.companionlibrary.EpgSyncJobService;
 import com.google.android.media.tv.companionlibrary.utils.TvContractUtils;
 
 import java.util.ArrayList;
@@ -66,7 +64,7 @@ import java.util.List;
  */
 public class RichTvInputService extends BaseTvInputService {
     private static final String TAG = "RichTvInputService";
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     private static final long EPG_SYNC_DELAYED_PERIOD_MS = 1000 * 2; // 2 Seconds
 
     private CaptioningManager mCaptioningManager;

@@ -3,6 +3,7 @@ package com.example.android.sampletvinput.Model;
 import android.util.Log;
 
 import com.example.android.sampletvinput.JsonParser.Parser;
+import com.google.android.exoplayer.util.Util;
 import com.google.android.media.tv.companionlibrary.model.Channel;
 import com.google.android.media.tv.companionlibrary.model.InternalProviderData;
 import com.google.android.media.tv.companionlibrary.model.Program;
@@ -32,7 +33,7 @@ public class ProgramsDB {
     private static final String PROG_IPD_EPG_EVENT_ID = "epgEventId";
     private static final String PROG_IPD_SERVICE_ID = "serviceId";
     private static final String PROG_IPD_ORIGINAL_NETWORK_ID = "originalNetworkId";
-    private static final String PROG_IPD_CHANNEL = "channel";
+    private static final String PROG_IPD_CHANNEL_NAME = "channelName";
 
 
     public static ProgramsDB getInstance() {
@@ -50,7 +51,7 @@ public class ProgramsDB {
 
 
     //TODO: do networking and parsing in background service
-    public List<Program> getPrograms(Channel channel) {
+    private boolean getPrograms() {
 
         if (allProgramMap.isEmpty() || (lastUpdate + MAX_AGE_MILLIS) <= (new Date().getTime())) {
             List<Program> programs;
@@ -63,8 +64,15 @@ public class ProgramsDB {
 
             for (Program program : programs) {
                 try {
+
+                    InternalProviderData ipd = program.getInternalProviderData();
+
                     // Event ids are not unique so we pair them with the corresponding originalNetworkId
-                    eventId = program.getInternalProviderData().get(PROG_IPD_EPG_EVENT_ID) + "/" + program.getInternalProviderData().get(PROG_IPD_ORIGINAL_NETWORK_ID);
+                    eventId = ipd.get(PROG_IPD_EPG_EVENT_ID) + "/" + ipd.get(PROG_IPD_ORIGINAL_NETWORK_ID);
+
+                    if (eventId.equals(ipd.get(PROG_IPD_ORIGINAL_NETWORK_ID) + "/" + ipd.get(PROG_IPD_ORIGINAL_NETWORK_ID)))
+                        Log.d(TAG, "No program data for " + ipd.get(PROG_IPD_CHANNEL_NAME));
+
                 } catch (InternalProviderData.ParseException e) {
                     e.printStackTrace();
                 }
@@ -91,22 +99,57 @@ public class ProgramsDB {
             }
 
             Log.d(TAG, "found programs for " + channelProgramsMap.values().size() + "channels");
+
+            return true;
         }
 
-
-        return getProgramsForChannel(channel);
+        return false;
     }
 
-    private List<Program> getProgramsForChannel(Channel channel) {
+    public List<Program> getProgramsForChannel(Channel channel) {
+
+        getPrograms();
+
         String channelKey = String.valueOf(channel.getOriginalNetworkId());
 
-        if (!channelProgramsMap.containsKey(channelKey))
+        if (!channelProgramsMap.containsKey(channelKey)) {
             channelProgramsMap.put(channelKey, new ArrayList<Program>());
+        }
 
-        Log.d(TAG, "found " + (channelProgramsMap.get(channelKey) != null ? channelProgramsMap.get(channelKey).size() : 0) + " programs for " + channel.getDisplayName());
+        if(channelProgramsMap.get(channelKey).isEmpty()){
+            channelProgramsMap.get(channelKey).add(makeDummyProgram(channel));
+            Log.d(TAG, "crate dummy program info for channel: " + channel.getDisplayName());
+            Log.d(TAG, "CHANNEL URL: " + channelProgramsMap.get(channelKey).get(0).getInternalProviderData().getVideoUrl());
+        }
+
+        Log.d(TAG, "found " + channelProgramsMap.get(channelKey).size() + " programs for " + channel.getDisplayName());
 
 
         return channelProgramsMap.get(channelKey);
+    }
+
+    private Program makeDummyProgram(Channel channel) {
+
+        InternalProviderData ipd = new InternalProviderData();
+        ipd.setVideoType(Util.TYPE_OTHER);
+        try {
+            ipd.setVideoUrl((String)channel.getInternalProviderData().get("mediaUrl"));
+            ipd.put(PROG_IPD_SERVICE_ID, channel.getServiceId());
+            ipd.put(PROG_IPD_ORIGINAL_NETWORK_ID, channel.getOriginalNetworkId());
+            //set default eventId since there are no real events for the channel
+            ipd.put(PROG_IPD_EPG_EVENT_ID, channel.getOriginalNetworkId() + "/" + channel.getOriginalNetworkId());
+            ipd.put(PROG_IPD_CHANNEL_NAME, channel.getDisplayName());
+        } catch (InternalProviderData.ParseException e) {
+            e.printStackTrace();
+        }
+
+        return new Program.Builder()
+                .setTitle(channel.getDisplayName())
+                .setThumbnailUri(channel.getChannelLogo())
+                .setInternalProviderData(ipd)
+                .setStartTimeUtcMillis(0)
+                .setEndTimeUtcMillis(700 * 1000)
+                .build();
     }
 
 

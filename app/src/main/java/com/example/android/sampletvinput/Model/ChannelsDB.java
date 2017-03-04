@@ -1,5 +1,6 @@
 package com.example.android.sampletvinput.Model;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 
@@ -11,6 +12,7 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -24,13 +26,15 @@ public class ChannelsDB {
 
     private static long MAX_AGE = 43200000;
     private static ChannelsDB myChannelsDB;
-    List<Channel> channels;
+    private HashMap<Integer, Channel> channelMap;
     private long lastUpdate;
 
     private Context context;
 
 
-    /** The default period between full EPG syncs, one day. */
+    /**
+     * The default period between full EPG syncs, one day.
+     */
     private static final long DEFAULT_SYNC_PERIOD_MILLIS = 1000 * 60 * 60 * 12; // 12 hour
     private static final long DEFAULT_IMMEDIATE_EPG_DURATION_MILLIS = 1000 * 60 * 60; // 1 Hour
     private static final long DEFAULT_PERIODIC_EPG_DURATION_MILLIS = 1000 * 60 * 60 * 48; // 48 Hour
@@ -42,41 +46,39 @@ public class ChannelsDB {
         return myChannelsDB;
     }
 
-    private ChannelsDB(Context context){
+    @SuppressLint("UseSparseArrays")
+    private ChannelsDB(Context context) {
         Log.d(TAG, "new ChannelsDB Instance");
         this.context = context;
+        channelMap = new HashMap<>();
     }
 
 
+    //TODO: do networking and parsing in background service
     public List<Channel> getChannels() {
-        if (channels == null) {
-            getChannels(true);
-            Log.d(TAG, "channles is null... refreshing");
-        } else if ((lastUpdate + MAX_AGE) <= (new Date().getTime())) {
-            getChannels(true);
-            Log.d(TAG, "channles too old... refreshing");
-        }
-        Log.d(TAG, "Found " + channels.size() + " Channels");
 
-        return channels;
-    }
+        List<Channel> channels = new ArrayList<>();
 
-    public List<Channel> getChannels(Boolean forceRefresh) {
-        if (forceRefresh)
+        if (channelMap.isEmpty() || (lastUpdate + MAX_AGE) <= (new Date().getTime())) {
             try {
-                channels = new ArrayList<>(new Parser().getChannels());
+                Log.d(TAG, "refreshing channels");
+                channels.addAll(new Parser().getChannels());
                 lastUpdate = new Date().getTime();
                 Log.d(TAG, "ChannelDB Timestamp: " + lastUpdate);
-            } catch (JSONException | IOException e) { e.printStackTrace(); }
+            } catch (JSONException | IOException e) {
+                e.printStackTrace();
+            }
 
-        if(channels == null)
-            getChannels(true);
+            List<Integer> keyList = new ArrayList<>();
+            for (Channel channel : channels) {
+                keyList.add(channel.getOriginalNetworkId());
+                channelMap.put(channel.getOriginalNetworkId(), channel);
+            }
+            channelMap.keySet().retainAll(keyList);
+        }
 
-        return channels;
+        Log.d(TAG, "Found " + channelMap.size() + " Channels");
+
+        return new ArrayList<>(channelMap.values());
     }
-
-    public void reset() {
-        channels = null;
-    }
-
 }

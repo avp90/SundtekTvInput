@@ -16,6 +16,7 @@
 package com.example.android.sampletvinput;
 
 import android.net.Uri;
+import android.util.Log;
 
 import com.example.android.sampletvinput.Model.ChannelsDB;
 import com.example.android.sampletvinput.Model.ProgramsDB;
@@ -23,6 +24,7 @@ import com.google.android.media.tv.companionlibrary.EpgSyncJobService;
 import com.google.android.media.tv.companionlibrary.model.Channel;
 import com.google.android.media.tv.companionlibrary.model.Program;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,7 +43,14 @@ public class SampleJobService extends EpgSyncJobService {
     @Override
     public List<Program> getProgramsForChannel(Uri channelUri, Channel channel, long startMs,
                                                long endMs) {
-        return ProgramsDB.getInstance(getApplicationContext()).getPrograms(channel, false);
+
+        Log.d(TAG, "Trying to get programs for " + channel.getDisplayName());
+
+        ArrayList<Program> programs = new ArrayList<>(ProgramsDB.getInstance(getApplicationContext()).getPrograms(channel));
+
+        Log.d(TAG, "Got " + programs.size() + " channels for " + channel.getDisplayName());
+
+        return programs;
     }
 
 }

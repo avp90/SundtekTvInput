@@ -38,6 +38,7 @@ public class SampleJobService extends EpgSyncJobService {
     @Override
     public List<Channel> getChannels() {
         return ChannelsDB.getInstance(getApplicationContext()).getChannels();
+
     }
 
     @Override
@@ -46,7 +47,7 @@ public class SampleJobService extends EpgSyncJobService {
 
         Log.d(TAG, "Trying to get programs for " + channel.getDisplayName());
 
-        ArrayList<Program> programs = new ArrayList<>(ProgramsDB.getInstance().getPrograms(channel));
+        ArrayList<Program> programs = new ArrayList<>(ProgramsDB.getInstance().getProgramsForChannel(channel));
 
         Log.d(TAG, "Got " + programs.size() + " channels for " + channel.getDisplayName());
 

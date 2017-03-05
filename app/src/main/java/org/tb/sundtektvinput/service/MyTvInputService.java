@@ -401,7 +401,7 @@ public class MyTvInputService extends BaseTvInputService {
             // recorded, no other channel from this TvInputService will be accessible. Developers
             // should call notifyError(TvInputManager.RECORDING_ERROR_RESOURCE_BUSY) to alert
             // the framework that this recording cannot be completed.
-            // Developers can update the tuner count in xml/richtvinputservice or programmatically
+            // Developers can update the tuner count in xml/tvinputservice or programmatically
             // by adding it to TvInputInfo.updateTvInputInfo.
             notifyTuned(uri);
         }

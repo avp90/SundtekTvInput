@@ -26,7 +26,7 @@ import org.tb.sundtektvinput.service.MyTvInputService;
 /**
  * The setup activity for demonstrating {@link MyTvInputService}.
  */
-public class RichTvInputSetupActivity extends Activity {
+public class TvInputSetupActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

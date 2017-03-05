@@ -4,8 +4,9 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 
-import org.tb.sundtektvinput.JsonParser.Parser;
 import com.google.android.media.tv.companionlibrary.model.Channel;
+
+import org.tb.sundtektvinput.JsonParser.Parser;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,7 +22,7 @@ public class ChannelsDB {
 
     private static final String TAG = ChannelsDB.class.getSimpleName();
 
-    private static long MAX_AGE = 43200000;
+    private static long MAX_AGE = 1000 * 60 * 60 * 1  / 12; //5mins;
     private static ChannelsDB myChannelsDB;
     private HashMap<Integer, Channel> channelMap;
     private long lastUpdate;

@@ -54,7 +54,7 @@ public class RichSetupFragment extends ChannelSetupFragment {
             Bundle savedInstanceState) {
         View fragmentView = super.onCreateView(inflater, container, savedInstanceState);
         setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.detail_background));
-        setBadge(getResources().getDrawable(R.drawable.your_company));
+        setBadge(getResources().getDrawable(R.drawable.ic_launcher));
         setChannelListVisibility(true);
         setTitle(getString(R.string.sundtek_tvinput_label));
         setDescription(getString(R.string.setup_description));

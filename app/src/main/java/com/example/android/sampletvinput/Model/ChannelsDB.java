@@ -7,9 +7,6 @@ import android.util.Log;
 import com.example.android.sampletvinput.JsonParser.Parser;
 import com.google.android.media.tv.companionlibrary.model.Channel;
 
-import org.json.JSONException;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -60,14 +57,10 @@ public class ChannelsDB {
         List<Channel> channels = new ArrayList<>();
 
         if (channelMap.isEmpty() || (lastUpdate + MAX_AGE) <= (new Date().getTime())) {
-            try {
-                Log.d(TAG, "refreshing channels");
-                channels.addAll(new Parser().getChannels());
-                lastUpdate = new Date().getTime();
-                Log.d(TAG, "ChannelDB Timestamp: " + lastUpdate);
-            } catch (JSONException | IOException e) {
-                e.printStackTrace();
-            }
+            Log.d(TAG, "refreshing channels");
+            channels.addAll(new Parser().getChannels());
+            lastUpdate = new Date().getTime();
+            Log.d(TAG, "ChannelDB Timestamp: " + lastUpdate);
 
             List<Integer> keyList = new ArrayList<>();
             for (Channel channel : channels) {
@@ -79,6 +72,11 @@ public class ChannelsDB {
 
         Log.d(TAG, "Found " + channelMap.size() + " Channels");
 
+
         return new ArrayList<>(channelMap.values());
+    }
+
+    public HashMap<Integer, Channel> getChannelMap(){
+        return channelMap;
     }
 }

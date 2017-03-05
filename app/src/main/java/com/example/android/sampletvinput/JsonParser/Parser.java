@@ -18,7 +18,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -31,8 +33,12 @@ public class Parser {
     private static final String TAG = Parser.class.getSimpleName();
 
     private static final int CHANNEL_NAME = 0;
+    private static final int CHANNEL_MEDIA = 1;
     private static final int CHANNEL_LOGO = 2;
     private static final int CHANNEL_ID = 4;
+
+    private static final String CHANNEL_IPD_MEDIA_URL = "mediaUrl";
+
 
     private static final int PROG_START = 0;
     private static final int PROG_DURATION = 1;
@@ -57,61 +63,62 @@ public class Parser {
     private static final String PROG_IPD_EPG_EVENT_ID = "epgEventId";
     private static final String PROG_IPD_SERVICE_ID = "serviceId";
     private static final String PROG_IPD_ORIGINAL_NETWORK_ID = "originalNetworkId";
-    private static final String PROG_IPD_CHANNEL = "channel";
+    private static final String PROG_IPD_CHANNEL_NAME = "channelName";
 
-    private JSONArray responseChannlesSdJson;
-    private JSONArray responseChannlesHdJson;
-    private JSONArray responseProgramsNowJson;
-    private JSONArray responseProgramsTodayJson;
-    private JSONArray responseProgramsTomorrowJson;
+    private static final int JSON_EPG_START_INDEX = 3;
 
+    private HashMap<String, Channel> channelMap;
     private int channelNumber = 1;
 
-    public Parser() {
-        Log.d(TAG, "new Parser");
+    public HashMap<String, Channel> getChannelMap() throws JSONException, IOException {
+
+        if (channelMap == null) {
+            channelMap = new HashMap<>();
+
+            Log.d(TAG, "Fetch HD channels");
+            JSONArray responseChannlesHdJson = new JSONArray(getJson(BASE_SERVERCMD_URL + QUERY_CHANNELS_HD));
+            channelMap.putAll(parseChannles(responseChannlesHdJson));
+
+            Log.d(TAG, "Fetch SD channels");
+            JSONArray responseChannlesSdJson = new JSONArray(getJson(BASE_SERVERCMD_URL + QUERY_CHANNELS_SD));
+            channelMap.putAll(parseChannles(responseChannlesSdJson));
+
+
+            Log.d(TAG, "total channels found: " + channelMap.size());
+        }
+        return channelMap;
     }
 
-    public List<Channel> getChannels() throws JSONException, IOException {
-        List<Channel> channelList = new ArrayList<>();
-        List<Channel> channelsHd;
-        List<Channel> channelsSd;
-
-
-        if (responseChannlesHdJson == null) {
-            Log.d(TAG, "No HD Channels found");
-            responseChannlesHdJson = new JSONArray(getJson(BASE_SERVERCMD_URL + QUERY_CHANNELS_HD));
+    public ArrayList<Channel> getChannels() {
+        try {
+            return new ArrayList<>(getChannelMap().values());
+        } catch (JSONException | IOException e) {
+            e.printStackTrace();
         }
-        channelsHd = parseChannles(responseChannlesHdJson);
-        Log.d(TAG, "HD channeles found: " + channelsHd.size());
 
-        if (responseChannlesSdJson == null) {
-            Log.d(TAG, "No SD Channels found");
-            responseChannlesSdJson = new JSONArray(getJson(BASE_SERVERCMD_URL + QUERY_CHANNELS_SD));
-        }
-        channelsSd = parseChannles(responseChannlesSdJson);
-        Log.d(TAG, "SD channels found: " + channelsSd.size());
-
-        channelList.addAll(channelsHd);
-        channelList.addAll(channelsSd);
-
-        Log.d(TAG, "total channels found: " + channelList.size());
-        return channelList;
+        return null;
     }
 
-    private List<Channel> parseChannles(JSONArray channelsJson) throws JSONException {
-        List<Channel> channelList = new ArrayList<>();
+
+    private Map<String, Channel> parseChannles(JSONArray channelsJson) throws JSONException {
+
+        HashMap<String, Channel> channels = new HashMap<>();
 
         InternalProviderData internalProviderData;
         JSONArray jsonChannel;
 
         String channelName;
         String channelLogo;
+        String mediaUrl;
+        int originalNetworkId;
         int serviceId;
 
         for (int i = 0; i < channelsJson.length(); i++) {
             jsonChannel = channelsJson.getJSONArray(i);
             channelName = jsonChannel.get(CHANNEL_NAME).toString();
             channelLogo = jsonChannel.get(CHANNEL_LOGO).toString();
+            mediaUrl = jsonChannel.get(CHANNEL_MEDIA).toString();
+            originalNetworkId = channelLogo.hashCode();
 
             String serviceIdString = jsonChannel.get(CHANNEL_ID).toString();
             serviceIdString = serviceIdString.substring(0, serviceIdString.indexOf("_"));
@@ -119,19 +126,21 @@ public class Parser {
 
             internalProviderData = new InternalProviderData();
             internalProviderData.setRepeatable(false);
+            internalProviderData.put(CHANNEL_IPD_MEDIA_URL, mediaUrl);
 
-            channelList.add(new Channel.Builder()
+
+            channels.put(String.valueOf(originalNetworkId), new Channel.Builder()
                     .setDisplayName(channelName)
                     .setDisplayNumber(String.valueOf(channelNumber++))
                     .setChannelLogo(channelLogo)
-                    .setOriginalNetworkId(channelLogo.hashCode())
+                    .setOriginalNetworkId(originalNetworkId)
                     .setInternalProviderData(internalProviderData)
                     .setServiceId(serviceId)
                     .build()
             );
         }
 
-        return channelList;
+        return channels;
     }
 
 
@@ -142,28 +151,27 @@ public class Parser {
         List<Program> programTomorrow = new ArrayList<>();
 
         try {
-//            if (responseProgramsNowJson == null)
-//                responseProgramsNowJson = new JSONArray(getJson(BASE_SERVERCMD_URL + QUERY_PROGRAMS_NOW));
+//            Log.d(TAG, "Fetch programs for NOW");
+//            JSONArray responseProgramsNowJson = new JSONArray(getJson(BASE_SERVERCMD_URL + QUERY_PROGRAMS_NOW));
 //            programNow = parsePrograms(responseProgramsNowJson);
-//            Log.d(TAG, "finished fetching programs for Now (Size: " + programNow.size() + ")");
+//            programList.addAll(programNow);
+//            Log.d(TAG, "Found " + programNow.size() + " programs for NOW");
 
-            if (responseProgramsTodayJson == null)
-                responseProgramsTodayJson = new JSONArray(getJson(BASE_SERVERCMD_URL + QUERY_PROGRAMS_TODAY));
+            Log.d(TAG, "Fetch programs for TODAY");
+            JSONArray responseProgramsTodayJson = new JSONArray(getJson(BASE_SERVERCMD_URL + QUERY_PROGRAMS_TODAY));
             programToday = parsePrograms(responseProgramsTodayJson);
-            Log.d(TAG, "finished fetching programs for TODAY: " + programToday.size());
+            programList.addAll(programToday);
+            Log.d(TAG, "Found " + programToday.size() + " programs for TODAY");
 
-            if ((responseProgramsTomorrowJson == null))
-                responseProgramsTomorrowJson = new JSONArray(getJson(BASE_SERVERCMD_URL + QUERY_PROGRAMS_TOMORROW));
+            Log.d(TAG, "Fetch programs for TOMORROW");
+            JSONArray responseProgramsTomorrowJson = new JSONArray(getJson(BASE_SERVERCMD_URL + QUERY_PROGRAMS_TOMORROW));
             programTomorrow = parsePrograms(responseProgramsTomorrowJson);
-            Log.d(TAG, "finished fetching programs for TOMORROW: " + programTomorrow.size());
+            programList.addAll(programTomorrow);
+            Log.d(TAG, "Found " + programTomorrow.size() + " programs for TOMORROW");
 
         } catch (JSONException | IOException e) {
             e.printStackTrace();
         }
-
-//        programList.addAll(programNow);
-        programList.addAll(programToday);
-        programList.addAll(programTomorrow);
 
         return programList;
     }
@@ -177,70 +185,91 @@ public class Parser {
         JSONArray prog;
         String title;
         String subtitle;
-        String logo = "";
-        int originalNetworkId = -1;
+        String logo;
+        int originalNetworkId;
         long start;
         long end;
         long duration;
-        String streamUrl = "";
-        String epgEventId = "empty";
-        String serviceId = "empty";
+        String mediaUrl = "empty";
+        String epgEventId;
+        String serviceId;
         String description = "no description available";
+        String channelName;
 
         InternalProviderData internalProviderData;
 
         for (int resp = 0; resp < programsJson.length(); resp++) {
             JSONArray channelJson = programsJson.getJSONArray(resp);
 
-            for (int i = 0; i < channelJson.length(); i++) {
-                if (channelJson.get(i) instanceof JSONArray) {
-                    prog = new JSONArray(channelJson.get(i).toString());
-                    title = prog.get(PROG_TITLE).toString();
-                    subtitle = prog.get(PROG_SUBTITLE).toString();
+            logo = channelJson.get(PROG_ICON_SRC).toString();
+            originalNetworkId = logo.hashCode();
+            serviceId = channelJson.getString(PROG_SERVICE_ID);
+            channelName = channelJson.get(PROG_CHANNEL_NAME).toString();
+            try {
+                mediaUrl = (String) getChannelMap().get(String.valueOf(originalNetworkId)).getInternalProviderData().get(CHANNEL_IPD_MEDIA_URL);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
-                    title = subtitle.equals("") ? title : title + " - " + subtitle;
-                    start = (prog.getLong(PROG_START) * 1000L);
-                    duration = (prog.getLong(PROG_DURATION) * 1000L);
-                    end = start + duration;
-                    epgEventId = prog.getString(PROG_EVENTID);
+            internalProviderData = new InternalProviderData();
+            internalProviderData.setVideoUrl(mediaUrl);
+            internalProviderData.setVideoType(Util.TYPE_OTHER);
+            internalProviderData.put(PROG_IPD_SERVICE_ID, serviceId);
+            internalProviderData.put(PROG_IPD_ORIGINAL_NETWORK_ID, originalNetworkId);
+            //set originalNetworkId as fake eventId in case there are no real events for the channel
+            internalProviderData.put(PROG_IPD_EPG_EVENT_ID, originalNetworkId);
+            internalProviderData.put(PROG_IPD_CHANNEL_NAME, channelName);
 
-                    internalProviderData = new InternalProviderData();
-                    internalProviderData.setVideoUrl(streamUrl);
-                    internalProviderData.setVideoType(Util.TYPE_OTHER);
-                    internalProviderData.put(PROG_IPD_EPG_EVENT_ID, epgEventId);
-                    internalProviderData.put(PROG_IPD_SERVICE_ID, serviceId);
-                    internalProviderData.put(PROG_IPD_ORIGINAL_NETWORK_ID, originalNetworkId);
+            if (channelJson.length() > (JSON_EPG_START_INDEX + 1)) {
+                for (int i = JSON_EPG_START_INDEX; i < channelJson.length(); i++) {
+                    if (channelJson.get(i) instanceof JSONArray) {
+                        prog = new JSONArray(channelJson.get(i).toString());
+                        title = prog.get(PROG_TITLE).toString();
+                        subtitle = prog.get(PROG_SUBTITLE).toString();
 
-                    if (!epgEventId.equals("") && (!serviceId.equals("empty")))
-                        description = getJsonDescription(serviceId, epgEventId);
+                        title = subtitle.equals("") ? title : title + " - " + subtitle;
+                        start = (prog.getLong(PROG_START) * 1000L);
+                        duration = (prog.getLong(PROG_DURATION) * 1000L);
+                        end = start + duration;
+                        epgEventId = prog.getString(PROG_EVENTID);
+                        internalProviderData.put(PROG_IPD_EPG_EVENT_ID, epgEventId);
+                        if (!epgEventId.equals("") && (!serviceId.equals("empty")))
+                            description = getJsonDescription(serviceId, epgEventId);
 
+                        programList.add(new Program.Builder()
+                                .setTitle(title)
+                                .setStartTimeUtcMillis(start)
+                                .setEndTimeUtcMillis(end)
+                                .setInternalProviderData(internalProviderData)
+                                .setDescription(description.length() > 256 ? description.substring(0, 255) : description)
+                                .setLongDescription(description)
+                                .setCanonicalGenres(new String[]{TvContract.Programs.Genres.ENTERTAINMENT,
+                                        TvContract.Programs.Genres.MOVIES, TvContract.Programs.Genres.TECH_SCIENCE})
+//                                .setPosterArtUri(logo)
+//                                .setThumbnailUri(logo)
+                                .build());
 
-                    programList.add(new Program.Builder()
-                            .setTitle(title)
-                            .setStartTimeUtcMillis(start)
-                            .setEndTimeUtcMillis(end)
-                            .setThumbnailUri(logo)
-                            .setInternalProviderData(internalProviderData)
-                            .setDescription(description.length() > 256 ? description.substring(0, 255) : description)
-                            .setLongDescription(description)
-                            .setCanonicalGenres(new String[]{TvContract.Programs.Genres.ENTERTAINMENT,
-                                    TvContract.Programs.Genres.MOVIES, TvContract.Programs.Genres.TECH_SCIENCE})
-                            .setPosterArtUri(logo)
-                            .build());
-
-                } else {
-                    logo = channelJson.get(PROG_ICON_SRC).toString();
-                    originalNetworkId = logo.hashCode();
-                    serviceId = channelJson.getString(PROG_SERVICE_ID);
-                    streamUrl = BASE_STREAM_URL + channelJson.get(PROG_CHANNEL_NAME).toString()
-                            .replace(" ", "_")
-                            .replace("<b>", "")
-                            .replace("</b>", "");
+                    }
                 }
             }
+//            else {
+//                Log.d(TAG, "No Programs found for " + channelName);
+//                Log.d(TAG, internalProviderData.get(PROG_IPD_EPG_EVENT_ID) + "");
+//                internalProviderData.setRepeatable(true);
+//                programList.add(new Program.Builder()
+//                        .setTitle(channelName)
+//                        .setThumbnailUri(logo)
+//                        .setDescription(description)
+//                        .setInternalProviderData(internalProviderData)
+//                        .setStartTimeUtcMillis(PROG_EMPTY_START_TIME_MS)
+//                        .setEndTimeUtcMillis(PROG_EMPTY_START_TIME_MS + PROG_EMPTY_DURATION_TIME_MS)
+//                        .build());
+//            }
         }
+
         return programList;
     }
+
 
     private String getJsonDescription(String serviceId, String epgEventId) {
 
@@ -251,7 +280,7 @@ public class Parser {
                 if (!detailsJson.isNull(k) && (detailsJson.get(k) instanceof JSONArray)) {
                     JSONArray detailsArray = detailsJson.getJSONArray(k);
                     if (!detailsArray.isNull(5) && !detailsArray.get(5).equals("")) {
-                         Log.d(TAG, "added Description for event: " + epgEventId);
+                        Log.d(TAG, "added Description for event: " + epgEventId);
                         return detailsArray.getString(5);
                     }
                 }
@@ -260,7 +289,7 @@ public class Parser {
             e.printStackTrace();
         }
 
-        return "no description available";
+        return null;
     }
 
 

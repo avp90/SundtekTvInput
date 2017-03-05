@@ -135,7 +135,7 @@ public class ProgramsDB {
         // Find a single program for the given time. If there is none a dummyprogram will be added
         Boolean hasProgramForGivenTime= false;
         for(Program program : programList) {
-            if (program.getEndTimeUtcMillis() >= startMs || program.getStartTimeUtcMillis() == startMs) {
+            if (program.getEndTimeUtcMillis() >= startMs && program.getStartTimeUtcMillis() <= startMs) {
                 hasProgramForGivenTime = true;
                 break;
             }

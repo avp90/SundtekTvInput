@@ -15,4 +15,4 @@
 -->
 <tv-input xmlns:android="http://schemas.android.com/apk/res/android"
     android:canRecord="false"
-    android:setupActivity="com.example.android.sampletvinput.rich.RichTvInputSetupActivity" />
+    android:setupActivity="org.tb.sundtektvinput.rich.RichTvInputSetupActivity" />

@@ -59,7 +59,7 @@
 
         <!-- Launched by the TV app before it uses MyTvInputService. This registers channels and
         sets up MyJobService to provide program information in the background. -->
-        <activity android:name="org.tb.sundtektvinput.ui.RichTvInputSetupActivity" >
+        <activity android:name="org.tb.sundtektvinput.ui.TvInputSetupActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
@@ -102,7 +102,7 @@
             TvInputSetupActivity to the system/TV app. -->
             <meta-data
                 android:name="android.media.tv.input"
-                android:resource="@xml/richtvinputservice" />
+                android:resource="@xml/tvinputservice" />
         </service>
 
         <!-- This service is for using JobScheduler to sync EPG data. -->

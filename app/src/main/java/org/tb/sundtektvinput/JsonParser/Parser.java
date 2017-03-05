@@ -248,23 +248,9 @@ public class Parser {
 //                                .setPosterArtUri(logo)
 //                                .setThumbnailUri(logo)
                                 .build());
-
                     }
                 }
             }
-//            else {
-//                Log.d(TAG, "No Programs found for " + channelName);
-//                Log.d(TAG, internalProviderData.get(PROG_IPD_EPG_EVENT_ID) + "");
-//                internalProviderData.setRepeatable(true);
-//                programList.add(new Program.Builder()
-//                        .setTitle(channelName)
-//                        .setThumbnailUri(logo)
-//                        .setDescription(description)
-//                        .setInternalProviderData(internalProviderData)
-//                        .setStartTimeUtcMillis(PROG_EMPTY_START_TIME_MS)
-//                        .setEndTimeUtcMillis(PROG_EMPTY_START_TIME_MS + PROG_EMPTY_DURATION_TIME_MS)
-//                        .build());
-//            }
         }
 
         return programList;

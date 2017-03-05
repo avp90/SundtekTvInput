@@ -151,15 +151,15 @@ public class Parser {
         List<Program> programTomorrow = new ArrayList<>();
 
         try {
-//            Log.d(TAG, "Fetch programs for NOW");
-//            JSONArray responseProgramsNowJson = new JSONArray(getJson(BASE_SERVERCMD_URL + QUERY_PROGRAMS_NOW));
-//            programNow = parsePrograms(responseProgramsNowJson);
-//            programList.addAll(programNow);
-//            Log.d(TAG, "Found " + programNow.size() + " programs for NOW");
+            Log.d(TAG, "Fetch programs for NOW");
+            JSONArray responseProgramsNowJson = new JSONArray(getJson(BASE_SERVERCMD_URL + QUERY_PROGRAMS_NOW));
+            programNow = parsePrograms(responseProgramsNowJson, true);
+            programList.addAll(programNow);
+            Log.d(TAG, "Found " + programNow.size() + " programs for NOW");
 
             Log.d(TAG, "Fetch programs for TODAY");
             JSONArray responseProgramsTodayJson = new JSONArray(getJson(BASE_SERVERCMD_URL + QUERY_PROGRAMS_TODAY));
-            programToday = parsePrograms(responseProgramsTodayJson, true);
+            programToday = parsePrograms(responseProgramsTodayJson, false);
             programList.addAll(programToday);
             Log.d(TAG, "Found " + programToday.size() + " programs for TODAY");
 
@@ -236,18 +236,20 @@ public class Parser {
                         if (parseDescription && !epgEventId.equals("") && !serviceId.equals("empty"))
                             description = getJsonDescription(serviceId, epgEventId);
 
-                        programList.add(new Program.Builder()
-                                .setTitle(title)
-                                .setStartTimeUtcMillis(start)
-                                .setEndTimeUtcMillis(end)
-                                .setInternalProviderData(internalProviderData)
-                                .setDescription(description.length() > 256 ? description.substring(0, 255) : description)
-                                .setLongDescription(description)
-                                .setCanonicalGenres(new String[]{TvContract.Programs.Genres.ENTERTAINMENT,
-                                        TvContract.Programs.Genres.MOVIES, TvContract.Programs.Genres.TECH_SCIENCE})
+
+                        if (!(end == start || end < start))
+                            programList.add(new Program.Builder()
+                                    .setTitle(title)
+                                    .setStartTimeUtcMillis(start)
+                                    .setEndTimeUtcMillis(end)
+                                    .setInternalProviderData(internalProviderData)
+                                    .setDescription(description.length() > 256 ? description.substring(0, 255) : description)
+                                    .setLongDescription(description)
+                                    .setCanonicalGenres(new String[]{TvContract.Programs.Genres.ENTERTAINMENT,
+                                            TvContract.Programs.Genres.MOVIES, TvContract.Programs.Genres.TECH_SCIENCE})
 //                                .setPosterArtUri(logo)
 //                                .setThumbnailUri(logo)
-                                .build());
+                                    .build());
                     }
                 }
             }
@@ -259,21 +261,21 @@ public class Parser {
 
     private String getJsonDescription(String serviceId, String epgEventId) {
         if (!epgEventId.equals("") && (!serviceId.equals("")))
-        try {
-            JSONArray detailsJson = new JSONArray(getJson(BASE_SERVERCMD_URL + "epgserviceid=" + serviceId + "&epgeventid=" + epgEventId + "&delsys=1"));
+            try {
+                JSONArray detailsJson = new JSONArray(getJson(BASE_SERVERCMD_URL + "epgserviceid=" + serviceId + "&epgeventid=" + epgEventId + "&delsys=1"));
 
-            for (int k = 0; k < detailsJson.length(); k++) {
-                if (!detailsJson.isNull(k) && (detailsJson.get(k) instanceof JSONArray)) {
-                    JSONArray detailsArray = detailsJson.getJSONArray(k);
-                    if (!detailsArray.isNull(5) && !detailsArray.get(5).equals("")) {
-                        Log.d(TAG, "added Description for event: " + epgEventId);
-                        return detailsArray.getString(5);
+                for (int k = 0; k < detailsJson.length(); k++) {
+                    if (!detailsJson.isNull(k) && (detailsJson.get(k) instanceof JSONArray)) {
+                        JSONArray detailsArray = detailsJson.getJSONArray(k);
+                        if (!detailsArray.isNull(5) && !detailsArray.get(5).equals("")) {
+                            Log.d(TAG, "added Description for event: " + epgEventId);
+                            return detailsArray.getString(5);
+                        }
                     }
                 }
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
             }
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
-        }
 
         return "";
     }

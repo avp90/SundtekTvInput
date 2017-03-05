@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.tb.sundtektvinput.rich;
+package org.tb.sundtektvinput.ui;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -26,17 +26,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.media.tv.companionlibrary.ChannelSetupFragment;
-import com.google.android.media.tv.companionlibrary.EpgSyncJobService;
+import org.tb.sundtektvinput.service.base.EpgSyncJobService;
 
 import org.tb.sundtektvinput.R;
-import org.tb.sundtektvinput.SampleJobService;
+import org.tb.sundtektvinput.service.MyJobService;
+import org.tb.sundtektvinput.ui.base.ChannelSetupFragment;
 
 /**
- * Fragment which shows a sample UI for registering channels and setting up SampleJobService to
+ * Fragment which shows a sample UI for registering channels and setting up MyJobService to
  * provide program information in the background.
  */
-public class RichSetupFragment extends ChannelSetupFragment {
+public class SetupFragment extends ChannelSetupFragment {
     public static final long FULL_SYNC_FREQUENCY_MILLIS = 1000 * 60 * 60 * 24;  // 24 hour
     private static final long FULL_SYNC_WINDOW_SEC = 1000 * 60 * 60 * 24 * 14;  // 2 weeks
 
@@ -66,10 +66,10 @@ public class RichSetupFragment extends ChannelSetupFragment {
     public void onScanStarted() {
         EpgSyncJobService.cancelAllSyncRequests(getActivity());
         EpgSyncJobService.requestImmediateSync(getActivity(), mInputId,
-                new ComponentName(getActivity(), SampleJobService.class));
+                new ComponentName(getActivity(), MyJobService.class));
 
         // Set up SharedPreference to share inputId. If there is not periodic sync job after reboot,
-        // RichBootReceiver can use the shared inputId to set up periodic sync job.
+        // BootReceiver can use the shared inputId to set up periodic sync job.
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(
                 EpgSyncJobService.PREFERENCE_EPG_SYNC, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -89,7 +89,7 @@ public class RichSetupFragment extends ChannelSetupFragment {
         if (!mErrorFound) {
             EpgSyncJobService.cancelAllSyncRequests(getActivity());
             EpgSyncJobService.setUpPeriodicSync(getActivity(), mInputId,
-                    new ComponentName(getActivity(), SampleJobService.class),
+                    new ComponentName(getActivity(), MyJobService.class),
                     FULL_SYNC_FREQUENCY_MILLIS, FULL_SYNC_WINDOW_SEC);
             getActivity().setResult(Activity.RESULT_OK);
         } else {

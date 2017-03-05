@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package org.tb.sundtektvinput.rich;
+package org.tb.sundtektvinput.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
 
 import org.tb.sundtektvinput.R;
 
-public class RichAppLinkDetailsActivity extends Activity {
+public class AppLinkDetailsActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

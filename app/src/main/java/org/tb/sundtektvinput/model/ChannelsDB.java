@@ -1,4 +1,4 @@
-package org.tb.sundtektvinput.Model;
+package org.tb.sundtektvinput.model;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -6,7 +6,7 @@ import android.util.Log;
 
 import com.google.android.media.tv.companionlibrary.model.Channel;
 
-import org.tb.sundtektvinput.JsonParser.Parser;
+import org.tb.sundtektvinput.parser.SundtekJsonParser;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -59,7 +59,7 @@ public class ChannelsDB {
 
         if (channelMap.isEmpty() || (lastUpdate + MAX_AGE) <= (new Date().getTime())) {
             Log.d(TAG, "refreshing channels");
-            channels.addAll(new Parser().getChannels());
+            channels.addAll(new SundtekJsonParser().getChannels());
             lastUpdate = new Date().getTime();
             Log.d(TAG, "ChannelDB Timestamp: " + lastUpdate);
 

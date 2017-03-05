@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-package org.tb.sundtektvinput;
+package org.tb.sundtektvinput.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
 
+import org.tb.sundtektvinput.R;
+import org.tb.sundtektvinput.service.MyTvInputService;
+
+
 /**
- * MainActivity class that loads {@link MainFragment}.
+ * The setup activity for demonstrating {@link MyTvInputService}.
  */
-public class MainActivity extends Activity {
+public class RichTvInputSetupActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        setContentView(R.layout.rich_setup);
     }
 }

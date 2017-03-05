@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.tb.sundtektvinput.rich;
+package org.tb.sundtektvinput.util;
 
 import android.content.ContentResolver;
 import android.content.Context;

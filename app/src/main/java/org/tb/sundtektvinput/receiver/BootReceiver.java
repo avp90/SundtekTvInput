@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.tb.sundtektvinput.rich;
+package org.tb.sundtektvinput.receiver;
 
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
@@ -24,8 +24,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 
-import org.tb.sundtektvinput.SampleJobService;
-import com.google.android.media.tv.companionlibrary.EpgSyncJobService;
+import org.tb.sundtektvinput.service.MyJobService;
+import org.tb.sundtektvinput.service.base.EpgSyncJobService;
 
 import java.util.List;
 
@@ -33,7 +33,7 @@ import java.util.List;
  * This BroadcastReceiver is set up to make sure sync job can schedule after reboot. Because
  * JobScheduler doesn't work well on reboot scheduler on L/L-MR1.
  */
-public class RichBootReceiver extends BroadcastReceiver{
+public class BootReceiver extends BroadcastReceiver{
     @Override
     public void onReceive(Context context, Intent intent) {
         JobScheduler jobScheduler =
@@ -46,7 +46,7 @@ public class RichBootReceiver extends BroadcastReceiver{
             if (inputId != null) {
                 // Set up periodic sync only when input has set up.
                 EpgSyncJobService.setUpPeriodicSync(context, inputId,
-                        new ComponentName(context, SampleJobService.class));
+                        new ComponentName(context, MyJobService.class));
             }
             return;
         }

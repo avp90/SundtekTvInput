@@ -1,5 +1,6 @@
 package com.example.android.sampletvinput.Model;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.example.android.sampletvinput.JsonParser.Parser;
@@ -22,6 +23,7 @@ public class ProgramsDB {
     private static final String TAG = ProgramsDB.class.getSimpleName();
 
     private static ProgramsDB myProgramsDB;
+    private Context context;
     private Parser parser;
     private HashMap<String, Program> allProgramMap;
     private HashMap<String, ArrayList<Program>> channelProgramsMap;
@@ -36,17 +38,19 @@ public class ProgramsDB {
     private static final String PROG_IPD_CHANNEL_NAME = "channelName";
 
 
-    public static ProgramsDB getInstance() {
+    public static ProgramsDB getInstance(Context context) {
         if (myProgramsDB == null) {
-            myProgramsDB = new ProgramsDB();
+            myProgramsDB = new ProgramsDB(context);
             myProgramsDB.parser = new Parser();
         }
         return myProgramsDB;
     }
 
-    private ProgramsDB() {
+    private ProgramsDB(Context context) {
         Log.d(TAG, "new ProgramsDB Instance");
+        this.context = context;
         allProgramMap = new HashMap<>();
+
     }
 
 
@@ -106,34 +110,30 @@ public class ProgramsDB {
         return false;
     }
 
-    public List<Program> getProgramsForChannel(Channel channel) {
+    public HashMap<String, ArrayList<Program>> getProgramsForChannel(Channel channel) {
 
         getPrograms();
 
         String channelKey = String.valueOf(channel.getOriginalNetworkId());
 
         if (!channelProgramsMap.containsKey(channelKey)) {
-            channelProgramsMap.put(channelKey, new ArrayList<Program>());
-        }
-
-        if(channelProgramsMap.get(channelKey).isEmpty()){
-            channelProgramsMap.get(channelKey).add(makeDummyProgram(channel));
-            Log.d(TAG, "crate dummy program info for channel: " + channel.getDisplayName());
-            Log.d(TAG, "CHANNEL URL: " + channelProgramsMap.get(channelKey).get(0).getInternalProviderData().getVideoUrl());
+            Log.d(TAG, "No programdata found for channel: " + channel.getDisplayName());
+            channelProgramsMap.put(channelKey, makeDummyProgram(channel));
         }
 
         Log.d(TAG, "found " + channelProgramsMap.get(channelKey).size() + " programs for " + channel.getDisplayName());
 
 
-        return channelProgramsMap.get(channelKey);
+        return channelProgramsMap;
     }
 
-    private Program makeDummyProgram(Channel channel) {
+    private ArrayList<Program> makeDummyProgram(Channel channel) {
 
         InternalProviderData ipd = new InternalProviderData();
         ipd.setVideoType(Util.TYPE_OTHER);
+        ipd.setRepeatable(true);
         try {
-            ipd.setVideoUrl((String)channel.getInternalProviderData().get("mediaUrl"));
+            ipd.setVideoUrl((String) channel.getInternalProviderData().get("mediaUrl"));
             ipd.put(PROG_IPD_SERVICE_ID, channel.getServiceId());
             ipd.put(PROG_IPD_ORIGINAL_NETWORK_ID, channel.getOriginalNetworkId());
             //set default eventId since there are no real events for the channel
@@ -143,14 +143,19 @@ public class ProgramsDB {
             e.printStackTrace();
         }
 
-        return new Program.Builder()
-                .setTitle(channel.getDisplayName())
-                .setThumbnailUri(channel.getChannelLogo())
-                .setInternalProviderData(ipd)
-                .setStartTimeUtcMillis(0)
-                .setEndTimeUtcMillis(700 * 1000)
-                .build();
-    }
+        ArrayList<Program> dummy = new ArrayList<>();
 
+        dummy.add(new Program.Builder()
+//                .setTitle("No Information")
+//                .setThumbnailUri(channel.getChannelLogo())
+                .setInternalProviderData(ipd)
+                .setStartTimeUtcMillis(new Date().getTime())
+                .setEndTimeUtcMillis(new Date().getTime() + 86400000 * 2) //48h
+                .build());
+
+        Log.d(TAG, "created dummy program info for channel: " + channel.getDisplayName());
+
+        return dummy;
+    }
 
 }

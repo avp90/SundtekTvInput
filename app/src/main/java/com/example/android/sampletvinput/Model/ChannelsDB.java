@@ -75,4 +75,8 @@ public class ChannelsDB {
 
         return new ArrayList<>(channelMap.values());
     }
+
+    public HashMap<Integer, Channel> getChannelMap(){
+        return channelMap;
+    }
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.android.sampletvinput.rich;
+package org.tb.sundtektvinput.rich;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -32,7 +32,7 @@ import android.support.v17.leanback.widget.ListRowPresenter;
 import android.support.v17.leanback.widget.OnActionClickedListener;
 import android.support.v4.content.ContextCompat;
 
-import com.example.android.sampletvinput.R;
+import org.tb.sundtektvinput.R;
 
 /**
  * Fragment that shows a simple details fragment UI.

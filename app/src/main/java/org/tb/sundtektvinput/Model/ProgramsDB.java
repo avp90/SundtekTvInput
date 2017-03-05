@@ -1,9 +1,9 @@
-package com.example.android.sampletvinput.Model;
+package org.tb.sundtektvinput.Model;
 
 import android.content.Context;
 import android.util.Log;
 
-import com.example.android.sampletvinput.JsonParser.Parser;
+import org.tb.sundtektvinput.JsonParser.Parser;
 import com.google.android.exoplayer.util.Util;
 import com.google.android.media.tv.companionlibrary.model.Channel;
 import com.google.android.media.tv.companionlibrary.model.InternalProviderData;
@@ -146,7 +146,7 @@ public class ProgramsDB {
         ArrayList<Program> dummy = new ArrayList<>();
 
         dummy.add(new Program.Builder()
-//                .setTitle("No Information")
+                .setTitle(channel.getDisplayName())
 //                .setThumbnailUri(channel.getChannelLogo())
                 .setInternalProviderData(ipd)
                 .setStartTimeUtcMillis(new Date().getTime())

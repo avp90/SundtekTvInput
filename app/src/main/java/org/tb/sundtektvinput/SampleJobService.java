@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.android.sampletvinput;
+package org.tb.sundtektvinput;
 
 import android.net.Uri;
 import android.util.Log;
 
-import com.example.android.sampletvinput.Model.ChannelsDB;
-import com.example.android.sampletvinput.Model.ProgramsDB;
+import org.tb.sundtektvinput.Model.ChannelsDB;
+import org.tb.sundtektvinput.Model.ProgramsDB;
 import com.google.android.exoplayer.util.Util;
 import com.google.android.media.tv.companionlibrary.EpgSyncJobService;
 import com.google.android.media.tv.companionlibrary.model.Channel;

@@ -1,10 +1,10 @@
-package com.example.android.sampletvinput.Model;
+package org.tb.sundtektvinput.Model;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 
-import com.example.android.sampletvinput.JsonParser.Parser;
+import org.tb.sundtektvinput.JsonParser.Parser;
 import com.google.android.media.tv.companionlibrary.model.Channel;
 
 import java.util.ArrayList;

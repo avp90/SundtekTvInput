@@ -1,4 +1,4 @@
-package com.example.android.sampletvinput.JsonParser;
+package org.tb.sundtektvinput.JsonParser;
 
 import android.media.tv.TvContract;
 import android.util.Log;
@@ -159,7 +159,7 @@ public class Parser {
 
             Log.d(TAG, "Fetch programs for TODAY");
             JSONArray responseProgramsTodayJson = new JSONArray(getJson(BASE_SERVERCMD_URL + QUERY_PROGRAMS_TODAY));
-            programToday = parsePrograms(responseProgramsTodayJson, false);
+            programToday = parsePrograms(responseProgramsTodayJson, true);
             programList.addAll(programToday);
             Log.d(TAG, "Found " + programToday.size() + " programs for TODAY");
 
@@ -193,7 +193,7 @@ public class Parser {
         String mediaUrl = "empty";
         String epgEventId;
         String serviceId;
-        String description = "no description available";
+        String description = "";
         String channelName;
 
         InternalProviderData internalProviderData;
@@ -271,7 +271,7 @@ public class Parser {
     }
 
 
-    public String getJsonDescription(String serviceId, String epgEventId) {
+    private String getJsonDescription(String serviceId, String epgEventId) {
         if (!epgEventId.equals("") && (!serviceId.equals("")))
         try {
             JSONArray detailsJson = new JSONArray(getJson(BASE_SERVERCMD_URL + "epgserviceid=" + serviceId + "&epgeventid=" + epgEventId + "&delsys=1"));

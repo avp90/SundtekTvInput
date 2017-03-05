@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.android.sampletvinput.player;
+package org.tb.sundtektvinput.player;
 
 import android.net.Uri;
 import android.os.SystemClock;

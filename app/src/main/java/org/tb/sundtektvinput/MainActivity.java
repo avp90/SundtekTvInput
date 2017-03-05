@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-package com.example.android.sampletvinput.rich;
+package org.tb.sundtektvinput;
 
 import android.app.Activity;
 import android.os.Bundle;
 
-import com.example.android.sampletvinput.R;
-
 /**
- * The setup activity for demonstrating {@link RichTvInputService}.
+ * MainActivity class that loads {@link MainFragment}.
  */
-public class RichTvInputSetupActivity extends Activity {
+public class MainActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.rich_setup);
+        setContentView(R.layout.main);
     }
 }

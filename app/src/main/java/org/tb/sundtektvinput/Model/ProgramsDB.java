@@ -111,7 +111,7 @@ public class ProgramsDB {
         return false;
     }
 
-    public HashMap<String, ArrayList<Program>> getProgramsForChannel(Channel channel) {
+    public ArrayList<Program> getProgramsForChannel(Channel channel) {
 
         getPrograms();
 
@@ -119,14 +119,11 @@ public class ProgramsDB {
 
         if (!channelProgramsMap.containsKey(channelKey)) {
             Log.d(TAG, "No programdata found for channel: " + channel.getDisplayName());
-            HashMap<String, ArrayList<Program>> dummy = new HashMap<>();
-            dummy.put(channelKey, makeDummyProgram(channel));
-            return dummy;
+            return makeDummyProgram(channel);
         }
         Log.d(TAG, "found " + channelProgramsMap.get(channelKey).size() + " programs for " + channel.getDisplayName());
 
-
-        return channelProgramsMap;
+        return channelProgramsMap.get(channelKey);
     }
 
     private ArrayList<Program> makeDummyProgram(Channel channel) {

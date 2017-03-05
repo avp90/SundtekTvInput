@@ -111,7 +111,7 @@ public class ProgramsDB {
         return false;
     }
 
-    public ArrayList<Program> getProgramsForChannel(Channel channel) {
+    public ArrayList<Program> getProgramsForChannel(Channel channel, long startMs, long endMs) {
 
         getPrograms();
 
@@ -119,14 +119,35 @@ public class ProgramsDB {
 
         if (!channelProgramsMap.containsKey(channelKey)) {
             Log.d(TAG, "No programdata found for channel: " + channel.getDisplayName());
-            return makeDummyProgram(channel);
+            return makeDummyProgram(channel, startMs, endMs);
+        } else if (channelProgramsMap.get(channelKey) == null || channelProgramsMap.get(channelKey).isEmpty()) {
+            channelProgramsMap.remove(channelKey);
+            Log.d(TAG, "Removed empty programlist from Map for: " + channel.getDisplayName());
+            return makeDummyProgram(channel, startMs, endMs);
         }
+
         Log.d(TAG, "found " + channelProgramsMap.get(channelKey).size() + " programs for " + channel.getDisplayName());
 
-        return channelProgramsMap.get(channelKey);
+        ArrayList<Program> programList =  channelProgramsMap.get(channelKey);
+
+
+        //TODO: Implement method in ProgramsDB to get program by time for given channel
+        // Find a single program for the given time. If there is none a dummyprogram will be added
+        Boolean hasProgramForGivenTime= false;
+        for(Program program : programList) {
+            if (program.getEndTimeUtcMillis() >= startMs || program.getStartTimeUtcMillis() == startMs) {
+                hasProgramForGivenTime = true;
+                break;
+            }
+        }
+        if(!hasProgramForGivenTime)
+            programList.add(makeDummyProgram(channel, startMs, endMs).get(0));
+
+
+        return programList;
     }
 
-    private ArrayList<Program> makeDummyProgram(Channel channel) {
+    private ArrayList<Program> makeDummyProgram(Channel channel, long startMs, long endMs) {
 
         InternalProviderData ipd = new InternalProviderData();
         ipd.setVideoType(Util.TYPE_OTHER);
@@ -146,10 +167,10 @@ public class ProgramsDB {
 
         dummy.add(new Program.Builder()
                 .setTitle(channel.getDisplayName())
-//                .setThumbnailUri(channel.getChannelLogo())
+                .setThumbnailUri(channel.getChannelLogo())
                 .setInternalProviderData(ipd)
-                .setStartTimeUtcMillis(new Date().getTime())
-                .setEndTimeUtcMillis(new Date().getTime() + 86400000 * 2) //48h
+                .setStartTimeUtcMillis(startMs)
+                .setEndTimeUtcMillis(endMs)
                 .build());
 
         Log.d(TAG, "created dummy program info for channel: " + channel.getDisplayName());

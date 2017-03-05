@@ -50,7 +50,7 @@ public class RichAppLinkDetailsFragment extends DetailsFragment {
 
         DetailsOverviewRow row = new DetailsOverviewRow(displayNumber);
         Resources res = getResources();
-        Bitmap bitmap = BitmapFactory.decodeResource(res, R.drawable.your_company);
+        Bitmap bitmap = BitmapFactory.decodeResource(res, R.drawable.ic_launcher);
         int length = Math.min(bitmap.getWidth(), bitmap.getHeight());
         Bitmap croppedBitmap = Bitmap.createBitmap(bitmap,
                 (bitmap.getWidth() - length) / 2,

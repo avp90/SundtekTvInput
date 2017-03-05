@@ -3,11 +3,12 @@ package org.tb.sundtektvinput.Model;
 import android.content.Context;
 import android.util.Log;
 
-import org.tb.sundtektvinput.JsonParser.Parser;
 import com.google.android.exoplayer.util.Util;
 import com.google.android.media.tv.companionlibrary.model.Channel;
 import com.google.android.media.tv.companionlibrary.model.InternalProviderData;
 import com.google.android.media.tv.companionlibrary.model.Program;
+
+import org.tb.sundtektvinput.JsonParser.Parser;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,7 +30,7 @@ public class ProgramsDB {
     private HashMap<String, ArrayList<Program>> channelProgramsMap;
 
     private long lastUpdate;
-    private static long MAX_AGE_MILLIS = 43200000;
+    private static long MAX_AGE_MILLIS = 1000 * 60 * 60 * 1 / 12; //5mins
 
 
     private static final String PROG_IPD_EPG_EVENT_ID = "epgEventId";
@@ -118,9 +119,10 @@ public class ProgramsDB {
 
         if (!channelProgramsMap.containsKey(channelKey)) {
             Log.d(TAG, "No programdata found for channel: " + channel.getDisplayName());
-            channelProgramsMap.put(channelKey, makeDummyProgram(channel));
+            HashMap<String, ArrayList<Program>> dummy = new HashMap<>();
+            dummy.put(channelKey, makeDummyProgram(channel));
+            return dummy;
         }
-
         Log.d(TAG, "found " + channelProgramsMap.get(channelKey).size() + " programs for " + channel.getDisplayName());
 
 

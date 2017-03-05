@@ -289,7 +289,7 @@ public class Parser {
             e.printStackTrace();
         }
 
-        return null;
+        return "";
     }
 
 

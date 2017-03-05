@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.tb.sundtektvinput.rich;
+package org.tb.sundtektvinput.ui;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -33,11 +33,12 @@ import android.support.v17.leanback.widget.OnActionClickedListener;
 import android.support.v4.content.ContextCompat;
 
 import org.tb.sundtektvinput.R;
+import org.tb.sundtektvinput.util.RichFeedUtil;
 
 /**
  * Fragment that shows a simple details fragment UI.
  */
-public class RichAppLinkDetailsFragment extends DetailsFragment {
+public class AppLinkDetailsFragment extends DetailsFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +47,7 @@ public class RichAppLinkDetailsFragment extends DetailsFragment {
 
         DetailsOverviewRowPresenter dorPresenter = new DetailsOverviewRowPresenter(
                 new DetailsDescriptionPresenter());
-        dorPresenter.setSharedElementEnterTransition(getActivity(), "RichAppLinkDetailsFragment");
+        dorPresenter.setSharedElementEnterTransition(getActivity(), "AppLinkDetailsFragment");
 
         DetailsOverviewRow row = new DetailsOverviewRow(displayNumber);
         Resources res = getResources();

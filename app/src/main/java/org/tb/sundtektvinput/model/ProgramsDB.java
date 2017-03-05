@@ -1,4 +1,4 @@
-package org.tb.sundtektvinput.Model;
+package org.tb.sundtektvinput.model;
 
 import android.content.Context;
 import android.util.Log;
@@ -8,7 +8,7 @@ import com.google.android.media.tv.companionlibrary.model.Channel;
 import com.google.android.media.tv.companionlibrary.model.InternalProviderData;
 import com.google.android.media.tv.companionlibrary.model.Program;
 
-import org.tb.sundtektvinput.JsonParser.Parser;
+import org.tb.sundtektvinput.parser.SundtekJsonParser;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,7 +25,7 @@ public class ProgramsDB {
 
     private static ProgramsDB myProgramsDB;
     private Context context;
-    private Parser parser;
+    private SundtekJsonParser parser;
     private HashMap<String, Program> allProgramMap;
     private HashMap<String, ArrayList<Program>> channelProgramsMap;
 
@@ -42,7 +42,7 @@ public class ProgramsDB {
     public static ProgramsDB getInstance(Context context) {
         if (myProgramsDB == null) {
             myProgramsDB = new ProgramsDB(context);
-            myProgramsDB.parser = new Parser();
+            myProgramsDB.parser = new SundtekJsonParser();
         }
         return myProgramsDB;
     }
@@ -170,7 +170,7 @@ public class ProgramsDB {
                 .setThumbnailUri(channel.getChannelLogo())
                 .setInternalProviderData(ipd)
                 .setStartTimeUtcMillis(startMs)
-                .setEndTimeUtcMillis(endMs)
+                .setEndTimeUtcMillis(startMs  + 60 * 30 * 1000) //duration 10min
                 .build());
 
         Log.d(TAG, "created dummy program info for channel: " + channel.getDisplayName());

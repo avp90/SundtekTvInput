@@ -12,7 +12,7 @@
  * the License.
  */
 
-package org.tb.sundtektvinput;
+package org.tb.sundtektvinput.ui;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -21,6 +21,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import org.tb.sundtektvinput.R;
 
 /**
  * Fragment that shows a web page for Sample TV Input introduction.

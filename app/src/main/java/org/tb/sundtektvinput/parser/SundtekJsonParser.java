@@ -1,4 +1,4 @@
-package org.tb.sundtektvinput.JsonParser;
+package org.tb.sundtektvinput.parser;
 
 import android.media.tv.TvContract;
 import android.util.Log;
@@ -27,10 +27,10 @@ import java.util.Map;
  * Created by Tamim Baschour on 26.02.2017.
  */
 
-public class Parser {
+public class SundtekJsonParser {
 
 
-    private static final String TAG = Parser.class.getSimpleName();
+    private static final String TAG = SundtekJsonParser.class.getSimpleName();
 
     private static final int CHANNEL_NAME = 0;
     private static final int CHANNEL_MEDIA = 1;
@@ -151,11 +151,11 @@ public class Parser {
         List<Program> programTomorrow = new ArrayList<>();
 
         try {
-            Log.d(TAG, "Fetch programs for NOW");
-            JSONArray responseProgramsNowJson = new JSONArray(getJson(BASE_SERVERCMD_URL + QUERY_PROGRAMS_NOW));
-            programNow = parsePrograms(responseProgramsNowJson, true);
-            programList.addAll(programNow);
-            Log.d(TAG, "Found " + programNow.size() + " programs for NOW");
+//            Log.d(TAG, "Fetch programs for NOW");
+//            JSONArray responseProgramsNowJson = new JSONArray(getJson(BASE_SERVERCMD_URL + QUERY_PROGRAMS_NOW));
+//            programNow = parsePrograms(responseProgramsNowJson, false);
+//            programList.addAll(programNow);
+//            Log.d(TAG, "Found " + programNow.size() + " programs for NOW");
 
             Log.d(TAG, "Fetch programs for TODAY");
             JSONArray responseProgramsTodayJson = new JSONArray(getJson(BASE_SERVERCMD_URL + QUERY_PROGRAMS_TODAY));
@@ -163,11 +163,11 @@ public class Parser {
             programList.addAll(programToday);
             Log.d(TAG, "Found " + programToday.size() + " programs for TODAY");
 
-//            Log.d(TAG, "Fetch programs for TOMORROW");
-//            JSONArray responseProgramsTomorrowJson = new JSONArray(getJson(BASE_SERVERCMD_URL + QUERY_PROGRAMS_TOMORROW));
-//            programTomorrow = parsePrograms(responseProgramsTomorrowJson, false);
-//            programList.addAll(programTomorrow);
-//            Log.d(TAG, "Found " + programTomorrow.size() + " programs for TOMORROW");
+            Log.d(TAG, "Fetch programs for TOMORROW");
+            JSONArray responseProgramsTomorrowJson = new JSONArray(getJson(BASE_SERVERCMD_URL + QUERY_PROGRAMS_TOMORROW));
+            programTomorrow = parsePrograms(responseProgramsTomorrowJson, false);
+            programList.addAll(programTomorrow);
+            Log.d(TAG, "Found " + programTomorrow.size() + " programs for TOMORROW");
 
         } catch (JSONException | IOException e) {
             e.printStackTrace();

@@ -13,26 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.tb.sundtektvinput;
+package org.tb.sundtektvinput.service;
 
 import android.net.Uri;
 import android.util.Log;
 
-import com.google.android.media.tv.companionlibrary.EpgSyncJobService;
 import com.google.android.media.tv.companionlibrary.model.Channel;
 import com.google.android.media.tv.companionlibrary.model.Program;
 
-import org.tb.sundtektvinput.Model.ChannelsDB;
-import org.tb.sundtektvinput.Model.ProgramsDB;
+import org.tb.sundtektvinput.model.ChannelsDB;
+import org.tb.sundtektvinput.model.ProgramsDB;
+import org.tb.sundtektvinput.service.base.EpgSyncJobService;
 
 import java.util.List;
 
 /**
  * EpgSyncJobService that periodically runs to update channels and programs.
  */
-public class SampleJobService extends EpgSyncJobService {
+public class MyJobService extends EpgSyncJobService {
 
-    private static String TAG = SampleJobService.class.getSimpleName();
+    private static String TAG = MyJobService.class.getSimpleName();
 
 
     @Override

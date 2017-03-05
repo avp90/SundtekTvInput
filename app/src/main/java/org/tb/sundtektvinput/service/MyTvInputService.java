@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.tb.sundtektvinput.rich;
+package org.tb.sundtektvinput.service;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -51,10 +51,9 @@ import com.google.android.media.tv.companionlibrary.model.Program;
 import com.google.android.media.tv.companionlibrary.model.RecordedProgram;
 import com.google.android.media.tv.companionlibrary.utils.TvContractUtils;
 
-import org.tb.sundtektvinput.R;
-import org.tb.sundtektvinput.SampleJobService;
 import org.tb.sundtektvinput.player.DemoPlayer;
 import org.tb.sundtektvinput.player.RendererBuilderFactory;
+import org.tb.sundtektvinput.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,8 +63,8 @@ import java.util.List;
  * TvInputService which provides a full implementation of EPG, subtitles, multi-audio, parental
  * controls, and overlay view.
  */
-public class RichTvInputService extends BaseTvInputService {
-    private static final String TAG = "RichTvInputService";
+public class MyTvInputService extends BaseTvInputService {
+    private static final String TAG = "MyTvInputService";
     private static final boolean DEBUG = false;
     private static final long EPG_SYNC_DELAYED_PERIOD_MS = 1000 * 2; // 2 Seconds
 
@@ -370,8 +369,8 @@ public class RichTvInputService extends BaseTvInputService {
         }
 
         public void requestEpgSync(final Uri channelUri) {
-            EpgSyncJobService.requestImmediateSync(RichTvInputService.this, mInputId,
-                    new ComponentName(RichTvInputService.this, SampleJobService.class));
+            EpgSyncJobService.requestImmediateSync(MyTvInputService.this, mInputId,
+                    new ComponentName(MyTvInputService.this, MyJobService.class));
             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                 @Override
                 public void run() {

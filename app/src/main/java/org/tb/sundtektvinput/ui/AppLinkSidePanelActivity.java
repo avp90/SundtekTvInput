@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.tb.sundtektvinput.rich;
+package org.tb.sundtektvinput.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -30,6 +30,7 @@ import com.google.android.media.tv.companionlibrary.model.Channel;
 import com.google.android.media.tv.companionlibrary.utils.TvContractUtils;
 
 import org.tb.sundtektvinput.R;
+import org.tb.sundtektvinput.util.RichFeedUtil;
 
 import java.util.List;
 
@@ -37,7 +38,7 @@ import java.util.List;
 /**
  * Activity that shows a simple side panel UI.
  */
-public class RichAppLinkSidePanelActivity extends Activity {
+public class AppLinkSidePanelActivity extends Activity {
     private VerticalGridView mAppLinkMenuList;
 
     @Override

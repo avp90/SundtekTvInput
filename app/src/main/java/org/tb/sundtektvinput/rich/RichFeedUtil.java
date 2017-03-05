@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package com.example.android.sampletvinput.rich;
+package org.tb.sundtektvinput.rich;
 
 import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
-import com.example.android.sampletvinput.R;
 import com.google.android.media.tv.companionlibrary.XmlTvParser;
+
+import org.tb.sundtektvinput.R;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;

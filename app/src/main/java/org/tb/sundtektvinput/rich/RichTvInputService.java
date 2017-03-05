@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.android.sampletvinput.rich;
+package org.tb.sundtektvinput.rich;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -36,10 +36,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.accessibility.CaptioningManager;
 
-import com.example.android.sampletvinput.R;
-import com.example.android.sampletvinput.SampleJobService;
-import com.example.android.sampletvinput.player.DemoPlayer;
-import com.example.android.sampletvinput.player.RendererBuilderFactory;
 import com.google.android.exoplayer.ExoPlayer;
 import com.google.android.exoplayer.MediaFormat;
 import com.google.android.exoplayer.text.CaptionStyleCompat;
@@ -55,8 +51,14 @@ import com.google.android.media.tv.companionlibrary.model.Program;
 import com.google.android.media.tv.companionlibrary.model.RecordedProgram;
 import com.google.android.media.tv.companionlibrary.utils.TvContractUtils;
 
+import org.tb.sundtektvinput.R;
+import org.tb.sundtektvinput.SampleJobService;
+import org.tb.sundtektvinput.player.DemoPlayer;
+import org.tb.sundtektvinput.player.RendererBuilderFactory;
+
 import java.util.ArrayList;
 import java.util.List;
+
 
 /**
  * TvInputService which provides a full implementation of EPG, subtitles, multi-audio, parental

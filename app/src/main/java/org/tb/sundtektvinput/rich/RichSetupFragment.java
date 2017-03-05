@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.android.sampletvinput.rich;
+package org.tb.sundtektvinput.rich;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -26,10 +26,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.android.sampletvinput.R;
 import com.google.android.media.tv.companionlibrary.ChannelSetupFragment;
 import com.google.android.media.tv.companionlibrary.EpgSyncJobService;
-import com.example.android.sampletvinput.SampleJobService;
+
+import org.tb.sundtektvinput.R;
+import org.tb.sundtektvinput.SampleJobService;
 
 /**
  * Fragment which shows a sample UI for registering channels and setting up SampleJobService to
@@ -55,8 +56,8 @@ public class RichSetupFragment extends ChannelSetupFragment {
         setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.detail_background));
         setBadge(getResources().getDrawable(R.drawable.your_company));
         setChannelListVisibility(true);
-        setTitle(getString(R.string.rich_input_label));
-        setDescription(getString(R.string.company_name));
+        setTitle(getString(R.string.sundtek_tvinput_label));
+        setDescription(getString(R.string.setup_description));
         setButtonText(getString(R.string.rich_setup_add_channel));
         return fragmentView;
     }

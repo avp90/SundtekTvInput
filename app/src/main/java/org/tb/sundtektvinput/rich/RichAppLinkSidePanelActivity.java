@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.android.sampletvinput.rich;
+package org.tb.sundtektvinput.rich;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -26,11 +26,13 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.TextView;
 
-import com.example.android.sampletvinput.R;
 import com.google.android.media.tv.companionlibrary.model.Channel;
 import com.google.android.media.tv.companionlibrary.utils.TvContractUtils;
 
+import org.tb.sundtektvinput.R;
+
 import java.util.List;
+
 
 /**
  * Activity that shows a simple side panel UI.

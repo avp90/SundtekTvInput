@@ -159,15 +159,15 @@ public class Parser {
 
             Log.d(TAG, "Fetch programs for TODAY");
             JSONArray responseProgramsTodayJson = new JSONArray(getJson(BASE_SERVERCMD_URL + QUERY_PROGRAMS_TODAY));
-            programToday = parsePrograms(responseProgramsTodayJson);
+            programToday = parsePrograms(responseProgramsTodayJson, false);
             programList.addAll(programToday);
             Log.d(TAG, "Found " + programToday.size() + " programs for TODAY");
 
-            Log.d(TAG, "Fetch programs for TOMORROW");
-            JSONArray responseProgramsTomorrowJson = new JSONArray(getJson(BASE_SERVERCMD_URL + QUERY_PROGRAMS_TOMORROW));
-            programTomorrow = parsePrograms(responseProgramsTomorrowJson);
-            programList.addAll(programTomorrow);
-            Log.d(TAG, "Found " + programTomorrow.size() + " programs for TOMORROW");
+//            Log.d(TAG, "Fetch programs for TOMORROW");
+//            JSONArray responseProgramsTomorrowJson = new JSONArray(getJson(BASE_SERVERCMD_URL + QUERY_PROGRAMS_TOMORROW));
+//            programTomorrow = parsePrograms(responseProgramsTomorrowJson, false);
+//            programList.addAll(programTomorrow);
+//            Log.d(TAG, "Found " + programTomorrow.size() + " programs for TOMORROW");
 
         } catch (JSONException | IOException e) {
             e.printStackTrace();
@@ -177,7 +177,7 @@ public class Parser {
     }
 
 
-    private List<Program> parsePrograms(JSONArray programsJson) throws
+    private List<Program> parsePrograms(JSONArray programsJson, Boolean parseDescription) throws
             JSONException {
 
         List<Program> programList = new ArrayList<>();
@@ -233,7 +233,7 @@ public class Parser {
                         end = start + duration;
                         epgEventId = prog.getString(PROG_EVENTID);
                         internalProviderData.put(PROG_IPD_EPG_EVENT_ID, epgEventId);
-                        if (!epgEventId.equals("") && (!serviceId.equals("empty")))
+                        if (parseDescription && !epgEventId.equals("") && !serviceId.equals("empty"))
                             description = getJsonDescription(serviceId, epgEventId);
 
                         programList.add(new Program.Builder()
@@ -271,8 +271,8 @@ public class Parser {
     }
 
 
-    private String getJsonDescription(String serviceId, String epgEventId) {
-
+    public String getJsonDescription(String serviceId, String epgEventId) {
+        if (!epgEventId.equals("") && (!serviceId.equals("")))
         try {
             JSONArray detailsJson = new JSONArray(getJson(BASE_SERVERCMD_URL + "epgserviceid=" + serviceId + "&epgeventid=" + epgEventId + "&delsys=1"));
 

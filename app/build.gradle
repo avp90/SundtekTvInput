@@ -5,7 +5,7 @@ android {
     buildToolsVersion '25.0.2'
 
     defaultConfig {
-        applicationId "org.tv.sundtektvinput"
+        applicationId "org.tb.sundtektvinput"
         minSdkVersion 21
         targetSdkVersion 25
         versionCode 2

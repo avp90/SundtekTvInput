@@ -22,20 +22,15 @@ public class ChannelsDB {
 
     private static final String TAG = ChannelsDB.class.getSimpleName();
 
-    private static long MAX_AGE = 1000 * 60 * 60 * 1  / 12; //5mins;
+    private static long MAX_AGE = 1000 * 60 * 60   / 12; //5mins;
     private static ChannelsDB myChannelsDB;
     private HashMap<Integer, Channel> channelMap;
     private long lastUpdate;
-
-    private Context context;
 
 
     /**
      * The default period between full EPG syncs, one day.
      */
-    private static final long DEFAULT_SYNC_PERIOD_MILLIS = 1000 * 60 * 60 * 12; // 12 hour
-    private static final long DEFAULT_IMMEDIATE_EPG_DURATION_MILLIS = 1000 * 60 * 60; // 1 Hour
-    private static final long DEFAULT_PERIODIC_EPG_DURATION_MILLIS = 1000 * 60 * 60 * 48; // 48 Hour
 
     public static ChannelsDB getInstance(Context context) {
         if (myChannelsDB == null) {
@@ -47,7 +42,6 @@ public class ChannelsDB {
     @SuppressLint("UseSparseArrays")
     private ChannelsDB(Context context) {
         Log.d(TAG, "new ChannelsDB Instance");
-        this.context = context;
         channelMap = new HashMap<>();
     }
 

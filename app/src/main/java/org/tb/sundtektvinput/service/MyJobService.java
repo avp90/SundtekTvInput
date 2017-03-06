@@ -46,7 +46,7 @@ public class MyJobService extends EpgSyncJobService {
                                                long endMs) {
 
         Log.d(TAG, "Trying to get programs for " + channel.getDisplayName());
-        return ProgramsDB.getInstance(getApplicationContext()).getProgramsForChannel(channel, startMs, endMs);
+        return ProgramsDB.getInstance().getProgramsForChannel(channel, startMs, endMs);
     }
 
 

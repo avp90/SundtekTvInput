@@ -593,7 +593,7 @@ public abstract class BaseTvInputService extends TvInputService {
             if (mCurrentProgram == null) {
 //                Log.w(TAG, "Failed to get program info for " + mChannelUri + ". Try to do an " + "EPG sync.");
                 Log.w(TAG, "Failed to get program info for " + mChannelUri + ". play dummy program");
-                mCurrentProgram = ProgramsDB.getInstance(mContext).getDummyProgram(mCurrentChannel);
+                mCurrentProgram = ProgramsDB.getInstance().getDummyProgram(mCurrentChannel);
                 return playCurrentProgram();
               //  return onPlayProgram(mCurrentChannel, null, 0);
             }

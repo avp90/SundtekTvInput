@@ -1,6 +1,5 @@
 package org.tb.sundtektvinput.model;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.google.android.exoplayer.util.Util;
@@ -24,7 +23,6 @@ public class ProgramsDB {
     private static final String TAG = ProgramsDB.class.getSimpleName();
 
     private static ProgramsDB myProgramsDB;
-    private Context context;
     private SundtekJsonParser parser;
     private HashMap<String, Program> allProgramMap;
     private HashMap<String, ArrayList<Program>> channelProgramsMap;
@@ -39,17 +37,16 @@ public class ProgramsDB {
     private static final String PROG_IPD_CHANNEL_NAME = "channelName";
 
 
-    public static ProgramsDB getInstance(Context context) {
+    public static ProgramsDB getInstance() {
         if (myProgramsDB == null) {
-            myProgramsDB = new ProgramsDB(context);
+            myProgramsDB = new ProgramsDB();
             myProgramsDB.parser = new SundtekJsonParser();
         }
         return myProgramsDB;
     }
 
-    private ProgramsDB(Context context) {
+    private ProgramsDB() {
         Log.d(TAG, "new ProgramsDB Instance");
-        this.context = context;
         allProgramMap = new HashMap<>();
 
     }

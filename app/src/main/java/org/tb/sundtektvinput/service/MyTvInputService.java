@@ -41,7 +41,6 @@ import com.google.android.exoplayer.MediaFormat;
 import com.google.android.exoplayer.text.CaptionStyleCompat;
 import com.google.android.exoplayer.text.Cue;
 import com.google.android.exoplayer.text.SubtitleLayout;
-import com.google.android.media.tv.companionlibrary.BaseTvInputService;
 import com.google.android.media.tv.companionlibrary.EpgSyncJobService;
 import com.google.android.media.tv.companionlibrary.TvPlayer;
 import com.google.android.media.tv.companionlibrary.model.Advertisement;
@@ -51,9 +50,10 @@ import com.google.android.media.tv.companionlibrary.model.Program;
 import com.google.android.media.tv.companionlibrary.model.RecordedProgram;
 import com.google.android.media.tv.companionlibrary.utils.TvContractUtils;
 
+import org.tb.sundtektvinput.R;
 import org.tb.sundtektvinput.player.DemoPlayer;
 import org.tb.sundtektvinput.player.RendererBuilderFactory;
-import org.tb.sundtektvinput.R;
+import org.tb.sundtektvinput.service.base.BaseTvInputService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -198,7 +198,7 @@ public class MyTvInputService extends BaseTvInputService {
         }
 
         @Override
-        public boolean onPlayProgram(Program program, long startPosMs) {
+        public boolean onPlayProgram(Channel channel, Program program, long startPosMs) {
             if (program == null) {
                 requestEpgSync(getCurrentChannelUri());
                 notifyVideoUnavailable(TvInputManager.VIDEO_UNAVAILABLE_REASON_TUNING);
@@ -282,7 +282,7 @@ public class MyTvInputService extends BaseTvInputService {
             int trackIndex = getIndexFromTrackId(trackId);
             if (mPlayer != null) {
                 if (type == TvTrackInfo.TYPE_SUBTITLE) {
-                    if (! mCaptionEnabled) {
+                    if (!mCaptionEnabled) {
                         return false;
                     }
                     mSelectedSubtitleTrackIndex = trackIndex;
@@ -354,7 +354,7 @@ public class MyTvInputService extends BaseTvInputService {
 
         @Override
         public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees,
-                float pixelWidthHeightRatio) {
+                                       float pixelWidthHeightRatio) {
             // Do nothing.
         }
 
@@ -430,12 +430,12 @@ public class MyTvInputService extends BaseTvInputService {
             InternalProviderData internalProviderData = programToRecord.getInternalProviderData();
             internalProviderData.setRecordingStartTime(mStartTimeMs);
             RecordedProgram recordedProgram = new RecordedProgram.Builder(programToRecord)
-                        .setInputId(mInputId)
-                        .setRecordingDataUri(
-                                programToRecord.getInternalProviderData().getVideoUrl())
-                        .setRecordingDurationMillis(currentTime - mStartTimeMs)
-                        .setInternalProviderData(internalProviderData)
-                        .build();
+                    .setInputId(mInputId)
+                    .setRecordingDataUri(
+                            programToRecord.getInternalProviderData().getVideoUrl())
+                    .setRecordingDurationMillis(currentTime - mStartTimeMs)
+                    .setInternalProviderData(internalProviderData)
+                    .build();
             notifyRecordingStopped(recordedProgram);
         }
 

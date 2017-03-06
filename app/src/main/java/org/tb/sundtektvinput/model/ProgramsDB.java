@@ -117,34 +117,39 @@ public class ProgramsDB {
 
         String channelKey = String.valueOf(channel.getOriginalNetworkId());
 
-        if (!channelProgramsMap.containsKey(channelKey)) {
-            Log.d(TAG, "No programdata found for channel: " + channel.getDisplayName());
-            return makeDummyProgram(channel, startMs, endMs);
-        } else if (channelProgramsMap.get(channelKey) == null || channelProgramsMap.get(channelKey).isEmpty()) {
-            channelProgramsMap.remove(channelKey);
-            Log.d(TAG, "Removed empty programlist from Map for: " + channel.getDisplayName());
-            return makeDummyProgram(channel, startMs, endMs);
-        }
-
-        Log.d(TAG, "found " + channelProgramsMap.get(channelKey).size() + " programs for " + channel.getDisplayName());
-
+//        if (!channelProgramsMap.containsKey(channelKey)) {
+//            Log.d(TAG, "No programdata found for channel: " + channel.getDisplayName());
+//            return makeDummyProgram(channel, startMs, endMs);
+//        } else if (channelProgramsMap.get(channelKey) == null || channelProgramsMap.get(channelKey).isEmpty()) {
+//            channelProgramsMap.remove(channelKey);
+//            Log.d(TAG, "Removed empty programlist from Map for: " + channel.getDisplayName());
+//            return makeDummyProgram(channel, startMs, endMs);
+//        }
+//
         ArrayList<Program> programList =  channelProgramsMap.get(channelKey);
-
-
-        //TODO: Implement method in ProgramsDB to get program by time for given channel
-        // Find a single program for the given time. If there is none a dummyprogram will be added
-        Boolean hasProgramForGivenTime= false;
-        for(Program program : programList) {
-            if (program.getEndTimeUtcMillis() >= startMs && program.getStartTimeUtcMillis() <= startMs) {
-                hasProgramForGivenTime = true;
-                break;
-            }
-        }
-        if(!hasProgramForGivenTime)
-            programList.add(makeDummyProgram(channel, startMs, endMs).get(0));
-
-
+        Log.d(TAG, "found " + channelProgramsMap.get(channelKey).size() + " programs for " + channel.getDisplayName());
+//
+//
+          // TODO: Implement method in ProgramsDB to get program by time for given channel
+          // Find a single program for the given time. If there is none a dummyprogram will be added
+//        Boolean hasProgramForGivenTime= false;
+//        for(Program program : programList) {
+//            if (program.getEndTimeUtcMillis() >= startMs && program.getStartTimeUtcMillis() <= startMs) {
+//                hasProgramForGivenTime = true;
+//                break;
+//            }
+//        }
+//        if(!hasProgramForGivenTime)
+//            programList.add(makeDummyProgram(channel, startMs, endMs).get(0));
+//
+//
         return programList;
+    }
+
+    public Program getDummyProgram(Channel channel){
+
+
+        return makeDummyProgram(channel, new Date().getTime(), 0).get(0);
     }
 
     private ArrayList<Program> makeDummyProgram(Channel channel, long startMs, long endMs) {

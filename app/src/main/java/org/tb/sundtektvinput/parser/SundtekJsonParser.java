@@ -248,7 +248,7 @@ public class SundtekJsonParser {
                                     .setCanonicalGenres(new String[]{TvContract.Programs.Genres.ENTERTAINMENT,
                                             TvContract.Programs.Genres.MOVIES, TvContract.Programs.Genres.TECH_SCIENCE})
 //                                .setPosterArtUri(logo)
-//                                .setThumbnailUri(logo)
+                                    .setThumbnailUri(logo)
                                     .build());
                     }
                 }

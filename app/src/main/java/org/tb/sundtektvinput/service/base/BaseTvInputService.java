@@ -226,6 +226,10 @@ public abstract class BaseTvInputService extends TvInputService {
             switch (msg.what) {
                 case MSG_PLAY_CONTENT:
                     mCurrentProgram = (Program) msg.obj;
+                    if (mCurrentProgram == null) {
+                        mCurrentProgram = ProgramsDB.getInstance().getDummyProgram(mCurrentChannel);
+                        Log.d(TAG, "DUMMYPROG" + mCurrentProgram.toString());
+                    }
                     playCurrentContent();
                     return true;
                 case MSG_PLAY_AD:
@@ -591,11 +595,8 @@ public abstract class BaseTvInputService extends TvInputService {
 
         private boolean playCurrentProgram() {
             if (mCurrentProgram == null) {
-//                Log.w(TAG, "Failed to get program info for " + mChannelUri + ". Try to do an " + "EPG sync.");
-                Log.w(TAG, "Failed to get program info for " + mChannelUri + ". play dummy program");
-                mCurrentProgram = ProgramsDB.getInstance().getDummyProgram(mCurrentChannel);
-                return playCurrentProgram();
-              //  return onPlayProgram(mCurrentChannel, null, 0);
+                Log.w(TAG, "Failed to get program info for " + mChannelUri + ". Try to do an " + "EPG sync.");
+                return onPlayProgram(mCurrentChannel, null, 0);
             }
             calculateElapsedTimesFromCurrentTime();
             if (!scheduleNextAd()) {

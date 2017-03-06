@@ -12,6 +12,7 @@ import org.tb.sundtektvinput.R;
  */
 public class GuideActivity extends Activity {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

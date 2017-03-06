@@ -123,8 +123,9 @@ public class ProgramsDB {
 //            return makeDummyProgram(channel, startMs, endMs);
 //        }
 //
-        ArrayList<Program> programList =  channelProgramsMap.get(channelKey);
-        Log.d(TAG, "found " + channelProgramsMap.get(channelKey).size() + " programs for " + channel.getDisplayName());
+        ArrayList<Program> programList = channelProgramsMap.get(channelKey);
+        if (!(channelProgramsMap.get(channelKey) == null))
+            Log.d(TAG, "found " + channelProgramsMap.get(channelKey).size() + " programs for " + channel.getDisplayName());
 //
 //
           // TODO: Implement method in ProgramsDB to get program by time for given channel

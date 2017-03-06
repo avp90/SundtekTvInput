@@ -144,9 +144,7 @@ public class ProgramsDB {
     }
 
     public Program getDummyProgram(Channel channel){
-
-
-        return makeDummyProgram(channel, new Date().getTime(), 0).get(0);
+        return makeDummyProgram(channel, System.currentTimeMillis(), 0).get(0);
     }
 
     private ArrayList<Program> makeDummyProgram(Channel channel, long startMs, long endMs) {

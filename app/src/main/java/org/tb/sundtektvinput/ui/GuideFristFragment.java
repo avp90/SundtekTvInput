@@ -48,12 +48,15 @@ public class GuideFristFragment extends GuidedStepFragment {
         if (action.getId() == 0) {
             Toast.makeText(getActivity().getApplicationContext(), "NEXT", Toast.LENGTH_LONG).show();
             GuidedStepFragment.add(fm, new GuideSecondFragment());
-
         }
         if (action.getId() == 1) {
             Toast.makeText(getActivity().getApplicationContext(), "BACK", Toast.LENGTH_LONG).show();
 
         }
     }
+
+
+
+
 
 }

@@ -1,7 +1,6 @@
 package org.tb.sundtektvinput.model;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.util.Log;
 
 import com.google.android.media.tv.companionlibrary.model.Channel;
@@ -32,15 +31,15 @@ public class ChannelsDB {
      * The default period between full EPG syncs, one day.
      */
 
-    public static ChannelsDB getInstance(Context context) {
+    public static ChannelsDB getInstance() {
         if (myChannelsDB == null) {
-            myChannelsDB = new ChannelsDB(context);
+            myChannelsDB = new ChannelsDB();
         }
         return myChannelsDB;
     }
 
     @SuppressLint("UseSparseArrays")
-    private ChannelsDB(Context context) {
+    private ChannelsDB() {
         Log.d(TAG, "new ChannelsDB Instance");
         channelMap = new HashMap<>();
     }

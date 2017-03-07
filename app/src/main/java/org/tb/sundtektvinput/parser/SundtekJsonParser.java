@@ -53,8 +53,10 @@ public class SundtekJsonParser {
     private static final int PROG_SERVICE_ID = 2;
 
 
-    private String IP_ADDRESS;
-    private String BASE_URL;
+    private String IP_ADDRESS;// = "192.168.3.26";
+    private static final String SERVER_PORT = "22000";
+
+    private String BASE_URL;// = "http://" + IP_ADDRESS + ":" + SERVER_PORT;
     private static final String BASE_STREAM_URL = "/stream/";
     private static final String BASE_SERVERCMD_URL = "/servercmd.xhx?";
     private static final String QUERY_CHANNELS_SD = "chantype=sdtv&filter=publictv-privatetv";
@@ -76,18 +78,15 @@ public class SundtekJsonParser {
     private Context mContext;
 
 
-    public SundtekJsonParser(){}
-
-    public SundtekJsonParser(Context context){
+    public SundtekJsonParser(Context context) {
         mContext = context;
         String ip = new SettingsHelper(context).loadIp();
-        if(ip != null)
+        if (ip != null)
             IP_ADDRESS = ip;
         else
             IP_ADDRESS = "192.168.3.26";
 
-        BASE_URL = "http://" + IP_ADDRESS + ":22000";
-
+        BASE_URL = "http://"+IP_ADDRESS+":"+SERVER_PORT;
 
 
     }
@@ -97,7 +96,9 @@ public class SundtekJsonParser {
         if (channelMap == null) {
             channelMap = new HashMap<>();
 
+            Log.d(TAG, BASE_URL + BASE_SERVERCMD_URL + QUERY_CHANNELS_HD);
             Log.d(TAG, "Fetch HD channels");
+
             JSONArray responseChannlesHdJson = new JSONArray(getJson(BASE_URL + BASE_SERVERCMD_URL + QUERY_CHANNELS_HD));
             channelMap.putAll(parseChannles(responseChannlesHdJson));
 

@@ -1,5 +1,6 @@
 package org.tb.sundtektvinput.model;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.google.android.exoplayer.util.Util;
@@ -23,7 +24,6 @@ public class ProgramsDB {
     private static final String TAG = ProgramsDB.class.getSimpleName();
 
     private static ProgramsDB myProgramsDB;
-    private SundtekJsonParser parser;
     private HashMap<String, Program> allProgramMap;
     private HashMap<String, ArrayList<Program>> channelProgramsMap;
 
@@ -40,7 +40,6 @@ public class ProgramsDB {
     public static ProgramsDB getInstance() {
         if (myProgramsDB == null) {
             myProgramsDB = new ProgramsDB();
-            myProgramsDB.parser = new SundtekJsonParser();
         }
         return myProgramsDB;
     }
@@ -53,11 +52,11 @@ public class ProgramsDB {
 
 
     //TODO: do networking and parsing in background service
-    private boolean getPrograms() {
+    private boolean getPrograms(Context context) {
 
         if (allProgramMap.isEmpty() || (lastUpdate + MAX_AGE_MILLIS) <= (new Date().getTime())) {
             List<Program> programs;
-            programs = parser.getPrograms();
+            programs = new SundtekJsonParser(context).getPrograms();
             lastUpdate = new Date().getTime();
             Log.d(TAG, "refreshing programs");
 
@@ -108,9 +107,9 @@ public class ProgramsDB {
         return false;
     }
 
-    public ArrayList<Program> getProgramsForChannel(Channel channel, long startMs, long endMs) {
+    public ArrayList<Program> getProgramsForChannel(Context context, Channel channel, long startMs, long endMs) {
 
-        getPrograms();
+        getPrograms(context);
 
         String channelKey = String.valueOf(channel.getOriginalNetworkId());
 

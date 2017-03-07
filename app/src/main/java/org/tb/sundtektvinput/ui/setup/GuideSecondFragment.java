@@ -99,7 +99,7 @@ public class GuideSecondFragment extends GuideBaseFragment {
 
         @Override
         protected ArrayList<Channel> doInBackground(Void... arg0) {
-            return new SundtekJsonParser().getChannels();
+            return new SundtekJsonParser(getContext()).getChannels();
         }
 
         @Override

@@ -177,15 +177,15 @@ public class SundtekJsonParser {
         try {
             Log.d(TAG, "Fetch programs for NOW");
             JSONArray responseProgramsNowJson = new JSONArray(getJson(BASE_URL + BASE_SERVERCMD_URL + QUERY_PROGRAMS_NOW));
-            programNow = parsePrograms(responseProgramsNowJson, false);
+            programNow = parsePrograms(responseProgramsNowJson, true);
             programList.addAll(programNow);
             Log.d(TAG, "Found " + programNow.size() + " programs for NOW");
-//
-//            Log.d(TAG, "Fetch programs for TODAY");
-//            JSONArray responseProgramsTodayJson = new JSONArray(getJson(BASE_URL + BASE_SERVERCMD_URL + QUERY_PROGRAMS_TODAY));
-//            programToday = parsePrograms(responseProgramsTodayJson, false);
-//            programList.addAll(programToday);
-//            Log.d(TAG, "Found " + programToday.size() + " programs for TODAY");
+
+            Log.d(TAG, "Fetch programs for TODAY");
+            JSONArray responseProgramsTodayJson = new JSONArray(getJson(BASE_URL + BASE_SERVERCMD_URL + QUERY_PROGRAMS_TODAY));
+            programToday = parsePrograms(responseProgramsTodayJson, false);
+            programList.addAll(programToday);
+            Log.d(TAG, "Found " + programToday.size() + " programs for TODAY");
 //
 //            Log.d(TAG, "Fetch programs for TOMORROW");
 //            JSONArray responseProgramsTomorrowJson = new JSONArray(getJson(BASE_URL + BASE_SERVERCMD_URL + QUERY_PROGRAMS_TOMORROW));

@@ -49,16 +49,16 @@ public class GuideThirdFragment extends GuideBaseFragment {
     @Override
     public void onCreateActions(@NonNull List<GuidedAction> actions, Bundle savedInstanceState) {
         channels = (HashMap<String, Channel>) getArguments().getSerializable("channels");
-
+        int channelNumber = 1;
         for (Channel channel : channels.values()) {
             actions.add(new GuidedAction.Builder(getActivity().getApplicationContext())
                     .checkSetId(NO_CHECK_SET)
                     .title(channel.getDisplayName())
-                    .description(String.valueOf(channel.getOriginalNetworkId()))
+                    .description(String.valueOf(channelNumber++))
                     .checked(false)
                     .focusable(true)
                     .enabled(true)
-                    .infoOnly(true)
+                    .descriptionEditable(true)
                     .build());
         }
     }

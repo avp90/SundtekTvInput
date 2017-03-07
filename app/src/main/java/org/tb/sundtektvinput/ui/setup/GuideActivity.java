@@ -17,7 +17,14 @@ public class GuideActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.guide_layout);
+        GuidedStepFragment.addAsRoot(this, new GuideIpFragment(), android.R.id.content);
+    }
 
-        GuidedStepFragment.add(getFragmentManager(), new GuideFirstFragment(), android.R.id.content);
+    @Override
+    public void onBackPressed() {
+        if (!(GuidedStepFragment.getCurrentGuidedStepFragment(getFragmentManager()) instanceof GuideFourthFragment))
+            super.onBackPressed();
+        else
+            return;
     }
 }

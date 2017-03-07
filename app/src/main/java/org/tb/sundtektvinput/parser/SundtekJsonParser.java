@@ -11,6 +11,7 @@ import com.google.android.media.tv.companionlibrary.model.Program;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.tb.sundtektvinput.util.SettingsHelper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -52,9 +53,10 @@ public class SundtekJsonParser {
     private static final int PROG_SERVICE_ID = 2;
 
 
-    private static final String BASE_URL = "http://192.168.3.26:22000";
-    private static final String BASE_STREAM_URL = BASE_URL + "/stream/";
-    private static final String BASE_SERVERCMD_URL = BASE_URL + "/servercmd.xhx?";
+    private String IP_ADDRESS;
+    private String BASE_URL;
+    private static final String BASE_STREAM_URL = "/stream/";
+    private static final String BASE_SERVERCMD_URL = "/servercmd.xhx?";
     private static final String QUERY_CHANNELS_SD = "chantype=sdtv&filter=publictv-privatetv";
     private static final String QUERY_CHANNELS_HD = "chantype=hdtv&filter=publictv-privatetv";
     private static final String QUERY_PROGRAMS_NOW = "epgmode=now&epgfilter=now-publictv-privatetv&channels=1%2C2%2C3%2C4%2C5";
@@ -78,6 +80,16 @@ public class SundtekJsonParser {
 
     public SundtekJsonParser(Context context){
         mContext = context;
+        String ip = new SettingsHelper(context).loadIp();
+        if(ip != null)
+            IP_ADDRESS = ip;
+        else
+            IP_ADDRESS = "192.168.3.26";
+
+        BASE_URL = "http://" + IP_ADDRESS + ":22000";
+
+
+
     }
 
     public HashMap<String, Channel> getChannelMap() throws JSONException, IOException {
@@ -86,11 +98,11 @@ public class SundtekJsonParser {
             channelMap = new HashMap<>();
 
             Log.d(TAG, "Fetch HD channels");
-            JSONArray responseChannlesHdJson = new JSONArray(getJson(BASE_SERVERCMD_URL + QUERY_CHANNELS_HD));
+            JSONArray responseChannlesHdJson = new JSONArray(getJson(BASE_URL + BASE_SERVERCMD_URL + QUERY_CHANNELS_HD));
             channelMap.putAll(parseChannles(responseChannlesHdJson));
 
             Log.d(TAG, "Fetch SD channels");
-            JSONArray responseChannlesSdJson = new JSONArray(getJson(BASE_SERVERCMD_URL + QUERY_CHANNELS_SD));
+            JSONArray responseChannlesSdJson = new JSONArray(getJson(BASE_URL + BASE_SERVERCMD_URL + QUERY_CHANNELS_SD));
             channelMap.putAll(parseChannles(responseChannlesSdJson));
 
 
@@ -163,19 +175,19 @@ public class SundtekJsonParser {
 
         try {
             Log.d(TAG, "Fetch programs for NOW");
-            JSONArray responseProgramsNowJson = new JSONArray(getJson(BASE_SERVERCMD_URL + QUERY_PROGRAMS_NOW));
+            JSONArray responseProgramsNowJson = new JSONArray(getJson(BASE_URL + BASE_SERVERCMD_URL + QUERY_PROGRAMS_NOW));
             programNow = parsePrograms(responseProgramsNowJson, false);
             programList.addAll(programNow);
             Log.d(TAG, "Found " + programNow.size() + " programs for NOW");
 //
 //            Log.d(TAG, "Fetch programs for TODAY");
-//            JSONArray responseProgramsTodayJson = new JSONArray(getJson(BASE_SERVERCMD_URL + QUERY_PROGRAMS_TODAY));
+//            JSONArray responseProgramsTodayJson = new JSONArray(getJson(BASE_URL + BASE_SERVERCMD_URL + QUERY_PROGRAMS_TODAY));
 //            programToday = parsePrograms(responseProgramsTodayJson, false);
 //            programList.addAll(programToday);
 //            Log.d(TAG, "Found " + programToday.size() + " programs for TODAY");
 //
 //            Log.d(TAG, "Fetch programs for TOMORROW");
-//            JSONArray responseProgramsTomorrowJson = new JSONArray(getJson(BASE_SERVERCMD_URL + QUERY_PROGRAMS_TOMORROW));
+//            JSONArray responseProgramsTomorrowJson = new JSONArray(getJson(BASE_URL + BASE_SERVERCMD_URL + QUERY_PROGRAMS_TOMORROW));
 //            programTomorrow = parsePrograms(responseProgramsTomorrowJson, false);
 //            programList.addAll(programTomorrow);
 //            Log.d(TAG, "Found " + programTomorrow.size() + " programs for TOMORROW");
@@ -273,7 +285,7 @@ public class SundtekJsonParser {
     private String getJsonDescription(String serviceId, String epgEventId) {
         if (!epgEventId.equals("") && (!serviceId.equals("")))
             try {
-                JSONArray detailsJson = new JSONArray(getJson(BASE_SERVERCMD_URL + "epgserviceid=" + serviceId + "&epgeventid=" + epgEventId + "&delsys=1"));
+                JSONArray detailsJson = new JSONArray(getJson(BASE_URL + BASE_SERVERCMD_URL + "epgserviceid=" + serviceId + "&epgeventid=" + epgEventId + "&delsys=1"));
 
                 for (int k = 0; k < detailsJson.length(); k++) {
                     if (!detailsJson.isNull(k) && (detailsJson.get(k) instanceof JSONArray)) {

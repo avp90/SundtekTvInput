@@ -1,7 +1,6 @@
 package org.tb.sundtektvinput.ui.setup;
 
 import android.app.FragmentManager;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,7 +8,6 @@ import android.support.v17.leanback.app.GuidedStepFragment;
 import android.support.v17.leanback.widget.GuidanceStylist;
 import android.support.v17.leanback.widget.GuidedAction;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.media.tv.companionlibrary.model.Channel;
 
@@ -22,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import static android.support.v17.leanback.widget.GuidedAction.ACTION_ID_CANCEL;
+import static android.support.v17.leanback.widget.GuidedAction.ACTION_ID_CONTINUE;
 import static android.support.v17.leanback.widget.GuidedAction.CHECKBOX_CHECK_SET_ID;
 import static com.google.ads.interactivemedia.v3.impl.w.c.loaded;
 
@@ -33,10 +33,10 @@ public class GuideSecondFragment extends GuideBaseFragment {
 
     @NonNull
     public GuidanceStylist.Guidance onCreateGuidance(@NonNull Bundle savedInstanceState) {
-        String title = "Channels Found";
+        String title = "Here we go";
         String description = "Please select the channels you want to import";
-        Drawable icon = getActivity().getDrawable(R.drawable.ic_launcher);
-        return new GuidanceStylist.Guidance(title, description, breadcrumb, icon);
+    //    Drawable icon = getActivity().getDrawable(R.drawable.ic_launcher);
+        return new GuidanceStylist.Guidance(title, description, breadcrumb, null);
     }
 
 
@@ -45,12 +45,12 @@ public class GuideSecondFragment extends GuideBaseFragment {
     @Override
     public void onCreateButtonActions(@NonNull List<GuidedAction> actions, Bundle savedInstanceState) {
         actions.add(new GuidedAction.Builder(getActivity().getApplicationContext())
-                .id(12)
+                .id(ACTION_ID_CONTINUE)
                 .title("Continue")
                 .build());
 
         actions.add(new GuidedAction.Builder(getActivity().getApplicationContext())
-                .id(13)
+                .id(ACTION_ID_CANCEL)
                 .title("Back")
                 .build());
     }
@@ -77,8 +77,6 @@ public class GuideSecondFragment extends GuideBaseFragment {
                             .checked(selectedChannels.contains(id))
                             .build());
         }
-
-
     }
 
 
@@ -107,9 +105,6 @@ public class GuideSecondFragment extends GuideBaseFragment {
         @Override
         protected void onPostExecute(ArrayList<Channel> channels) {
             super.onPostExecute(channels);
-//            allChannels = new HashMap<>();
-//            for (Channel channel : channels)
-//                allChannels.put(String.valueOf(channel.getOriginalNetworkId()), channel);
         }
     }
 
@@ -117,21 +112,17 @@ public class GuideSecondFragment extends GuideBaseFragment {
     @Override
     public void onGuidedActionClicked(GuidedAction action) {
         FragmentManager fm = getFragmentManager();
-        Log.d("ACTIONID", "" + action.getId());
         if (action.isChecked()) {
             selectedChannels.add(action.getDescription().toString());
             selectedChannelMap.put((String) action.getDescription(), allChannels.get(action.getDescription()));
-            Log.d("ACTIONID", action.getTitle() + " in list " + selectedChannels.contains(action.getDescription()));
         } else {
             if (selectedChannels.contains(action.getDescription())) {
                 selectedChannels.remove(action.getDescription());
                 selectedChannelMap.remove(action.getDescription());
-                Log.d("ACTIONID", action.getTitle() + " in list " + selectedChannels.contains(action.getDescription()));
             }
         }
 
-        if (action.getId() == 12) {
-            Toast.makeText(getActivity().getApplicationContext(), "Next", Toast.LENGTH_LONG).show();
+        if (action.getId() == ACTION_ID_CONTINUE) {
             new SettingsHelper(getActivity().getApplicationContext())
                     .saveChannelIds(selectedChannels, getString(R.string.selectedChannelsFile));
             Bundle args = new Bundle();
@@ -139,11 +130,8 @@ public class GuideSecondFragment extends GuideBaseFragment {
             GuideBaseFragment fragment = new GuideThirdFragment();
             fragment.setArguments(args);
             GuidedStepFragment.add(fm, fragment);
-
-
         }
-        if (action.getId() == 13) {
-            Toast.makeText(getActivity().getApplicationContext(), "Next", Toast.LENGTH_LONG).show();
+        if (action.getId() == ACTION_ID_CANCEL) {
             getFragmentManager().popBackStack();
         }
     }

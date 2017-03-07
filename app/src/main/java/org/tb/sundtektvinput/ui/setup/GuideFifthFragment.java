@@ -39,9 +39,7 @@ public class GuideFifthFragment extends GuideBaseFragment {
 
         if (action.getId() == 0) {
             Toast.makeText(getActivity().getApplicationContext(), "NEXT", Toast.LENGTH_LONG).show();
-            getActivity().finish();
             finishGuidedStepFragments();
-
         }
 
     }

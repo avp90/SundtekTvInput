@@ -61,10 +61,13 @@ public class ChannelsDB {
 
         channelMap.clear();
 
+        Channel newChannel;
+        int newChannelNumber = 0;
         for (Channel channel : channels) {
             String key = String.valueOf(channel.getOriginalNetworkId());
             if (filter.contains(key)) {
-                channelMap.put(Integer.valueOf(key), channel);
+                newChannel = new Channel.Builder(channel).setDisplayNumber(String.valueOf(newChannelNumber++)).build();
+                channelMap.put(Integer.valueOf(key), newChannel);
                 Log.d(TAG, "Found " + channelMap.size() + " Channels");
             }
         }

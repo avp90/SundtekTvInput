@@ -5,8 +5,10 @@ import android.content.SharedPreferences;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.tb.sundtektvinput.R;
 
 import java.util.ArrayList;
+
 
 /**
  * Created on 06.03.2017.
@@ -46,6 +48,19 @@ public class SettingsHelper {
             e1.printStackTrace();
         }
         return outputArraylist;
+    }
+
+    public void saveIp(String ip){
+        SharedPreferences pSharedPref = context.getSharedPreferences(context.getString(R.string.ipsave), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pSharedPref.edit();
+        editor.remove(context.getString(R.string.ipsave)).commit();
+        editor.putString(context.getString(R.string.ipsave), String.valueOf(ip)).commit();
+        editor.commit();
+    }
+
+    public String loadIp(){
+        SharedPreferences pSharedPref = context.getSharedPreferences(context.getString(R.string.ipsave), Context.MODE_PRIVATE);
+        return pSharedPref.getString(context.getString(R.string.ipsave), "");
     }
 
 }

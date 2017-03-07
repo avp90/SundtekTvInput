@@ -55,7 +55,7 @@ public class ChannelsDB {
         List<Channel> channels = new ArrayList<>();
 
         Log.d(TAG, "refreshing channels");
-        channels.addAll(new SundtekJsonParser().getChannels());
+        channels.addAll(new SundtekJsonParser(context).getChannels());
         lastUpdate = new Date().getTime();
         Log.d(TAG, "ChannelDB Timestamp: " + lastUpdate);
 

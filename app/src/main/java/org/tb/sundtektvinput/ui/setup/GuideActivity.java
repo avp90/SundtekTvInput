@@ -1,4 +1,4 @@
-package org.tb.sundtektvinput.ui;
+package org.tb.sundtektvinput.ui.setup;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -17,6 +17,6 @@ public class GuideActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.guide_layout);
-        GuidedStepFragment.add(getFragmentManager(), new GuideFristFragment());
+        GuidedStepFragment.addAsRoot(this, new GuideFirstFragment(), android.R.id.content);
     }
 }

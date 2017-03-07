@@ -1,4 +1,4 @@
-package org.tb.sundtektvinput.ui;
+package org.tb.sundtektvinput.ui.setup;
 
 import android.app.FragmentManager;
 import android.graphics.drawable.Drawable;
@@ -25,16 +25,16 @@ import java.util.concurrent.ExecutionException;
 import static android.support.v17.leanback.widget.GuidedAction.CHECKBOX_CHECK_SET_ID;
 import static com.google.ads.interactivemedia.v3.impl.w.c.loaded;
 
-public class GuideSecondFragment extends GuidedStepFragment {
+public class GuideSecondFragment extends GuideBaseFragment {
 
     ArrayList<String> selectedChannels = new ArrayList<>();
     HashMap<String, Channel> allChannels;
+    HashMap<String, Channel> selectedChannelMap;
 
     @NonNull
     public GuidanceStylist.Guidance onCreateGuidance(@NonNull Bundle savedInstanceState) {
-        String title = "Select Channels";
-        String breadcrumb = "Sundtek Tv Input Setup";
-        String description = "";
+        String title = "Channels Found";
+        String description = "Please select the channels you want to import";
         Drawable icon = getActivity().getDrawable(R.drawable.ic_launcher);
         return new GuidanceStylist.Guidance(title, description, breadcrumb, icon);
     }
@@ -46,8 +46,7 @@ public class GuideSecondFragment extends GuidedStepFragment {
     public void onCreateButtonActions(@NonNull List<GuidedAction> actions, Bundle savedInstanceState) {
         actions.add(new GuidedAction.Builder(getActivity().getApplicationContext())
                 .id(12)
-                .title("Start")
-                .description("Channels will be pulled from server")
+                .title("Continue")
                 .build());
 
         actions.add(new GuidedAction.Builder(getActivity().getApplicationContext())
@@ -61,10 +60,15 @@ public class GuideSecondFragment extends GuidedStepFragment {
     public void onCreateActions(@NonNull List<GuidedAction> actions, Bundle savedInstanceState) {
         allChannels = getChannels();
         selectedChannels = new SettingsHelper(getActivity().getApplicationContext()).loadSelectedChannelsMap(getString(R.string.selectedChannelsFile));
+        selectedChannelMap = new HashMap<>();
         Log.d("LOADED", loaded.toString());
         String id;
         for (Channel channel : allChannels.values()) {
-            id =String.valueOf(channel.getOriginalNetworkId());
+            id = String.valueOf(channel.getOriginalNetworkId());
+
+            if(selectedChannels.contains(id)){
+                selectedChannelMap.put(id, channel);
+            }
             actions.add(
                     new GuidedAction.Builder(getActivity().getApplicationContext())
                             .checkSetId(CHECKBOX_CHECK_SET_ID)
@@ -113,10 +117,12 @@ public class GuideSecondFragment extends GuidedStepFragment {
         Log.d("ACTIONID", "" + action.getId());
         if (action.isChecked()) {
             selectedChannels.add(action.getDescription().toString());
+            selectedChannelMap.put((String) action.getDescription(), allChannels.get(action.getDescription()));
             Log.d("ACTIONID", action.getTitle() + " in list " + selectedChannels.contains(action.getDescription()));
         } else {
             if (selectedChannels.contains(action.getDescription())) {
                 selectedChannels.remove(action.getDescription());
+                selectedChannelMap.remove(action.getDescription());
                 Log.d("ACTIONID", action.getTitle() + " in list " + selectedChannels.contains(action.getDescription()));
             }
         }
@@ -125,12 +131,16 @@ public class GuideSecondFragment extends GuidedStepFragment {
             Toast.makeText(getActivity().getApplicationContext(), "Next", Toast.LENGTH_LONG).show();
             new SettingsHelper(getActivity().getApplicationContext())
                     .saveChannelIds(selectedChannels, getString(R.string.selectedChannelsFile));
-
+            Bundle args = new Bundle();
+            args.putSerializable("channels",selectedChannelMap);
+            GuideBaseFragment fragment = new GuideThirdFragment();
+            fragment.setArguments(args);
+            GuidedStepFragment.add(fm, fragment);
 
 
         }
         if (action.getId() == 13) {
-            Toast.makeText(getActivity().getApplicationContext(), "BACK", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity().getApplicationContext(), "Next", Toast.LENGTH_LONG).show();
             getFragmentManager().popBackStack();
         }
     }

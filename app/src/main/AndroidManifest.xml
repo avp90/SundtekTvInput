@@ -86,7 +86,7 @@
 
 
         <activity
-            android:name="org.tb.sundtektvinput.ui.GuideActivity"
+            android:name="org.tb.sundtektvinput.ui.setup.GuideActivity"
             android:theme="@style/Theme.Transparent">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

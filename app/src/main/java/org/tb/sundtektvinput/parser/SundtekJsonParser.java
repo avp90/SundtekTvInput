@@ -1,5 +1,6 @@
 package org.tb.sundtektvinput.parser;
 
+import android.content.Context;
 import android.media.tv.TvContract;
 import android.util.Log;
 
@@ -70,6 +71,15 @@ public class SundtekJsonParser {
     private HashMap<String, Channel> channelMap;
     private int channelNumber = 1;
 
+    private Context mContext;
+
+
+    public SundtekJsonParser(){}
+
+    public SundtekJsonParser(Context context){
+        mContext = context;
+    }
+
     public HashMap<String, Channel> getChannelMap() throws JSONException, IOException {
 
         if (channelMap == null) {
@@ -112,6 +122,7 @@ public class SundtekJsonParser {
         String mediaUrl;
         int originalNetworkId;
         int serviceId;
+
 
         for (int i = 0; i < channelsJson.length(); i++) {
             jsonChannel = channelsJson.getJSONArray(i);

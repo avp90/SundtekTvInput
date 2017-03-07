@@ -19,7 +19,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
-
     app:layout_editor_absoluteX="0dp"
     app:layout_editor_absoluteY="80dp"
     tools:layout_editor_absoluteX="0dp"
@@ -29,7 +28,7 @@
 
 
     <ProgressBar
-        android:id="@+id/progressBar"
+        android:id="@+id/epgSyncProgress"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="322dp"
         android:layout_height="18dp"
@@ -54,9 +53,9 @@
         android:layout_marginTop="32dp" />
 
     <ListView
+        android:id="@+id/channelList"
         android:layout_width="0dp"
         android:layout_height="0dp"
-
         android:layout_marginBottom="16dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
@@ -66,9 +65,9 @@
         android:scrollbars="none|horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintLeft_toLeftOf="@+id/progressBar"
-        app:layout_constraintRight_toRightOf="@+id/progressBar"
-        app:layout_constraintTop_toBottomOf="@+id/progressBar"
+        app:layout_constraintLeft_toLeftOf="@+id/epgSyncProgress"
+        app:layout_constraintRight_toRightOf="@+id/epgSyncProgress"
+        app:layout_constraintTop_toBottomOf="@+id/epgSyncProgress"
         app:layout_constraintVertical_bias="0.0" />
 
 </android.support.constraint.ConstraintLayout>

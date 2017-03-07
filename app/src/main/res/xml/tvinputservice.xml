@@ -15,4 +15,4 @@
 -->
 <tv-input xmlns:android="http://schemas.android.com/apk/res/android"
     android:canRecord="false"
-    android:setupActivity="org.tb.sundtektvinput.ui.TvInputSetupActivity" />
+    android:setupActivity="org.tb.sundtektvinput.ui.setup.GuideActivity" />

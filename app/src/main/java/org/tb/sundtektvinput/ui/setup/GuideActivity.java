@@ -17,6 +17,7 @@ public class GuideActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.guide_layout);
-        GuidedStepFragment.addAsRoot(this, new GuideFirstFragment(), android.R.id.content);
+
+        GuidedStepFragment.add(getFragmentManager(), new GuideFirstFragment(), android.R.id.content);
     }
 }

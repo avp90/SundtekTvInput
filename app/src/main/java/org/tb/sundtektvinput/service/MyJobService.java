@@ -37,7 +37,7 @@ public class MyJobService extends EpgSyncJobService {
 
     @Override
     public List<Channel> getChannels() {
-        return ChannelsDB.getInstance().getChannels();
+        return ChannelsDB.getInstance().getChannels(getApplicationContext());
     }
 
 

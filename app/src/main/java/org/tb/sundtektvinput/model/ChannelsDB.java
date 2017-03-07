@@ -1,11 +1,13 @@
 package org.tb.sundtektvinput.model;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.util.Log;
 
 import com.google.android.media.tv.companionlibrary.model.Channel;
 
 import org.tb.sundtektvinput.parser.SundtekJsonParser;
+import org.tb.sundtektvinput.util.SettingsHelper;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,6 +27,7 @@ public class ChannelsDB {
     private static ChannelsDB myChannelsDB;
     private HashMap<Integer, Channel> channelMap;
     private long lastUpdate;
+    private ArrayList<String> filter;
 
 
     /**
@@ -46,31 +49,26 @@ public class ChannelsDB {
 
 
     //TODO: do networking and parsing in background service
-    public List<Channel> getChannels() {
+    public List<Channel> getChannels(Context context) {
 
+        filter = new SettingsHelper(context).loadSelectedChannelsMap("selectedChannels");
         List<Channel> channels = new ArrayList<>();
 
-        if (channelMap.isEmpty() || (lastUpdate + MAX_AGE) <= (new Date().getTime())) {
-            Log.d(TAG, "refreshing channels");
-            channels.addAll(new SundtekJsonParser().getChannels());
-            lastUpdate = new Date().getTime();
-            Log.d(TAG, "ChannelDB Timestamp: " + lastUpdate);
+        Log.d(TAG, "refreshing channels");
+        channels.addAll(new SundtekJsonParser().getChannels());
+        lastUpdate = new Date().getTime();
+        Log.d(TAG, "ChannelDB Timestamp: " + lastUpdate);
 
-            List<Integer> keyList = new ArrayList<>();
-            for (Channel channel : channels) {
-                keyList.add(channel.getOriginalNetworkId());
-                channelMap.put(channel.getOriginalNetworkId(), channel);
+        channelMap.clear();
+
+        for (Channel channel : channels) {
+            String key = String.valueOf(channel.getOriginalNetworkId());
+            if (filter.contains(key)) {
+                channelMap.put(Integer.valueOf(key), channel);
+                Log.d(TAG, "Found " + channelMap.size() + " Channels");
             }
-            channelMap.keySet().retainAll(keyList);
         }
-
-        Log.d(TAG, "Found " + channelMap.size() + " Channels");
-
-
         return new ArrayList<>(channelMap.values());
-    }
 
-    public HashMap<Integer, Channel> getChannelMap(){
-        return channelMap;
     }
 }

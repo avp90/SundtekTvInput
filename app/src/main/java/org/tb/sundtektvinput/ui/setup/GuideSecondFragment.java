@@ -107,6 +107,9 @@ public class GuideSecondFragment extends GuideBaseFragment {
         @Override
         protected void onPostExecute(ArrayList<Channel> channels) {
             super.onPostExecute(channels);
+//            allChannels = new HashMap<>();
+//            for (Channel channel : channels)
+//                allChannels.put(String.valueOf(channel.getOriginalNetworkId()), channel);
         }
     }
 

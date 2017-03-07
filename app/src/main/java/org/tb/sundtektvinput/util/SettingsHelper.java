@@ -40,7 +40,7 @@ public class SettingsHelper {
                 String jsonString = pSharedPref.getString("selectedChannels", new JSONArray().toString());
                 JSONArray jsonArray = new JSONArray(jsonString);
                 for(int i = 0 ; i < jsonArray.length(); i++)
-                    outputArraylist.add(jsonArray.get(i).toString());
+                    outputArraylist.add(jsonArray.getString(i));
                 }
             } catch (JSONException e1) {
             e1.printStackTrace();

@@ -33,4 +33,15 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:backgroundDimEnabled">false</item>
     </style>
+
+    <style name="Theme.SetupWizard" parent="Theme.Leanback.GuidedStep">
+        <item name="guidedActionsBackground">@color/wizard_actions_background</item>
+        <item name="guidedActionsBackgroundDark">@color/wizard_subactions_background</item>
+        <item name="android:colorAccent">@color/wizard_accent</item>
+
+    </style>
+
+    <style name="Theme.SetupWizard.NoSelector">
+        <item name="guidedActionsSelectorDrawable">@null</item>
+    </style>
 </resources>

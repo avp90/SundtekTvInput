@@ -22,4 +22,9 @@
     <color name="side_panel_background">#263238</color>
     <color name="side_panel_header_background">#0277BD</color>
     <color name="side_panel_item_text">#FFEEEEEE</color>
+
+    <color name="wizard_actions_background">#C03800</color>
+    <color name="wizard_subactions_background">#732200</color>
+    <color name="wizard_dialog_actions_background">#263238</color>
+    <color name="wizard_accent">#ffffff</color>
 </resources>

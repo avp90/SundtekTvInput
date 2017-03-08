@@ -41,7 +41,7 @@ import com.google.android.exoplayer.MediaFormat;
 import com.google.android.exoplayer.text.CaptionStyleCompat;
 import com.google.android.exoplayer.text.Cue;
 import com.google.android.exoplayer.text.SubtitleLayout;
-import com.google.android.media.tv.companionlibrary.EpgSyncJobService;
+//import com.google.android.media.tv.companionlibrary.EpgSyncJobService;
 import com.google.android.media.tv.companionlibrary.TvPlayer;
 import com.google.android.media.tv.companionlibrary.model.Advertisement;
 import com.google.android.media.tv.companionlibrary.model.Channel;
@@ -54,9 +54,12 @@ import org.tb.sundtektvinput.R;
 import org.tb.sundtektvinput.player.DemoPlayer;
 import org.tb.sundtektvinput.player.RendererBuilderFactory;
 import org.tb.sundtektvinput.service.base.BaseTvInputService;
+import org.tb.sundtektvinput.service.base.EpgSyncJobService;
 
 import java.util.ArrayList;
 import java.util.List;
+
+//import org.tb.sundtektvinput.service.base.EpgSyncJobService;
 
 
 /**

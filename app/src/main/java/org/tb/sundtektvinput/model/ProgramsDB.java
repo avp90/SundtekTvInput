@@ -29,7 +29,7 @@ public class ProgramsDB {
     private HashMap<String, ArrayList<Program>> channelProgramsMap;
 
     private long lastUpdate;
-    private static long MAX_AGE_MILLIS = 1000 * 60 * 60 * 1 / 12; //5mins
+    private static long MAX_AGE_MILLIS = 1000 * 60 * 60 * 1; // 1h
 
 
     private static final String PROG_IPD_EPG_EVENT_ID = "epgEventId";

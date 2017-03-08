@@ -23,6 +23,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.util.Log;
 
 import org.tb.sundtektvinput.service.MyJobService;
 import org.tb.sundtektvinput.service.base.EpgSyncJobService;
@@ -40,6 +41,7 @@ public class BootReceiver extends BroadcastReceiver {
                 (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
         // If there are not pending jobs. Create a sync job and schedule it.
         List<JobInfo> pendingJobs = jobScheduler.getAllPendingJobs();
+        Log.d(this.getClass().getSimpleName(), "Found pending jobs: " + pendingJobs.toString());
         if (pendingJobs.isEmpty()) {
             String inputId = context.getSharedPreferences(EpgSyncJobService.PREFERENCE_EPG_SYNC,
                     Context.MODE_PRIVATE).getString(EpgSyncJobService.BUNDLE_KEY_INPUT_ID, null);
@@ -47,7 +49,12 @@ public class BootReceiver extends BroadcastReceiver {
                 // Set up periodic sync only when input has set up.
                 EpgSyncJobService.setUpPeriodicSync(context, inputId,
                         new ComponentName(context, MyJobService.class));
+                Log.d(this.getClass().getSimpleName(), "Setup periodic sync with inputId " + inputId );
+
+            }else{
+                Log.d(this.getClass().getSimpleName(), "Can't setup periodic sync cause inputId is null");
             }
+
             return;
         }
         // On L/L-MR1, reschedule the pending jobs.

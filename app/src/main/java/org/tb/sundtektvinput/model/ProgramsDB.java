@@ -11,7 +11,6 @@ import com.google.android.media.tv.companionlibrary.model.Program;
 import org.tb.sundtektvinput.parser.SundtekJsonParser;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -54,10 +53,10 @@ public class ProgramsDB {
     //TODO: do networking and parsing in background service
     private boolean getPrograms(Context context) {
 
-        if (allProgramMap.isEmpty() || (lastUpdate + MAX_AGE_MILLIS) <= (new Date().getTime())) {
+        if (allProgramMap.isEmpty() || (lastUpdate + MAX_AGE_MILLIS) <= (System.currentTimeMillis())) {
             List<Program> programs;
             programs = new SundtekJsonParser(context).getPrograms();
-            lastUpdate = new Date().getTime();
+            lastUpdate = System.currentTimeMillis();
             Log.d(TAG, "refreshing programs");
 
             List<String> keyList = new ArrayList<>();

@@ -10,7 +10,6 @@ import org.tb.sundtektvinput.parser.SundtekJsonParser;
 import org.tb.sundtektvinput.util.SettingsHelper;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -56,7 +55,8 @@ public class ChannelsDB {
 
         Log.d(TAG, "refreshing channels");
         channels.addAll(new SundtekJsonParser(context).getChannels());
-        lastUpdate = new Date().getTime();
+        lastUpdate = System.currentTimeMillis();
+
         Log.d(TAG, "ChannelDB Timestamp: " + lastUpdate);
 
         channelMap.clear();

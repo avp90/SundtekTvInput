@@ -1,6 +1,8 @@
 package org.tb.sundtektvinput.model;
 
 import android.content.Context;
+import android.media.tv.TvContract;
+import android.os.Build;
 import android.util.Log;
 
 import com.google.android.exoplayer.util.Util;
@@ -175,6 +177,44 @@ public class ProgramsDB {
         Log.d(TAG, "created dummy program info for channel: " + channel.getDisplayName());
 
         return dummy;
+    }
+
+
+    public static String[] getAllGenres() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            return new String[]{
+                    TvContract.Programs.Genres.ANIMAL_WILDLIFE,
+                    TvContract.Programs.Genres.ARTS,
+                    TvContract.Programs.Genres.COMEDY,
+                    TvContract.Programs.Genres.DRAMA,
+                    TvContract.Programs.Genres.EDUCATION,
+                    TvContract.Programs.Genres.ENTERTAINMENT,
+                    TvContract.Programs.Genres.FAMILY_KIDS,
+                    TvContract.Programs.Genres.GAMING,
+                    TvContract.Programs.Genres.LIFE_STYLE,
+                    TvContract.Programs.Genres.MOVIES,
+                    TvContract.Programs.Genres.MUSIC,
+                    TvContract.Programs.Genres.NEWS,
+                    TvContract.Programs.Genres.PREMIER,
+                    TvContract.Programs.Genres.SHOPPING,
+                    TvContract.Programs.Genres.SPORTS,
+                    TvContract.Programs.Genres.TECH_SCIENCE,
+                    TvContract.Programs.Genres.TRAVEL,
+            };
+        }
+        return new String[]{
+                TvContract.Programs.Genres.ANIMAL_WILDLIFE,
+                TvContract.Programs.Genres.COMEDY,
+                TvContract.Programs.Genres.DRAMA,
+                TvContract.Programs.Genres.EDUCATION,
+                TvContract.Programs.Genres.FAMILY_KIDS,
+                TvContract.Programs.Genres.GAMING,
+                TvContract.Programs.Genres.MOVIES,
+                TvContract.Programs.Genres.NEWS,
+                TvContract.Programs.Genres.SHOPPING,
+                TvContract.Programs.Genres.SPORTS,
+                TvContract.Programs.Genres.TRAVEL,
+        };
     }
 
 }

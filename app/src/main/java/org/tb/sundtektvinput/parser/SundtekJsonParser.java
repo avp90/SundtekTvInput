@@ -1,7 +1,6 @@
 package org.tb.sundtektvinput.parser;
 
 import android.content.Context;
-import android.media.tv.TvContract;
 import android.util.Log;
 
 import com.google.android.exoplayer.util.Util;
@@ -11,6 +10,7 @@ import com.google.android.media.tv.companionlibrary.model.Program;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.tb.sundtektvinput.model.ProgramsDB;
 import org.tb.sundtektvinput.util.SettingsHelper;
 
 import java.io.BufferedReader;
@@ -175,23 +175,23 @@ public class SundtekJsonParser {
         List<Program> programTomorrow = new ArrayList<>();
 
         try {
-            Log.d(TAG, "Fetch programs for NOW");
-            JSONArray responseProgramsNowJson = new JSONArray(getJson(BASE_URL + BASE_SERVERCMD_URL + QUERY_PROGRAMS_NOW));
-            programNow = parsePrograms(responseProgramsNowJson, true);
-            programList.addAll(programNow);
-            Log.d(TAG, "Found " + programNow.size() + " programs for NOW");
-
+//            Log.d(TAG, "Fetch programs for NOW");
+//            JSONArray responseProgramsNowJson = new JSONArray(getJson(BASE_URL + BASE_SERVERCMD_URL + QUERY_PROGRAMS_NOW));
+//            programNow = parsePrograms(responseProgramsNowJson, true);
+//            programList.addAll(programNow);
+//            Log.d(TAG, "Found " + programNow.size() + " programs for NOW");
+//
             Log.d(TAG, "Fetch programs for TODAY");
             JSONArray responseProgramsTodayJson = new JSONArray(getJson(BASE_URL + BASE_SERVERCMD_URL + QUERY_PROGRAMS_TODAY));
-            programToday = parsePrograms(responseProgramsTodayJson, false);
+            programToday = parsePrograms(responseProgramsTodayJson, true);
             programList.addAll(programToday);
             Log.d(TAG, "Found " + programToday.size() + " programs for TODAY");
-//
-//            Log.d(TAG, "Fetch programs for TOMORROW");
-//            JSONArray responseProgramsTomorrowJson = new JSONArray(getJson(BASE_URL + BASE_SERVERCMD_URL + QUERY_PROGRAMS_TOMORROW));
-//            programTomorrow = parsePrograms(responseProgramsTomorrowJson, false);
-//            programList.addAll(programTomorrow);
-//            Log.d(TAG, "Found " + programTomorrow.size() + " programs for TOMORROW");
+
+            Log.d(TAG, "Fetch programs for TOMORROW");
+            JSONArray responseProgramsTomorrowJson = new JSONArray(getJson(BASE_URL + BASE_SERVERCMD_URL + QUERY_PROGRAMS_TOMORROW));
+            programTomorrow = parsePrograms(responseProgramsTomorrowJson, true);
+            programList.addAll(programTomorrow);
+            Log.d(TAG, "Found " + programTomorrow.size() + " programs for TOMORROW");
 
         } catch (JSONException | IOException e) {
             e.printStackTrace();
@@ -219,6 +219,7 @@ public class SundtekJsonParser {
         String serviceId;
         String description = "";
         String channelName;
+        int genreIndex = 0;
 
         InternalProviderData internalProviderData;
 
@@ -259,7 +260,8 @@ public class SundtekJsonParser {
                         internalProviderData.put(PROG_IPD_EPG_EVENT_ID, epgEventId);
                         if (parseDescription && !epgEventId.equals("") && !serviceId.equals("empty"))
                             description = getJsonDescription(serviceId, epgEventId);
-
+                        //TODO:REMOVE FAKE GENRES
+                        String[] genre = new String[]{ProgramsDB.getAllGenres()[(genreIndex++) % ProgramsDB.getAllGenres().length]};
 
                         if (!(end == start || end < start))
                             programList.add(new Program.Builder()
@@ -269,9 +271,8 @@ public class SundtekJsonParser {
                                     .setInternalProviderData(internalProviderData)
                                     .setDescription(description.length() > 256 ? description.substring(0, 255) : description)
                                     .setLongDescription(description)
-                                    .setCanonicalGenres(new String[]{TvContract.Programs.Genres.ENTERTAINMENT,
-                                            TvContract.Programs.Genres.MOVIES, TvContract.Programs.Genres.TECH_SCIENCE})
-//                                .setPosterArtUri(logo)
+                                    .setCanonicalGenres(genre)
+//                                    .setPosterArtUri(logo)
                                     .setThumbnailUri(logo)
                                     .build());
                     }

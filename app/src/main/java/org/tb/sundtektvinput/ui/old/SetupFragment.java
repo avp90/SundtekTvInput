@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.tb.sundtektvinput.ui;
+package org.tb.sundtektvinput.ui.old;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -29,7 +29,6 @@ import android.view.ViewGroup;
 import org.tb.sundtektvinput.R;
 import org.tb.sundtektvinput.service.MyJobService;
 import org.tb.sundtektvinput.service.base.EpgSyncJobService;
-import org.tb.sundtektvinput.ui.base.ChannelSetupFragment;
 
 /**
  * Fragment which shows a sample UI for registering channels and setting up MyJobService to

@@ -24,6 +24,7 @@ import com.google.android.media.tv.companionlibrary.model.Channel;
 import org.tb.sundtektvinput.R;
 import org.tb.sundtektvinput.service.MyJobService;
 import org.tb.sundtektvinput.service.base.EpgSyncJobService;
+import org.tb.sundtektvinput.ui.setup.base.SetupBaseFragment;
 
 import java.util.List;
 
@@ -31,7 +32,7 @@ import java.util.List;
  * Created on 07.03.2017.
  */
 
-public class GuideFourthFragment extends GuideBaseFragment {
+public class EpgScanFragment extends SetupBaseFragment {
 
     final static String TAG = "SCANFRAGMENT";
 
@@ -177,7 +178,7 @@ public class GuideFourthFragment extends GuideBaseFragment {
                 Log.d(TAG, "onScanFinished: RESULT_CANCELED");
             getActivity().setResult(Activity.RESULT_CANCELED);
         }
-        GuidedStepFragment fragment = new GuideFifthFragment();
+        GuidedStepFragment fragment = new FinishFragment();
         fragment.setArguments(getArguments());
         add(getFragmentManager(), fragment);
     }

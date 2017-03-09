@@ -10,21 +10,19 @@ import org.tb.sundtektvinput.R;
 /**
  * Created by thomas on 03/09/16.
  */
-public class GuideActivity extends Activity {
+public class SetupActivity extends Activity {
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.guide_layout);
-        GuidedStepFragment.addAsRoot(this, new GuideIpFragment(), android.R.id.content);
+        GuidedStepFragment.addAsRoot(this, new IpAddressFragment(), android.R.id.content);
     }
 
     @Override
     public void onBackPressed() {
-        if (!(GuidedStepFragment.getCurrentGuidedStepFragment(getFragmentManager()) instanceof GuideFourthFragment))
+        if (!(GuidedStepFragment.getCurrentGuidedStepFragment(getFragmentManager()) instanceof EpgScanFragment))
             super.onBackPressed();
-        else
-            return;
     }
 }

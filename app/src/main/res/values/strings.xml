@@ -40,6 +40,7 @@
     <string name="ipsave">ip_address</string>
     <string name="ip_not_valid">INVALID IP</string>
     <string name="ip_valid">VALID IP</string>
+    <string name="syncing_epg">Syncing EPG...</string>
 
 
 </resources>

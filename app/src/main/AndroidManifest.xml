@@ -50,16 +50,9 @@
         android:theme="@style/Theme.Leanback">
 
 
-
-        <activity android:name="org.tb.sundtektvinput.ui.MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-        </activity>
-
         <!-- Launched by the TV app before it uses MyTvInputService. This registers channels and
         sets up MyJobService to provide program information in the background. -->
-        <activity android:name="org.tb.sundtektvinput.ui.TvInputSetupActivity">
+        <activity android:name="org.tb.sundtektvinput.ui.old.TvInputSetupActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
@@ -87,7 +80,7 @@
 
 
         <activity
-            android:name="org.tb.sundtektvinput.ui.setup.GuideActivity"
+            android:name="org.tb.sundtektvinput.ui.setup.SetupActivity"
             android:theme="@style/Theme.Transparent">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

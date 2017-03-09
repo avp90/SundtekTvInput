@@ -7,13 +7,15 @@ import android.support.v17.leanback.app.GuidedStepFragment;
 import android.support.v17.leanback.widget.GuidanceStylist;
 import android.support.v17.leanback.widget.GuidedAction;
 
+import org.tb.sundtektvinput.ui.setup.base.SetupBaseFragment;
+
 import java.util.List;
 
 
 import static android.support.v17.leanback.widget.GuidedAction.ACTION_ID_CANCEL;
 import static android.support.v17.leanback.widget.GuidedAction.ACTION_ID_CONTINUE;
 
-public class GuideFirstFragment extends GuideBaseFragment {
+public class WelcomeFragment extends SetupBaseFragment {
 
 
     @Override
@@ -27,12 +29,12 @@ public class GuideFirstFragment extends GuideBaseFragment {
 
     @Override
     public void onCreateActions(@NonNull List<GuidedAction> actions, Bundle savedInstanceState) {
-        actions.add(new GuidedAction.Builder(getActivity().getApplicationContext())
+        actions.add(new GuidedAction.Builder(getActivity())
                 .id(ACTION_ID_CONTINUE)
                 .title("Find Channels")
                 .build());
 
-        actions.add(new GuidedAction.Builder(getActivity().getApplicationContext())
+        actions.add(new GuidedAction.Builder(getActivity())
                 .id(ACTION_ID_CANCEL)
                 .title("Back")
                 .build());
@@ -44,7 +46,7 @@ public class GuideFirstFragment extends GuideBaseFragment {
         FragmentManager fm = getFragmentManager();
 
         if (action.getId() == ACTION_ID_CONTINUE) {
-            GuidedStepFragment.add(fm, new GuideSecondFragment());
+            GuidedStepFragment.add(fm, new ChannelSelectFragment());
         }
         if (action.getId() == ACTION_ID_CANCEL) {
 

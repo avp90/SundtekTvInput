@@ -13,6 +13,7 @@ import com.google.android.media.tv.companionlibrary.model.Channel;
 
 import org.tb.sundtektvinput.R;
 import org.tb.sundtektvinput.parser.SundtekJsonParser;
+import org.tb.sundtektvinput.ui.setup.base.SetupBaseFragment;
 import org.tb.sundtektvinput.util.SettingsHelper;
 
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ import static android.support.v17.leanback.widget.GuidedAction.ACTION_ID_CONTINU
 import static android.support.v17.leanback.widget.GuidedAction.CHECKBOX_CHECK_SET_ID;
 import static com.google.ads.interactivemedia.v3.impl.w.c.loaded;
 
-public class GuideSecondFragment extends GuideBaseFragment {
+public class ChannelSelectFragment extends SetupBaseFragment {
 
     ArrayList<String> selectedChannels = new ArrayList<>();
     HashMap<String, Channel> allChannels;
@@ -43,12 +44,12 @@ public class GuideSecondFragment extends GuideBaseFragment {
 
     @Override
     public void onCreateButtonActions(@NonNull List<GuidedAction> actions, Bundle savedInstanceState) {
-        actions.add(new GuidedAction.Builder(getActivity().getApplicationContext())
+        actions.add(new GuidedAction.Builder(getActivity())
                 .id(ACTION_ID_CONTINUE)
                 .title("Continue")
                 .build());
 
-        actions.add(new GuidedAction.Builder(getActivity().getApplicationContext())
+        actions.add(new GuidedAction.Builder(getActivity())
                 .id(ACTION_ID_CANCEL)
                 .title("Back")
                 .build());
@@ -58,7 +59,7 @@ public class GuideSecondFragment extends GuideBaseFragment {
     @Override
     public void onCreateActions(@NonNull List<GuidedAction> actions, Bundle savedInstanceState) {
         allChannels = getChannels();
-        selectedChannels = new SettingsHelper(getActivity().getApplicationContext()).loadSelectedChannelsMap(getString(R.string.selectedChannelsFile));
+        selectedChannels = new SettingsHelper(getActivity()).loadSelectedChannelsMap(getString(R.string.selectedChannelsFile));
         selectedChannelMap = new HashMap<>();
         Log.d("LOADED", loaded.toString());
         String id;
@@ -69,7 +70,7 @@ public class GuideSecondFragment extends GuideBaseFragment {
                 selectedChannelMap.put(id, channel);
             }
             actions.add(
-                    new GuidedAction.Builder(getActivity().getApplicationContext())
+                    new GuidedAction.Builder(getActivity())
                             .checkSetId(CHECKBOX_CHECK_SET_ID)
                             .description(id)
                             .title(channel.getDisplayName())
@@ -122,11 +123,11 @@ public class GuideSecondFragment extends GuideBaseFragment {
         }
 
         if (action.getId() == ACTION_ID_CONTINUE) {
-            new SettingsHelper(getActivity().getApplicationContext())
+            new SettingsHelper(getActivity())
                     .saveChannelIds(selectedChannels, getString(R.string.selectedChannelsFile));
             Bundle args = new Bundle();
             args.putSerializable("channels", selectedChannelMap);
-            GuideBaseFragment fragment = new GuideThirdFragment();
+            SetupBaseFragment fragment = new ChannelNumbersFragment();
             fragment.setArguments(args);
             GuidedStepFragment.add(fm, fragment);
         }

@@ -1,6 +1,5 @@
 package org.tb.sundtektvinput.ui.setup;
 
-import android.app.FragmentManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,10 +8,11 @@ import android.support.v17.leanback.widget.GuidedAction;
 import android.widget.Toast;
 
 import org.tb.sundtektvinput.R;
+import org.tb.sundtektvinput.ui.setup.base.SetupBaseFragment;
 
 import java.util.List;
 
-public class GuideFifthFragment extends GuideBaseFragment {
+public class FinishFragment extends SetupBaseFragment {
 
 
     @Override
@@ -26,23 +26,17 @@ public class GuideFifthFragment extends GuideBaseFragment {
 
     @Override
     public void onCreateActions(@NonNull List<GuidedAction> actions, Bundle savedInstanceState) {
-        actions.add(new GuidedAction.Builder(getActivity().getApplicationContext())
+        actions.add(new GuidedAction.Builder(getActivity())
                 .id(0)
                 .title("Finish")
                 .build());
     }
 
-
     @Override
     public void onGuidedActionClicked(GuidedAction action) {
-        FragmentManager fm = getFragmentManager();
-
         if (action.getId() == 0) {
-            Toast.makeText(getActivity().getApplicationContext(), "NEXT", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), "NEXT", Toast.LENGTH_LONG).show();
             finishGuidedStepFragments();
         }
-
     }
-
-
 }

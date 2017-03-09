@@ -8,6 +8,7 @@ import android.support.v17.leanback.widget.GuidanceStylist;
 import android.support.v17.leanback.widget.GuidedAction;
 
 import org.tb.sundtektvinput.R;
+import org.tb.sundtektvinput.ui.setup.base.SetupBaseFragment;
 import org.tb.sundtektvinput.util.SettingsHelper;
 
 import java.util.List;
@@ -18,7 +19,7 @@ import static android.support.v17.leanback.widget.GuidedAction.ACTION_ID_CANCEL;
 import static android.support.v17.leanback.widget.GuidedAction.ACTION_ID_CONTINUE;
 import static android.support.v17.leanback.widget.GuidedAction.ACTION_ID_CURRENT;
 
-public class GuideIpFragment extends GuideBaseFragment {
+public class IpAddressFragment extends SetupBaseFragment {
 
 
     private static final int ACTION_EDIT_IP = 333;
@@ -51,7 +52,7 @@ public class GuideIpFragment extends GuideBaseFragment {
                 .build()
         );
 
-        actions.add(new GuidedAction.Builder(getActivity().getApplicationContext())
+        actions.add(new GuidedAction.Builder(getActivity())
                 .id(ACTION_ID_CANCEL)
                 .title("Cancel")
                 .build());
@@ -97,7 +98,7 @@ public class GuideIpFragment extends GuideBaseFragment {
         FragmentManager fm = getFragmentManager();
 
         if (action.getId() == ACTION_ID_CONTINUE) {
-            GuidedStepFragment.add(fm, new GuideFirstFragment());
+            GuidedStepFragment.add(fm, new WelcomeFragment());
         }
         if (action.getId() == ACTION_ID_CANCEL) {
             finishGuidedStepFragments();

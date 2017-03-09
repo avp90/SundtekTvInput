@@ -9,6 +9,8 @@ import android.support.v17.leanback.widget.GuidedAction;
 
 import com.google.android.media.tv.companionlibrary.model.Channel;
 
+import org.tb.sundtektvinput.ui.setup.base.SetupBaseFragment;
+
 import java.util.HashMap;
 import java.util.List;
 
@@ -17,7 +19,7 @@ import static android.support.v17.leanback.widget.GuidedAction.ACTION_ID_CANCEL;
 import static android.support.v17.leanback.widget.GuidedAction.ACTION_ID_CONTINUE;
 import static android.support.v17.leanback.widget.GuidedAction.NO_CHECK_SET;
 
-public class GuideThirdFragment extends GuideBaseFragment {
+public class ChannelNumbersFragment extends SetupBaseFragment {
 
 
     HashMap<String, Channel> channels;
@@ -36,12 +38,12 @@ public class GuideThirdFragment extends GuideBaseFragment {
 
     @Override
     public void onCreateButtonActions(@NonNull List<GuidedAction> actions, Bundle savedInstanceState) {
-        actions.add(new GuidedAction.Builder(getActivity().getApplicationContext())
+        actions.add(new GuidedAction.Builder(getActivity())
                 .id(ACTION_ID_CONTINUE)
                 .title("Scan EPG")
                 .build());
 
-        actions.add(new GuidedAction.Builder(getActivity().getApplicationContext())
+        actions.add(new GuidedAction.Builder(getActivity())
                 .id(ACTION_ID_CANCEL)
                 .title("Back")
                 .build());
@@ -52,7 +54,7 @@ public class GuideThirdFragment extends GuideBaseFragment {
         channels = (HashMap<String, Channel>) getArguments().getSerializable("channels");
         int channelNumber = 1;
         for (Channel channel : channels.values()) {
-            actions.add(new GuidedAction.Builder(getActivity().getApplicationContext())
+            actions.add(new GuidedAction.Builder(getActivity())
                     .checkSetId(NO_CHECK_SET)
                     .title(channel.getDisplayName())
                     .description(String.valueOf(channelNumber++))
@@ -70,7 +72,7 @@ public class GuideThirdFragment extends GuideBaseFragment {
 
         if (action.getId() == ACTION_ID_CONTINUE) {
             Bundle args = new Bundle();
-            GuideBaseFragment fragment = new GuideFourthFragment();
+            SetupBaseFragment fragment = new EpgScanFragment();
             GuidedStepFragment.add(fm, fragment);
         }
         if (action.getId() == ACTION_ID_CANCEL) {

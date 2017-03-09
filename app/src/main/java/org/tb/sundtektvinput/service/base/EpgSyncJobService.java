@@ -308,15 +308,23 @@ public abstract class EpgSyncJobService extends JobService {
         persistableBundle.putString(EpgSyncJobService.BUNDLE_KEY_INPUT_ID, inputId);
         persistableBundle.putLong(EpgSyncJobService.BUNDLE_KEY_SYNC_PERIOD, syncDuration);
         JobInfo.Builder builder = new JobInfo.Builder(PERIODIC_SYNC_JOB_ID, jobServiceComponent);
-        JobInfo jobInfo = builder
-                .setExtras(persistableBundle)
-                .setPeriodic(fullSyncPeriod)
-                .setPersisted(true)
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                .build();
-
+        JobInfo jobInfo;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            jobInfo = builder
+                    .setExtras(persistableBundle)
+                    .setPersisted(true)
+                    .setPeriodic(fullSyncPeriod, JobInfo.getMinFlexMillis())
+                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                    .build();
+        } else {
+            jobInfo = builder
+                    .setExtras(persistableBundle)
+                    .setPersisted(true)
+                    .setPeriodic(fullSyncPeriod)
+                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                    .build();
+        }
         scheduleJob(context, jobInfo);
-
         if (DEBUG) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Log.d(TAG, "Job has been scheduled for every " + fullSyncPeriod + "ms" + " > " + fullSyncPeriod / 1000 / 60 + "min - flextime: " + jobInfo.getFlexMillis() + " > " + jobInfo.getFlexMillis() / 1000 / 60 + " min");

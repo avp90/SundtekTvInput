@@ -32,7 +32,7 @@ import java.util.List;
  * Created on 07.03.2017.
  */
 
-public class GuideFourthFragment extends GuideBaseFragment {
+public class EpgScanFragment extends SetupBaseFragment {
 
     final static String TAG = "SCANFRAGMENT";
 

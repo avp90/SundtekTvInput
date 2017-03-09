@@ -26,6 +26,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.OperationApplicationException;
+import android.content.SharedPreferences;
 import android.media.tv.TvContract;
 import android.media.tv.TvInputInfo;
 import android.net.Uri;
@@ -83,6 +84,8 @@ public abstract class EpgSyncJobService extends JobService {
      */
     public static final String BUNDLE_KEY_INPUT_ID = EpgSyncJobService.class.getPackage().getName()
             + ".bundle_key_input_id";
+    public static final String BUNDLE_KEY_SYNC_TIMESTAMP = EpgSyncJobService.class.getPackage().getName()
+            + ".bundle_key_sync_timestamp";
     /**
      * The key representing the number of channels that have been scanned and populated in the EPG.
      */
@@ -405,18 +408,27 @@ public abstract class EpgSyncJobService extends JobService {
     /**
      * @hide
      */
-    public class EpgSyncTask extends AsyncTask<Void, Void, Void> {
+    private class EpgSyncTask extends AsyncTask<Void, Void, Void> {
         private final JobParameters params;
         private String mInputId;
 
-        public EpgSyncTask(JobParameters params) {
+        EpgSyncTask(JobParameters params) {
             this.params = params;
+            Log.d(TAG, "EpgSyncTask: " + params.toString());
         }
 
         @Override
         public Void doInBackground(Void... voids) {
             Log.d(TAG, "EpgSyncTask: doInBackground");
             Log.d(TAG, "EpgSyncTask: " + params.toString());
+
+            // Set up SharedPreference to share inputId. If there is not periodic sync job after reboot,
+            // BootReceiver can use the shared inputId to set up periodic sync job.
+            SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(
+                    EpgSyncJobService.PREFERENCE_EPG_SYNC, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putLong(EpgSyncJobService.BUNDLE_KEY_SYNC_TIMESTAMP, System.currentTimeMillis());
+            editor.apply();
 
             PersistableBundle extras = params.getExtras();
             mInputId = extras.getString(BUNDLE_KEY_INPUT_ID);
@@ -455,12 +467,15 @@ public abstract class EpgSyncJobService extends JobService {
                     broadcastError(ERROR_EPG_SYNC_CANCELED);
                     return null;
                 }
+
                 List<Program> programs = getProgramsForChannel(channelUri, channelMap.valueAt(i),
                         startMs, endMs);
+
                 if (!(programs == null)) {
-                    if (DEBUG) {
+                    Log.d(TAG, "programs found for channel " + channelMap.valueAt(i).getDisplayName() + " : " + programs.size());
+                    if (DEBUG)
                         Log.d(TAG, programs.toString());
-                    }
+
                     for (int index = 0; index < programs.size(); index++) {
                         if (programs.get(index).getChannelId() == -1) {
                             // Automatically set the channel id if not set

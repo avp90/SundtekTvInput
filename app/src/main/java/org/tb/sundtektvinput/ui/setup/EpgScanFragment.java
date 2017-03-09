@@ -32,7 +32,7 @@ import java.util.List;
  * Created on 07.03.2017.
  */
 
-public class EpgScanFragment extends SetupBaseFragment {
+public class GuideFourthFragment extends GuideBaseFragment {
 
     final static String TAG = "SCANFRAGMENT";
 
@@ -70,8 +70,6 @@ public class EpgScanFragment extends SetupBaseFragment {
 
     @Override
     public void onStart() {
-        if (DEBUG)
-            Log.d(TAG, "onStart");
         super.onStart();
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(
                 mSyncStatusChangedReceiver,
@@ -82,17 +80,11 @@ public class EpgScanFragment extends SetupBaseFragment {
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public GuidedActionsStylist onCreateActionsStylist() {
-        if (DEBUG)
-            Log.d(TAG, "onCreateActionsStylist");
         GuidedActionsStylist stylist = new GuidedActionsStylist() {
             @Override
             public int onProvideItemLayoutId() {
-                if (DEBUG)
-                    Log.d(TAG, "onProvideItemLayoutId");
-
                 return R.layout.setup_epg_layout2;
             }
-
         };
         return stylist;
     }
@@ -100,23 +92,16 @@ public class EpgScanFragment extends SetupBaseFragment {
 
     @Override
     public int onProvideTheme() {
-        if (DEBUG)
-            Log.d(TAG, "onProvideTheme");
         return R.style.Theme_SetupWizard_NoSelector;
     }
 
     @Override
     public void onStop() {
-        if (DEBUG)
-            Log.d(TAG, "onStop");
         super.onStop();
     }
 
     @Override
     public void onCreateActions(@NonNull List<GuidedAction> actions, Bundle savedInstanceState) {
-        if (DEBUG)
-            Log.d(TAG, "onCreateActions");
-
         GuidedAction action = new GuidedAction.Builder(getActivity())
                 .id(ACTION_ID_PROCESSING)
                 .title("Scanning")
@@ -135,8 +120,6 @@ public class EpgScanFragment extends SetupBaseFragment {
 
     @Override
     public void onDestroy() {
-        if (DEBUG)
-            Log.d(TAG, "onDestroy");
         super.onDestroy();
         LocalBroadcastManager.getInstance(getActivity())
                 .unregisterReceiver(mSyncStatusChangedReceiver);
@@ -196,18 +179,20 @@ public class EpgScanFragment extends SetupBaseFragment {
      */
 
     public void onScanError(int reason) {
-        mErrorFound = true;
         switch (reason) {
             case EpgSyncJobService.ERROR_EPG_SYNC_CANCELED:
-                Log.d(TAG, getString(R.string.sync_error_canceled));
+                mErrorFound = true;
+                Log.d(TAG, "Scanerror: " + getString(R.string.sync_error_canceled));
                 break;
             case EpgSyncJobService.ERROR_NO_PROGRAMS:
-                Log.d(TAG, getString(R.string.sync_error_no_programs));
+                Log.d(TAG, "Scanerror: " + getString(R.string.sync_error_no_programs));
             case EpgSyncJobService.ERROR_NO_CHANNELS:
-                Log.d(TAG, getString(R.string.sync_error_no_channels));
+//                mErrorFound = true;
+                Log.d(TAG, "Scanerror: " + getString(R.string.sync_error_no_channels));
                 break;
             default:
-                Log.d(TAG, getString(R.string.sync_error_other, reason));
+                mErrorFound = true;
+                Log.d(TAG, "Scanerror: " + getString(R.string.sync_error_other, reason));
                 break;
         }
     }
@@ -251,7 +236,7 @@ public class EpgScanFragment extends SetupBaseFragment {
 
         @Override
         public void onReceive(Context context, final Intent intent) {
-            Log.d(TAG, "onReceive");
+            Log.d(TAG, "onReceive: " + intent.getExtras().toString());
 
             getActivity().runOnUiThread(new Runnable() {
                 @Override

@@ -76,7 +76,6 @@ public class DemoPlayer implements ExoPlayer.Listener, ChunkSampleSource.EventLi
     public interface RendererBuilder {
         /**
          * Builds renderers for playback.
-         *
          * @param player The player for which renderers are being built. {@link
          *               DemoPlayer#onRenderers} should be invoked once the renderers have been
          *               built. If building fails, {@link DemoPlayer#onRenderersError} should be
@@ -339,7 +338,6 @@ public class DemoPlayer implements ExoPlayer.Listener, ChunkSampleSource.EventLi
 
     /**
      * Invoked with the results from a {@link RendererBuilder}.
-     *
      * @param renderers      Renderers indexed by {@link DemoPlayer} TYPE_* constants. An individual
      *                       element may be null if there do not exist tracks of the corresponding
      *                       type.
@@ -368,7 +366,6 @@ public class DemoPlayer implements ExoPlayer.Listener, ChunkSampleSource.EventLi
 
     /**
      * Invoked if a {@link RendererBuilder} encounters an error.
-     *
      * @param e Describes the error.
      */
   /* package */ void onRenderersError(Exception e) {
@@ -521,9 +518,10 @@ public class DemoPlayer implements ExoPlayer.Listener, ChunkSampleSource.EventLi
         for (Callback tvCallback : mTvPlayerCallbacks) {
             if (playWhenReady && state == ExoPlayer.STATE_ENDED) {
                 tvCallback.onCompleted();
-            } else if (playWhenReady && state == ExoPlayer.STATE_READY) {
-                tvCallback.onStarted();
-            }
+            } else
+                if (playWhenReady && state == ExoPlayer.STATE_READY) {
+                    tvCallback.onStarted();
+                }
         }
         maybeReportPlayerState();
     }
@@ -573,9 +571,10 @@ public class DemoPlayer implements ExoPlayer.Listener, ChunkSampleSource.EventLi
         if (sourceId == TYPE_VIDEO) {
             videoFormat = format;
             infoListener.onVideoFormatEnabled(format, trigger, mediaTimeMs);
-        } else if (sourceId == TYPE_AUDIO) {
-            infoListener.onAudioFormatEnabled(format, trigger, mediaTimeMs);
-        }
+        } else
+            if (sourceId == TYPE_AUDIO) {
+                infoListener.onAudioFormatEnabled(format, trigger, mediaTimeMs);
+            }
     }
 
     @Override

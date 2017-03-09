@@ -33,7 +33,7 @@ import java.util.List;
  * This BroadcastReceiver is set up to make sure sync job can schedule after reboot. Because
  * JobScheduler doesn't work well on reboot scheduler on L/L-MR1.
  */
-public class BootReceiver extends BroadcastReceiver{
+public class BootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         JobScheduler jobScheduler =

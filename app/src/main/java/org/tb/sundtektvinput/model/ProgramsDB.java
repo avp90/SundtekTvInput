@@ -126,8 +126,8 @@ public class ProgramsDB {
             Log.d(TAG, "found " + channelProgramsMap.get(channelKey).size() + " programs for " + channel.getDisplayName());
 //
 //
-          // TODO: Implement method in ProgramsDB to get program by time for given channel
-          // Find a single program for the given time. If there is none a dummyprogram will be added
+        // TODO: Implement method in ProgramsDB to get program by time for given channel
+        // Find a single program for the given time. If there is none a dummyprogram will be added
 //        Boolean hasProgramForGivenTime= false;
 //        for(Program program : programList) {
 //            if (program.getEndTimeUtcMillis() >= startMs && program.getStartTimeUtcMillis() <= startMs) {
@@ -142,7 +142,7 @@ public class ProgramsDB {
         return programList;
     }
 
-    public Program getDummyProgram(Channel channel){
+    public Program getDummyProgram(Channel channel) {
         return makeDummyProgram(channel, System.currentTimeMillis(), 0).get(0);
     }
 
@@ -169,7 +169,7 @@ public class ProgramsDB {
                 .setThumbnailUri(channel.getChannelLogo())
                 .setInternalProviderData(ipd)
                 .setStartTimeUtcMillis(startMs)
-                .setEndTimeUtcMillis(startMs  + 60 * 30 * 1000) //duration 10min
+                .setEndTimeUtcMillis(startMs + 60 * 30 * 1000) //duration 10min
                 .build());
 
         Log.d(TAG, "created dummy program info for channel: " + channel.getDisplayName());

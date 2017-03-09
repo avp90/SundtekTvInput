@@ -80,7 +80,7 @@ public class DashRendererBuilder implements DemoPlayer.RendererBuilder {
     private AsyncRendererBuilder currentAsyncBuilder;
 
     public DashRendererBuilder(Context context, String userAgent, String url,
-                               MediaDrmCallback drmCallback) {
+            MediaDrmCallback drmCallback) {
         this.context = context;
         this.userAgent = userAgent;
         this.url = url;
@@ -118,7 +118,7 @@ public class DashRendererBuilder implements DemoPlayer.RendererBuilder {
         private long elapsedRealtimeOffset;
 
         public AsyncRendererBuilder(Context context, String userAgent, String url,
-                                    MediaDrmCallback drmCallback, DemoPlayer player) {
+                MediaDrmCallback drmCallback, DemoPlayer player) {
             this.context = context;
             this.userAgent = userAgent;
             this.drmCallback = drmCallback;

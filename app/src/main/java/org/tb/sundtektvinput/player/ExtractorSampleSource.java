@@ -54,10 +54,8 @@ import java.util.List;
 
 /**
  * A {@link SampleSource} that extracts sample data using an {@link Extractor}.
- *
  * <p>If no {@link Extractor} instances are passed to the constructor, the input stream container
  * format will be detected automatically from the following supported formats:
- *
  * <ul>
  * <li>Fragmented MP4
  * ({@link com.google.android.exoplayer.extractor.mp4.FragmentedMp4Extractor})</li>
@@ -70,9 +68,7 @@ import java.util.List;
  * <li>MPEG TS ({@link com.google.android.exoplayer.extractor.ts.TsExtractor}</li>
  * <li>FLV ({@link com.google.android.exoplayer.extractor.flv.FlvExtractor}</li>
  * </ul>
- *
  * <p>Seeking in AAC, MPEG TS and FLV streams is not supported.
- *
  * <p>To override the default extractors, pass one or more {@link Extractor} instances to the
  * constructor. When reading a new stream, the first {@link Extractor} that returns {@code true}
  * from {@link Extractor#sniff(ExtractorInput)} will be used.
@@ -110,6 +106,7 @@ final class ExtractorSampleSource implements SampleSource, SampleSourceReader,
      * possible to remove unused extractors.
      */
     private static final List<Class<? extends Extractor>> DEFAULT_EXTRACTOR_CLASSES;
+
     static {
         DEFAULT_EXTRACTOR_CLASSES = new ArrayList<>();
         // Load extractors using reflection so that they can be deleted cleanly.
@@ -214,33 +211,33 @@ final class ExtractorSampleSource implements SampleSource, SampleSourceReader,
     private int extractedSampleCountAtStartOfLoad;
 
     /**
-     * @param uri The {@link Uri} of the media stream.
-     * @param dataSource A data source to read the media stream.
-     * @param allocator An {@link Allocator} from which to obtain memory allocations.
+     * @param uri                 The {@link Uri} of the media stream.
+     * @param dataSource          A data source to read the media stream.
+     * @param allocator           An {@link Allocator} from which to obtain memory allocations.
      * @param requestedBufferSize The requested total buffer size for storing sample data, in bytes.
-     *     The actual allocated size may exceed the value passed in if the implementation requires it.
-     * @param extractors {@link Extractor}s to extract the media stream, in order of decreasing
-     *     priority. If omitted, the default extractors will be used.
+     *                            The actual allocated size may exceed the value passed in if the implementation requires it.
+     * @param extractors          {@link Extractor}s to extract the media stream, in order of decreasing
+     *                            priority. If omitted, the default extractors will be used.
      */
     ExtractorSampleSource(Uri uri, DataSource dataSource, Allocator allocator,
-                          int requestedBufferSize, Extractor... extractors) {
+            int requestedBufferSize, Extractor... extractors) {
         this(uri, dataSource, allocator, requestedBufferSize, MIN_RETRY_COUNT_DEFAULT_FOR_MEDIA,
                 extractors);
     }
 
     /**
-     * @param uri The {@link Uri} of the media stream.
-     * @param dataSource A data source to read the media stream.
-     * @param allocator An {@link Allocator} from which to obtain memory allocations.
-     * @param requestedBufferSize The requested total buffer size for storing sample data, in bytes.
-     *     The actual allocated size may exceed the value passed in if the implementation requires it.
+     * @param uri                   The {@link Uri} of the media stream.
+     * @param dataSource            A data source to read the media stream.
+     * @param allocator             An {@link Allocator} from which to obtain memory allocations.
+     * @param requestedBufferSize   The requested total buffer size for storing sample data, in bytes.
+     *                              The actual allocated size may exceed the value passed in if the implementation requires it.
      * @param minLoadableRetryCount The minimum number of times that the sample source will retry
-     *     if a loading error occurs.
-     * @param extractors {@link Extractor}s to extract the media stream, in order of decreasing
-     *     priority. If omitted, the default extractors will be used.
+     *                              if a loading error occurs.
+     * @param extractors            {@link Extractor}s to extract the media stream, in order of decreasing
+     *                              priority. If omitted, the default extractors will be used.
      */
     private ExtractorSampleSource(Uri uri, DataSource dataSource, Allocator allocator,
-                                  int requestedBufferSize, int minLoadableRetryCount, Extractor... extractors) {
+            int requestedBufferSize, int minLoadableRetryCount, Extractor... extractors) {
         this.uri = uri;
         this.dataSource = dataSource;
         this.allocator = allocator;
@@ -253,9 +250,9 @@ final class ExtractorSampleSource implements SampleSource, SampleSourceReader,
                 try {
                     if (DEFAULT_EXTRACTOR_CLASSES.get(i).getSimpleName().equals("TsExtractor"))
                         extractors[i] = DEFAULT_EXTRACTOR_CLASSES.get(i)
-                                        .getConstructor(PtsTimestampAdjuster.class, int.class)
-                                        .newInstance(new PtsTimestampAdjuster(0),
-                                                TsExtractor.WORKAROUND_ALLOW_NON_IDR_KEYFRAMES);
+                                .getConstructor(PtsTimestampAdjuster.class, int.class)
+                                .newInstance(new PtsTimestampAdjuster(0),
+                                        TsExtractor.WORKAROUND_ALLOW_NON_IDR_KEYFRAMES);
                     else
                         extractors[i] = DEFAULT_EXTRACTOR_CLASSES.get(i).newInstance();
                 } catch (InstantiationException | IllegalAccessException e) {
@@ -380,7 +377,7 @@ final class ExtractorSampleSource implements SampleSource, SampleSourceReader,
 
     @Override
     public int readData(int track, long playbackPositionUs, MediaFormatHolder formatHolder,
-                        SampleHolder sampleHolder) {
+            SampleHolder sampleHolder) {
         downstreamPositionUs = playbackPositionUs;
 
         if (pendingDiscontinuities[track] || isPendingReset()) {
@@ -470,17 +467,18 @@ final class ExtractorSampleSource implements SampleSource, SampleSourceReader,
     public long getBufferedPositionUs() {
         if (loadingFinished) {
             return TrackRenderer.END_OF_TRACK_US;
-        } else if (isPendingReset()) {
-            return pendingResetPositionUs;
-        } else {
-            long largestParsedTimestampUs = Long.MIN_VALUE;
-            for (int i = 0; i < sampleQueues.size(); i++) {
-                largestParsedTimestampUs = Math.max(largestParsedTimestampUs,
-                        sampleQueues.valueAt(i).getLargestParsedTimestampUs());
+        } else
+            if (isPendingReset()) {
+                return pendingResetPositionUs;
+            } else {
+                long largestParsedTimestampUs = Long.MIN_VALUE;
+                for (int i = 0; i < sampleQueues.size(); i++) {
+                    largestParsedTimestampUs = Math.max(largestParsedTimestampUs,
+                            sampleQueues.valueAt(i).getLargestParsedTimestampUs());
+                }
+                return largestParsedTimestampUs == Long.MIN_VALUE ? downstreamPositionUs
+                        : largestParsedTimestampUs;
             }
-            return largestParsedTimestampUs == Long.MIN_VALUE ? downstreamPositionUs
-                    : largestParsedTimestampUs;
-        }
     }
 
     @Override
@@ -579,23 +577,24 @@ final class ExtractorSampleSource implements SampleSource, SampleSourceReader,
                         sampleQueues.valueAt(i).clear();
                     }
                     loadable = createLoadableFromStart();
-                } else if (!seekMap.isSeekable() && maxTrackDurationUs == C.UNKNOWN_TIME_US) {
-                    // We're playing a non-seekable stream with unknown duration. Assume it's live, and
-                    // therefore that the data at the uri is a continuously shifting window of the latest
-                    // available media. For this case there's no way to continue loading from where a previous
-                    // load finished, so it's necessary to load from the start whenever commencing a new load.
-                    for (int i = 0; i < sampleQueues.size(); i++) {
-                        sampleQueues.valueAt(i).clear();
+                } else
+                    if (!seekMap.isSeekable() && maxTrackDurationUs == C.UNKNOWN_TIME_US) {
+                        // We're playing a non-seekable stream with unknown duration. Assume it's live, and
+                        // therefore that the data at the uri is a continuously shifting window of the latest
+                        // available media. For this case there's no way to continue loading from where a previous
+                        // load finished, so it's necessary to load from the start whenever commencing a new load.
+                        for (int i = 0; i < sampleQueues.size(); i++) {
+                            sampleQueues.valueAt(i).clear();
+                        }
+                        loadable = createLoadableFromStart();
+                        // To avoid introducing a discontinuity, we shift the sample timestamps so that they will
+                        // continue from the current downstream position.
+                        pendingNextSampleUs = downstreamPositionUs;
+                        havePendingNextSampleUs = true;
+                    } else {
+                        // We're playing a seekable on-demand stream. Resume the current loadable, which will
+                        // request data starting from the point it left off.
                     }
-                    loadable = createLoadableFromStart();
-                    // To avoid introducing a discontinuity, we shift the sample timestamps so that they will
-                    // continue from the current downstream position.
-                    pendingNextSampleUs = downstreamPositionUs;
-                    havePendingNextSampleUs = true;
-                } else {
-                    // We're playing a seekable on-demand stream. Resume the current loadable, which will
-                    // request data starting from the point it left off.
-                }
                 extractedSampleCountAtStartOfLoad = extractedSampleCount;
                 loader.startLoading(loadable, this);
             }
@@ -707,7 +706,7 @@ final class ExtractorSampleSource implements SampleSource, SampleSourceReader,
         private boolean pendingExtractorSeek;
 
         ExtractingLoadable(Uri uri, DataSource dataSource, ExtractorHolder extractorHolder,
-                           Allocator allocator, int requestedBufferSize, long position) {
+                Allocator allocator, int requestedBufferSize, long position) {
             this.uri = Assertions.checkNotNull(uri);
             this.dataSource = Assertions.checkNotNull(dataSource);
             this.extractorHolder = Assertions.checkNotNull(extractorHolder);
@@ -753,9 +752,10 @@ final class ExtractorSampleSource implements SampleSource, SampleSourceReader,
                 } finally {
                     if (result == Extractor.RESULT_SEEK) {
                         result = Extractor.RESULT_CONTINUE;
-                    } else if (input != null) {
-                        positionHolder.position = input.getPosition();
-                    }
+                    } else
+                        if (input != null) {
+                            positionHolder.position = input.getPosition();
+                        }
                     dataSource.close();
                 }
             }
@@ -774,8 +774,7 @@ final class ExtractorSampleSource implements SampleSource, SampleSourceReader,
 
         /**
          * Creates a holder that will select an extractor and initialize it using the specified output.
-         *
-         * @param extractors One or more extractors to choose from.
+         * @param extractors      One or more extractors to choose from.
          * @param extractorOutput The output that will be used to initialize the selected extractor.
          */
         ExtractorHolder(Extractor[] extractors, ExtractorOutput extractorOutput) {
@@ -786,11 +785,10 @@ final class ExtractorSampleSource implements SampleSource, SampleSourceReader,
         /**
          * Returns an initialized extractor for reading {@code input}, and returns the same extractor on
          * later calls.
-         *
          * @param input The {@link ExtractorInput} from which data should be read.
          * @throws UnrecognizedInputFormatException Thrown if the input format could not be detected.
-         * @throws IOException Thrown if the input could not be read.
-         * @throws InterruptedException Thrown if the thread was interrupted.
+         * @throws IOException                      Thrown if the input could not be read.
+         * @throws InterruptedException             Thrown if the thread was interrupted.
          */
         Extractor selectExtractor(ExtractorInput input)
                 throws UnrecognizedInputFormatException, IOException, InterruptedException {

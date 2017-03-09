@@ -41,16 +41,16 @@ public class SettingsHelper {
             if (pSharedPref != null) {
                 String jsonString = pSharedPref.getString("selectedChannels", new JSONArray().toString());
                 JSONArray jsonArray = new JSONArray(jsonString);
-                for(int i = 0 ; i < jsonArray.length(); i++)
+                for (int i = 0; i < jsonArray.length(); i++)
                     outputArraylist.add(jsonArray.getString(i));
-                }
-            } catch (JSONException e1) {
+            }
+        } catch (JSONException e1) {
             e1.printStackTrace();
         }
         return outputArraylist;
     }
 
-    public void saveIp(String ip){
+    public void saveIp(String ip) {
         SharedPreferences pSharedPref = context.getSharedPreferences(context.getString(R.string.ipsave), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pSharedPref.edit();
         editor.remove(context.getString(R.string.ipsave)).commit();
@@ -58,7 +58,7 @@ public class SettingsHelper {
         editor.commit();
     }
 
-    public String loadIp(){
+    public String loadIp() {
         SharedPreferences pSharedPref = context.getSharedPreferences(context.getString(R.string.ipsave), Context.MODE_PRIVATE);
         return pSharedPref.getString(context.getString(R.string.ipsave), "");
     }

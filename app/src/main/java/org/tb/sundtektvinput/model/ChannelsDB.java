@@ -22,7 +22,7 @@ public class ChannelsDB {
 
     private static final String TAG = ChannelsDB.class.getSimpleName();
 
-    private static long MAX_AGE = 1000 * 60 * 60   / 12; //5mins;
+    private static long MAX_AGE = 1000 * 60 * 60 / 12; //5mins;
     private static ChannelsDB myChannelsDB;
     private HashMap<Integer, Channel> channelMap;
     private long lastUpdate;

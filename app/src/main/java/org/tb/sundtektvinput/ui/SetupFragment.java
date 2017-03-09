@@ -26,10 +26,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.tb.sundtektvinput.service.base.EpgSyncJobService;
-
 import org.tb.sundtektvinput.R;
 import org.tb.sundtektvinput.service.MyJobService;
+import org.tb.sundtektvinput.service.base.EpgSyncJobService;
 import org.tb.sundtektvinput.ui.base.ChannelSetupFragment;
 
 /**

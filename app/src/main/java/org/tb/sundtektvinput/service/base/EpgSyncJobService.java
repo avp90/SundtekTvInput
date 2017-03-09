@@ -60,7 +60,6 @@ import java.util.List;
  *          android:permission="android.permission.BIND_JOB_SERVICE"
  *          android:exported="true" /&gt;
  * </pre>
- *
  * You will need to implement several methods in your EpgSyncJobService to return your content.
  * <p />
  * To start periodically syncing data, call
@@ -78,7 +77,8 @@ public abstract class EpgSyncJobService extends JobService {
     /** The key representing the component name for the app's TvInputService. */
     public static final String BUNDLE_KEY_INPUT_ID = EpgSyncJobService.class.getPackage().getName()
             + ".bundle_key_input_id";
-    /** The key representing the number of channels that have been scanned and populated in the EPG.
+    /**
+     * The key representing the number of channels that have been scanned and populated in the EPG.
      */
     public static final String BUNDLE_KEY_CHANNELS_SCANNED =
             EpgSyncJobService.class.getPackage().getName() + ".bundle_key_channels_scanned";
@@ -97,22 +97,27 @@ public abstract class EpgSyncJobService extends JobService {
     public static final String BUNDLE_KEY_ERROR_REASON =
             EpgSyncJobService.class.getPackage().getName() + ".bundle_key_error_reason";
 
-    /** The name for the {@link android.content.SharedPreferences} file used for storing syncing
-     * metadata. */
+    /**
+     * The name for the {@link android.content.SharedPreferences} file used for storing syncing
+     * metadata.
+     */
     public static final String PREFERENCE_EPG_SYNC = EpgSyncJobService.class.getPackage().getName()
             + ".preference_epg_sync";
 
     /** The status of the job service when syncing has begun. */
     public static final String SYNC_STARTED = "sync_started";
-    /** The status of the job service when a channel has been scanned and the EPG for that channel
-     * has been populated. */
+    /**
+     * The status of the job service when a channel has been scanned and the EPG for that channel
+     * has been populated.
+     */
     public static final String SYNC_SCANNED = "sync_scanned";
     /** The status of the job service when syncing has completed. */
     public static final String SYNC_FINISHED = "sync_finished";
-    /** The status of the job when a problem occurs during syncing. A {@link #SYNC_FINISHED}
-     *  broadcast will still be sent when the service is done. This status can be used to identify
-     *  specific issues in your EPG sync.
-     * */
+    /**
+     * The status of the job when a problem occurs during syncing. A {@link #SYNC_FINISHED}
+     * broadcast will still be sent when the service is done. This status can be used to identify
+     * specific issues in your EPG sync.
+     */
     public static final String SYNC_ERROR = "sync_error";
     /** The key corresponding to the job service's status. */
     public static final String SYNC_STATUS = "sync_status";
@@ -129,7 +134,7 @@ public abstract class EpgSyncJobService extends JobService {
     public static final int ERROR_DATABASE_INSERT = 5;
 
     /** The default period between full EPG syncs, one day. */
-    private static final long DEFAULT_SYNC_PERIOD_MILLIS = 1000 * 60 * 60  / 12; // ~5min // 12 hour
+    private static final long DEFAULT_SYNC_PERIOD_MILLIS = 1000 * 60 * 60 / 12; // ~5min // 12 hour
     private static final long DEFAULT_IMMEDIATE_EPG_DURATION_MILLIS = 1000 * 60 * 60 * 6; // 6 Hour
     private static final long DEFAULT_PERIODIC_EPG_DURATION_MILLIS = 1000 * 60 * 60 * 48; // 48 Hour
 
@@ -145,24 +150,22 @@ public abstract class EpgSyncJobService extends JobService {
 
     /**
      * Returns the channels that your app contains.
-     *
      * @return The list of channels for your app.
      */
     public abstract List<Channel> getChannels();
 
     /**
      * Returns the programs that will appear for each channel.
-     *
      * @param channelUri The Uri corresponding to the channel.
-     * @param channel The channel your programs will appear on.
-     * @param startMs The starting time in milliseconds since the epoch to generate programs. If
-     * your program starts before this starting time, it should be be included.
-     * @param endMs The ending time in milliseconds since the epoch to generate programs. If your
-     * program starts before this ending time, it should be be included.
+     * @param channel    The channel your programs will appear on.
+     * @param startMs    The starting time in milliseconds since the epoch to generate programs. If
+     *                   your program starts before this starting time, it should be be included.
+     * @param endMs      The ending time in milliseconds since the epoch to generate programs. If your
+     *                   program starts before this ending time, it should be be included.
      * @return A list of programs for a given channel.
      */
     public abstract List<Program> getProgramsForChannel(Uri channelUri, Channel channel,
-                                                        long startMs, long endMs);
+            long startMs, long endMs);
 
 
     @Override
@@ -240,32 +243,30 @@ public abstract class EpgSyncJobService extends JobService {
     /**
      * Initializes a job that will periodically update the app's channels and programs with a
      * default period of 24 hours.
-     *
-     * @param context Application's context.
-     * @param inputId Component name for the app's TvInputService. This can be received through an
-     * Intent extra parameter {@link TvInputInfo#EXTRA_INPUT_ID}.
+     * @param context             Application's context.
+     * @param inputId             Component name for the app's TvInputService. This can be received through an
+     *                            Intent extra parameter {@link TvInputInfo#EXTRA_INPUT_ID}.
      * @param jobServiceComponent The {@link EpgSyncJobService} component name that will run.
      */
     public static void setUpPeriodicSync(Context context, String inputId,
-                                         ComponentName jobServiceComponent) {
+            ComponentName jobServiceComponent) {
         setUpPeriodicSync(context, inputId, jobServiceComponent, DEFAULT_SYNC_PERIOD_MILLIS,
                 DEFAULT_PERIODIC_EPG_DURATION_MILLIS);
     }
 
     /**
      * Initializes a job that will periodically update the app's channels and programs.
-     *
-     * @param context Application's context.
-     * @param inputId Component name for the app's TvInputService. This can be received through an
-     * Intent extra parameter {@link TvInputInfo#EXTRA_INPUT_ID}.
+     * @param context             Application's context.
+     * @param inputId             Component name for the app's TvInputService. This can be received through an
+     *                            Intent extra parameter {@link TvInputInfo#EXTRA_INPUT_ID}.
      * @param jobServiceComponent The {@link EpgSyncJobService} component name that will run.
-     * @param fullSyncPeriod The period between when the job will run a full background sync in
-     * milliseconds.
-     * @param syncDuration The duration of EPG content to fetch in milliseconds. For a manual sync,
-     * this should be relatively short. For a background sync this should be long.
+     * @param fullSyncPeriod      The period between when the job will run a full background sync in
+     *                            milliseconds.
+     * @param syncDuration        The duration of EPG content to fetch in milliseconds. For a manual sync,
+     *                            this should be relatively short. For a background sync this should be long.
      */
     public static void setUpPeriodicSync(Context context, String inputId,
-                                         ComponentName jobServiceComponent, long fullSyncPeriod, long syncDuration) {
+            ComponentName jobServiceComponent, long fullSyncPeriod, long syncDuration) {
         if (jobServiceComponent.getClass().isAssignableFrom(EpgSyncJobService.class)) {
             throw new IllegalArgumentException("This class does not extend EpgSyncJobService");
         }
@@ -287,21 +288,19 @@ public abstract class EpgSyncJobService extends JobService {
 
     /**
      * Manually requests a job to run now to retrieve EPG content for the next hour.
-     *
-     * @param context Application's context.
-     * @param inputId Component name for the app's TvInputService. This can be received through an
-     * Intent extra parameter {@link TvInputInfo#EXTRA_INPUT_ID}.
+     * @param context             Application's context.
+     * @param inputId             Component name for the app's TvInputService. This can be received through an
+     *                            Intent extra parameter {@link TvInputInfo#EXTRA_INPUT_ID}.
      * @param jobServiceComponent The {@link EpgSyncJobService} class that will run.
      */
     public static void requestImmediateSync(Context context, String inputId,
-                                            ComponentName jobServiceComponent) {
+            ComponentName jobServiceComponent) {
         requestImmediateSync(context, inputId, DEFAULT_IMMEDIATE_EPG_DURATION_MILLIS,
                 jobServiceComponent);
     }
 
     /**
      * Manually requests a job to run now.
-     *
      * To check the current status of the sync, register a {@link android.content.BroadcastReceiver}
      * with an {@link android.content.IntentFilter} which checks for the action
      * {@link #ACTION_SYNC_STATUS_CHANGED}.
@@ -314,15 +313,15 @@ public abstract class EpgSyncJobService extends JobService {
      * {@link android.media.tv.TvInputService}. If you're calling this from your setup activity,
      * you can get the extra parameter {@link TvInputInfo#EXTRA_INPUT_ID}.
      * <p />
-     * @param context Application's context.
-     * @param inputId Component name for the app's TvInputService. This can be received through an
-     * Intent extra parameter {@link TvInputInfo#EXTRA_INPUT_ID}.
-     * @param syncDuration The duration of EPG content to fetch in milliseconds. For a manual sync,
-     * this should be relatively short. For a background sync this should be long.
+     * @param context             Application's context.
+     * @param inputId             Component name for the app's TvInputService. This can be received through an
+     *                            Intent extra parameter {@link TvInputInfo#EXTRA_INPUT_ID}.
+     * @param syncDuration        The duration of EPG content to fetch in milliseconds. For a manual sync,
+     *                            this should be relatively short. For a background sync this should be long.
      * @param jobServiceComponent The {@link EpgSyncJobService} class that will run.
      */
     public static void requestImmediateSync(Context context, String inputId, long syncDuration,
-                                            ComponentName jobServiceComponent) {
+            ComponentName jobServiceComponent) {
         if (jobServiceComponent.getClass().isAssignableFrom(EpgSyncJobService.class)) {
             throw new IllegalArgumentException("This class does not extend EpgSyncJobService");
         }
@@ -474,18 +473,17 @@ public abstract class EpgSyncJobService extends JobService {
 
         /**
          * Returns a list of programs for the given time range.
-         *
-         * @param channel The {@link Channel} for the programs to return.
-         * @param programs The feed fetched from cloud.
+         * @param channel     The {@link Channel} for the programs to return.
+         * @param programs    The feed fetched from cloud.
          * @param startTimeMs The start time of the range requested.
-         * @param endTimeMs The end time of the range requested.
+         * @param endTimeMs   The end time of the range requested.
          * @return A list of programs for the channel within the specifed range. They may be
          * repeated.
          * @hide
          */
         @VisibleForTesting
         public List<Program> getPrograms(Channel channel, List<Program> programs,
-                                         long startTimeMs, long endTimeMs) {
+                long startTimeMs, long endTimeMs) {
             if (startTimeMs > endTimeMs) {
                 throw new IllegalArgumentException("Start time must be before end time");
             }
@@ -554,12 +552,11 @@ public abstract class EpgSyncJobService extends JobService {
         /**
          * Shift advertisement time to match program playback time. For channels with repeated program,
          * the time for current program may vary from what it was defined previously.
-         *
          * @param oldProgramStartTimeMs Outdated program start time.
          * @param newProgramStartTimeMs Updated program start time.
          */
         private void shiftAdsTimeWithProgram(InternalProviderData internalProviderData,
-                                             long oldProgramStartTimeMs, long newProgramStartTimeMs) {
+                long oldProgramStartTimeMs, long newProgramStartTimeMs) {
             if (internalProviderData == null) {
                 return;
             }
@@ -577,13 +574,11 @@ public abstract class EpgSyncJobService extends JobService {
 
         /**
          * Updates the system database, TvProvider, with the given programs.
-         *
          * <p>If there is any overlap between the given and existing programs, the existing ones
          * will be updated with the given ones if they have the same title or replaced.
-         *
-         * @param channelUri The channel where the program info will be added.
+         * @param channelUri  The channel where the program info will be added.
          * @param newPrograms A list of {@link Program} instances which includes program
-         *         information.
+         *                    information.
          */
         private void updatePrograms(Uri channelUri, List<Program> newPrograms) {
             final int fetchedProgramsCount = newPrograms.size();
@@ -621,30 +616,32 @@ public abstract class EpgSyncJobService extends JobService {
                         // Exact match. No need to update. Move on to the next programs.
                         oldProgramsIndex++;
                         newProgramsIndex++;
-                    } else if (shouldUpdateProgramMetadata(oldProgram, newProgram)) {
-                        // Partial match. Update the old program with the new one.
-                        // NOTE: Use 'update' in this case instead of 'insert' and 'delete'. There
-                        // could be application specific settings which belong to the old program.
-                        ops.add(ContentProviderOperation.newUpdate(
-                                TvContract.buildProgramUri(oldProgram.getId()))
-                                .withValues(newProgram.toContentValues())
-                                .build());
-                        oldProgramsIndex++;
-                        newProgramsIndex++;
-                    } else if (oldProgram.getEndTimeUtcMillis()
-                            < newProgram.getEndTimeUtcMillis()) {
-                        // No match. Remove the old program first to see if the next program in
-                        // {@code oldPrograms} partially matches the new program.
-                        ops.add(ContentProviderOperation.newDelete(
-                                TvContract.buildProgramUri(oldProgram.getId()))
-                                .build());
-                        oldProgramsIndex++;
-                    } else {
-                        // No match. The new program does not match any of the old programs. Insert
-                        // it as a new program.
-                        addNewProgram = true;
-                        newProgramsIndex++;
-                    }
+                    } else
+                        if (shouldUpdateProgramMetadata(oldProgram, newProgram)) {
+                            // Partial match. Update the old program with the new one.
+                            // NOTE: Use 'update' in this case instead of 'insert' and 'delete'. There
+                            // could be application specific settings which belong to the old program.
+                            ops.add(ContentProviderOperation.newUpdate(
+                                    TvContract.buildProgramUri(oldProgram.getId()))
+                                    .withValues(newProgram.toContentValues())
+                                    .build());
+                            oldProgramsIndex++;
+                            newProgramsIndex++;
+                        } else
+                            if (oldProgram.getEndTimeUtcMillis()
+                                    < newProgram.getEndTimeUtcMillis()) {
+                                // No match. Remove the old program first to see if the next program in
+                                // {@code oldPrograms} partially matches the new program.
+                                ops.add(ContentProviderOperation.newDelete(
+                                        TvContract.buildProgramUri(oldProgram.getId()))
+                                        .build());
+                                oldProgramsIndex++;
+                            } else {
+                                // No match. The new program does not match any of the old programs. Insert
+                                // it as a new program.
+                                addNewProgram = true;
+                                newProgramsIndex++;
+                            }
                 } else {
                     // No old programs. Just insert new programs.
                     addNewProgram = true;

@@ -13,6 +13,7 @@ import org.tb.sundtektvinput.util.SettingsHelper;
 import java.util.List;
 import java.util.regex.Pattern;
 
+
 import static android.support.v17.leanback.widget.GuidedAction.ACTION_ID_CANCEL;
 import static android.support.v17.leanback.widget.GuidedAction.ACTION_ID_CONTINUE;
 import static android.support.v17.leanback.widget.GuidedAction.ACTION_ID_CURRENT;
@@ -42,7 +43,7 @@ public class GuideIpFragment extends GuideBaseFragment {
 
         actions.add(new GuidedAction.Builder(getActivity())
                 .id(ACTION_EDIT_IP)
-                .title( validateIp(ip) ? ip : "Enter IP Address")
+                .title(validateIp(ip) ? ip : "Enter IP Address")
                 .editTitle(ip)
                 .description(validateIp(ip) ? getString(R.string.ip_valid) : getString(R.string.ip_not_valid))
                 .editDescription("IP Address")

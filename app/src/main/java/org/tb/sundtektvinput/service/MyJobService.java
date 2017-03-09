@@ -42,8 +42,8 @@ public class MyJobService extends EpgSyncJobService {
 
 
     @Override
-    public List<Program> getProgramsForChannel( Uri channelUri, Channel channel, long startMs,
-                                               long endMs) {
+    public List<Program> getProgramsForChannel(Uri channelUri, Channel channel, long startMs,
+            long endMs) {
 
         Log.d(TAG, "Trying to get programs for " + channel.getDisplayName());
         return ProgramsDB.getInstance().getProgramsForChannel(getApplicationContext(), channel, startMs, endMs);

@@ -29,11 +29,10 @@ import com.google.android.media.tv.companionlibrary.utils.TvContractUtils;
 public class RendererBuilderFactory {
     /**
      * Create new instance of {@link DemoPlayer.RendererBuilder}.
-     *
-     * @param context The {@link Context} to use.
+     * @param context     The {@link Context} to use.
      * @param contentType The type of the video content: {@link Util#TYPE_SS},
-     * {@link Util#TYPE_DASH}, {@link Util#TYPE_HLS} or {@link Util#TYPE_OTHER}.
-     * @param contentUri The URI of the video content.
+     *                    {@link Util#TYPE_DASH}, {@link Util#TYPE_HLS} or {@link Util#TYPE_OTHER}.
+     * @param contentUri  The URI of the video content.
      * @return A {@link DemoPlayer.RendererBuilder} instance.
      */
     public static DemoPlayer.RendererBuilder createRendererBuilder(

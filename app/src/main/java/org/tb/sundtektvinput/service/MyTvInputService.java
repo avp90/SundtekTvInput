@@ -72,7 +72,6 @@ public class MyTvInputService extends BaseTvInputService {
 
     /**
      * Gets the track id of the track type and track index.
-     *
      * @param trackType  the type of the track e.g. TvTrackInfo.TYPE_AUDIO
      * @param trackIndex the index of that track within the media. e.g. 0, 1, 2...
      * @return the track id for the type & index combination.
@@ -83,7 +82,6 @@ public class MyTvInputService extends BaseTvInputService {
 
     /**
      * Gets the index of the track for a given track id.
-     *
      * @param trackId the track id.
      * @return the track index for the given id, as an integer.
      */
@@ -169,27 +167,31 @@ public class MyTvInputService extends BaseTvInputService {
                     if (trackType == DemoPlayer.TYPE_VIDEO) {
                         if (format.maxWidth != MediaFormat.NO_VALUE) {
                             builder.setVideoWidth(format.maxWidth);
-                        } else if (format.width != MediaFormat.NO_VALUE) {
-                            builder.setVideoWidth(format.width);
-                        }
+                        } else
+                            if (format.width != MediaFormat.NO_VALUE) {
+                                builder.setVideoWidth(format.width);
+                            }
                         if (format.maxHeight != MediaFormat.NO_VALUE) {
                             builder.setVideoHeight(format.maxHeight);
-                        } else if (format.height != MediaFormat.NO_VALUE) {
-                            builder.setVideoHeight(format.height);
-                        }
-                    } else if (trackType == DemoPlayer.TYPE_AUDIO) {
-                        builder.setAudioChannelCount(format.channelCount);
-                        builder.setAudioSampleRate(format.sampleRate);
-                        if (format.language != null && !UNKNOWN_LANGUAGE.equals(format.language)) {
-                            // TvInputInfo expects {@code null} for unknown language.
-                            builder.setLanguage(format.language);
-                        }
-                    } else if (trackType == DemoPlayer.TYPE_TEXT) {
-                        if (format.language != null && !UNKNOWN_LANGUAGE.equals(format.language)) {
-                            // TvInputInfo expects {@code null} for unknown language.
-                            builder.setLanguage(format.language);
-                        }
-                    }
+                        } else
+                            if (format.height != MediaFormat.NO_VALUE) {
+                                builder.setVideoHeight(format.height);
+                            }
+                    } else
+                        if (trackType == DemoPlayer.TYPE_AUDIO) {
+                            builder.setAudioChannelCount(format.channelCount);
+                            builder.setAudioSampleRate(format.sampleRate);
+                            if (format.language != null && !UNKNOWN_LANGUAGE.equals(format.language)) {
+                                // TvInputInfo expects {@code null} for unknown language.
+                                builder.setLanguage(format.language);
+                            }
+                        } else
+                            if (trackType == DemoPlayer.TYPE_TEXT) {
+                                if (format.language != null && !UNKNOWN_LANGUAGE.equals(format.language)) {
+                                    // TvInputInfo expects {@code null} for unknown language.
+                                    builder.setLanguage(format.language);
+                                }
+                            }
 
                     tracks.add(builder.build());
                 }
@@ -345,16 +347,17 @@ public class MyTvInputService extends BaseTvInputService {
                 notifyTrackSelected(TvTrackInfo.TYPE_VIDEO, videoId);
                 notifyTrackSelected(TvTrackInfo.TYPE_SUBTITLE, textId);
                 notifyVideoAvailable();
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                    Math.abs(mPlayer.getPlaybackSpeed() - 1) < 0.1 &&
-                    playWhenReady && playbackState == ExoPlayer.STATE_BUFFERING) {
-                notifyVideoUnavailable(TvInputManager.VIDEO_UNAVAILABLE_REASON_BUFFERING);
-            }
+            } else
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                        Math.abs(mPlayer.getPlaybackSpeed() - 1) < 0.1 &&
+                        playWhenReady && playbackState == ExoPlayer.STATE_BUFFERING) {
+                    notifyVideoUnavailable(TvInputManager.VIDEO_UNAVAILABLE_REASON_BUFFERING);
+                }
         }
 
         @Override
         public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees,
-                                       float pixelWidthHeightRatio) {
+                float pixelWidthHeightRatio) {
             // Do nothing.
         }
 

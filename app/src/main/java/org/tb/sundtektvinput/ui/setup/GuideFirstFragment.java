@@ -9,6 +9,7 @@ import android.support.v17.leanback.widget.GuidedAction;
 
 import java.util.List;
 
+
 import static android.support.v17.leanback.widget.GuidedAction.ACTION_ID_CANCEL;
 import static android.support.v17.leanback.widget.GuidedAction.ACTION_ID_CONTINUE;
 
@@ -20,7 +21,7 @@ public class GuideFirstFragment extends GuideBaseFragment {
     public GuidanceStylist.Guidance onCreateGuidance(@NonNull Bundle savedInstanceState) {
         String title = "Get all the channels";
         String description = "Press 'Find Channels' to get a list of all available channels from your streamingserver";
-   //     Drawable icon = getActivity().getDrawable(R.drawable.ic_launcher);
+        //     Drawable icon = getActivity().getDrawable(R.drawable.ic_launcher);
         return new GuidanceStylist.Guidance(title, description, breadcrumb, null);
     }
 
@@ -50,9 +51,6 @@ public class GuideFirstFragment extends GuideBaseFragment {
             getFragmentManager().popBackStack();
         }
     }
-
-
-
 
 
 }

@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+
 import static android.support.v17.leanback.widget.GuidedAction.ACTION_ID_CANCEL;
 import static android.support.v17.leanback.widget.GuidedAction.ACTION_ID_CONTINUE;
 import static android.support.v17.leanback.widget.GuidedAction.CHECKBOX_CHECK_SET_ID;
@@ -35,11 +36,9 @@ public class GuideSecondFragment extends GuideBaseFragment {
     public GuidanceStylist.Guidance onCreateGuidance(@NonNull Bundle savedInstanceState) {
         String title = "Here we go";
         String description = "Please select the channels you want to import";
-    //    Drawable icon = getActivity().getDrawable(R.drawable.ic_launcher);
+        //    Drawable icon = getActivity().getDrawable(R.drawable.ic_launcher);
         return new GuidanceStylist.Guidance(title, description, breadcrumb, null);
     }
-
-
 
 
     @Override
@@ -66,7 +65,7 @@ public class GuideSecondFragment extends GuideBaseFragment {
         for (Channel channel : allChannels.values()) {
             id = String.valueOf(channel.getOriginalNetworkId());
 
-            if(selectedChannels.contains(id)){
+            if (selectedChannels.contains(id)) {
                 selectedChannelMap.put(id, channel);
             }
             actions.add(
@@ -126,7 +125,7 @@ public class GuideSecondFragment extends GuideBaseFragment {
             new SettingsHelper(getActivity().getApplicationContext())
                     .saveChannelIds(selectedChannels, getString(R.string.selectedChannelsFile));
             Bundle args = new Bundle();
-            args.putSerializable("channels",selectedChannelMap);
+            args.putSerializable("channels", selectedChannelMap);
             GuideBaseFragment fragment = new GuideThirdFragment();
             fragment.setArguments(args);
             GuidedStepFragment.add(fm, fragment);

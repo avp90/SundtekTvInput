@@ -86,7 +86,7 @@ public class SundtekJsonParser {
         else
             IP_ADDRESS = "192.168.3.26";
 
-        BASE_URL = "http://"+IP_ADDRESS+":"+SERVER_PORT;
+        BASE_URL = "http://" + IP_ADDRESS + ":" + SERVER_PORT;
 
 
     }

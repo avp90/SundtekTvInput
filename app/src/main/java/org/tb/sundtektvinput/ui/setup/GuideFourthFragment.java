@@ -186,7 +186,6 @@ public class GuideFourthFragment extends GuideBaseFragment {
     /**
      * This method will be called when an error occurs in scanning. Developers may want to notify
      * the user that an error has happened or resolve the error.
-     *
      * @param reason A constant indicating the type of error that has happened. Possible values are
      *               {@link EpgSyncJobService#ERROR_EPG_SYNC_CANCELED},
      *               {@link EpgSyncJobService#ERROR_INPUT_ID_NULL},
@@ -214,7 +213,6 @@ public class GuideFourthFragment extends GuideBaseFragment {
 
     /**
      * Finishes the current scan thread. This fragment will be popped after the scan thread ends.
-     *
      * @param scanCompleted a flag which indicates the scan was completed successfully or canceled.
      */
     private void finishScan(boolean scanCompleted) {
@@ -228,7 +226,6 @@ public class GuideFourthFragment extends GuideBaseFragment {
     /**
      * This method will be called when a channel has been completely scanned. It can be overriden
      * to display custom information about this channel to the user.
-     *
      * @param displayName   {@link Channel#getDisplayName()} for the scanned channel.
      * @param displayNumber {@link Channel#getDisplayNumber()} ()} for the scanned channel.
      */
@@ -241,7 +238,6 @@ public class GuideFourthFragment extends GuideBaseFragment {
     /**
      * This method will be called when another channel has been scanned. It can be overriden to
      * display custom information about the current progress of the scan.
-     *
      * @param channelsScanned The number of channels that have been scanned so far.
      * @param channelCount    The total number of channels that need to be scanned.
      */
@@ -271,36 +267,39 @@ public class GuideFourthFragment extends GuideBaseFragment {
                             if (DEBUG) {
                                 Log.d(TAG, "Sync status: Started");
                             }
-                        } else if (syncStatus.equals(EpgSyncJobService.SYNC_SCANNED)) {
-                            int channelsScanned = intent.
-                                    getIntExtra(EpgSyncJobService.BUNDLE_KEY_CHANNELS_SCANNED, 0);
-                            int channelCount = intent.
-                                    getIntExtra(EpgSyncJobService.BUNDLE_KEY_CHANNEL_COUNT, 0);
-                            updateScanProgress(++channelsScanned, channelCount);
-                            String channelDisplayName = intent.getStringExtra(
-                                    EpgSyncJobService.BUNDLE_KEY_SCANNED_CHANNEL_DISPLAY_NAME);
-                            String channelDisplayNumber = intent.getStringExtra(
-                                    EpgSyncJobService.BUNDLE_KEY_SCANNED_CHANNEL_DISPLAY_NUMBER);
-                            if (DEBUG) {
-                                Log.d(TAG, "Sync status: Channel Scanned");
-                                Log.d(TAG, "Scanned " + channelsScanned + " out of " + channelCount);
-                            }
-                            onScannedChannel(channelDisplayName, channelDisplayNumber);
-                            //   mAdapter.add(new Pair<>(channelDisplayName, channelDisplayNumber));
-                        } else if (syncStatus.equals(EpgSyncJobService.SYNC_FINISHED)) {
-                            if (DEBUG) {
-                                Log.d(TAG, "Sync status: Finished");
-                            }
-                            finishScan(true);
-                        } else if (syncStatus.equals(EpgSyncJobService.SYNC_ERROR)) {
-                            int errorCode =
-                                    intent.getIntExtra(EpgSyncJobService.BUNDLE_KEY_ERROR_REASON,
-                                            0);
-                            if (DEBUG) {
-                                Log.d(TAG, "Error occurred: " + errorCode);
-                            }
-                            onScanError(errorCode);
-                        }
+                        } else
+                            if (syncStatus.equals(EpgSyncJobService.SYNC_SCANNED)) {
+                                int channelsScanned = intent.
+                                        getIntExtra(EpgSyncJobService.BUNDLE_KEY_CHANNELS_SCANNED, 0);
+                                int channelCount = intent.
+                                        getIntExtra(EpgSyncJobService.BUNDLE_KEY_CHANNEL_COUNT, 0);
+                                updateScanProgress(++channelsScanned, channelCount);
+                                String channelDisplayName = intent.getStringExtra(
+                                        EpgSyncJobService.BUNDLE_KEY_SCANNED_CHANNEL_DISPLAY_NAME);
+                                String channelDisplayNumber = intent.getStringExtra(
+                                        EpgSyncJobService.BUNDLE_KEY_SCANNED_CHANNEL_DISPLAY_NUMBER);
+                                if (DEBUG) {
+                                    Log.d(TAG, "Sync status: Channel Scanned");
+                                    Log.d(TAG, "Scanned " + channelsScanned + " out of " + channelCount);
+                                }
+                                onScannedChannel(channelDisplayName, channelDisplayNumber);
+                                //   mAdapter.add(new Pair<>(channelDisplayName, channelDisplayNumber));
+                            } else
+                                if (syncStatus.equals(EpgSyncJobService.SYNC_FINISHED)) {
+                                    if (DEBUG) {
+                                        Log.d(TAG, "Sync status: Finished");
+                                    }
+                                    finishScan(true);
+                                } else
+                                    if (syncStatus.equals(EpgSyncJobService.SYNC_ERROR)) {
+                                        int errorCode =
+                                                intent.getIntExtra(EpgSyncJobService.BUNDLE_KEY_ERROR_REASON,
+                                                        0);
+                                        if (DEBUG) {
+                                            Log.d(TAG, "Error occurred: " + errorCode);
+                                        }
+                                        onScanError(errorCode);
+                                    }
                     }
                 }
             });

@@ -49,9 +49,9 @@ public class BootReceiver extends BroadcastReceiver {
                 // Set up periodic sync only when input has set up.
                 EpgSyncJobService.setUpPeriodicSync(context, inputId,
                         new ComponentName(context, MyJobService.class));
-                Log.d(this.getClass().getSimpleName(), "Setup periodic sync with inputId " + inputId );
+                Log.d(this.getClass().getSimpleName(), "Setup periodic sync with inputId " + inputId);
 
-            }else{
+            } else {
                 Log.d(this.getClass().getSimpleName(), "Can't setup periodic sync cause inputId is null");
             }
 

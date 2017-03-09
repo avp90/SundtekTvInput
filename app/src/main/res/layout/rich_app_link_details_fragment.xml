@@ -14,8 +14,8 @@
      limitations under the License.
 -->
 <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/rich_app_link_details_frag"
-    android:name="org.tb.sundtektvinput.ui.AppLinkDetailsFragment"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+          android:id="@+id/rich_app_link_details_frag"
+          android:name="org.tb.sundtektvinput.ui.AppLinkDetailsFragment"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"/>
 

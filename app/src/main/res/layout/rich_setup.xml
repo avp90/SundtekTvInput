@@ -17,4 +17,4 @@
           android:id="@+id/rich_setup_frag"
           android:name="org.tb.sundtektvinput.ui.old.SetupFragment"
           android:layout_width="match_parent"
-          android:layout_height="match_parent" />
+          android:layout_height="match_parent"/>

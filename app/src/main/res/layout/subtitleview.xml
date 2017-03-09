@@ -22,4 +22,4 @@
     android:layout_marginBottom="32dp"
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
-    android:visibility="invisible" />
+    android:visibility="invisible"/>

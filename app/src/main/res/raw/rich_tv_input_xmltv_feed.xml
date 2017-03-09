@@ -5,17 +5,23 @@ xmltv.dtd are extended to be align with Android TV Input Framework and contain s
 contents. For details, please see the documentation of XmlTvParser class.
 -->
 <tv>
-    <channel id="ZDF Neo HD" repeat-programs="true">
+    <channel
+        id="ZDF Neo HD"
+        repeat-programs="true">
         <display-name>ZDF Neo HD</display-name>
         <display-number>1</display-number>
         <icon src="http://sundtek.de/picons/?p=ZDF_Neo_HD"/>
     </channel>
-    <channel id="ZDF" repeat-programs="true">
+    <channel
+        id="ZDF"
+        repeat-programs="true">
         <display-name>ZDF</display-name>
         <display-number>2</display-number>
         <icon src="http://sundtek.de/picons/?p=ZDF"/>
     </channel>
-    <channel id="MDR Sachsen" repeat-programs="true">
+    <channel
+        id="MDR Sachsen"
+        repeat-programs="true">
         <display-name>MDR Sachsen</display-name>
         <display-number>2</display-number>
         <icon src="http://sundtek.de/picons/?p=MDR_Sachsen"/>
@@ -42,14 +48,19 @@ contents. For details, please see the documentation of XmlTvParser class.
         video-src="http://192.168.3.1:22000/stream/ZDF_Neo_HD"
         video-type="HTTP_PROGRESSIVE">
         <title lang="de">Neo Magazin Royale</title>
-        <desc lang="de">Moderator Jan Böhmermann begrüßt prominente Gäste und beschäftigt sich satirisch, intelligent und humorvoll mit Zeitgeschehen, Boulevard, Pop- und Netzkultur. Mit dabei sind Ralf Kabelka und das Rundfunk-Tanzorchester Ehrenfeld. Die Sendung hat den Deutschen Fernsehpreis 2016 in der Kategorie "Beste Unterhaltung Late Night" gewonnen sowie einen Grimme-Preis 2016 für den Beitrag #varoufake</desc>
+        <desc lang="de">Moderator Jan Böhmermann begrüßt prominente Gäste und beschäftigt sich
+            satirisch, intelligent und humorvoll mit Zeitgeschehen, Boulevard, Pop- und Netzkultur.
+            Mit dabei sind Ralf Kabelka und das Rundfunk-Tanzorchester Ehrenfeld. Die Sendung hat
+            den Deutschen Fernsehpreis 2016 in der Kategorie "Beste Unterhaltung Late Night"
+            gewonnen sowie einen Grimme-Preis 2016 für den Beitrag #varoufake
+        </desc>
         <credits>
             <presenter>Jan Böhmermann</presenter>
         </credits>
         <date>2017</date>
         <category lang="de">Show</category>
         <category lang="de">Late-Night-Comedy</category>
-        <icon src="http://tvdigitalepg.images.dvbdata.com/2894310/2894310_478x268.jpg" />
+        <icon src="http://tvdigitalepg.images.dvbdata.com/2894310/2894310_478x268.jpg"/>
         <country>D</country>
         <star-rating>
             <value>4.0</value>
@@ -63,11 +74,15 @@ contents. For details, please see the documentation of XmlTvParser class.
         video-type="HTTP_PROGRESSIVE">
         <title lang="de">heute-show</title>
         <sub-title lang="de">Nachrichtensatire mit Oliver Welke</sub-title>
-        <desc lang="de">Nachrichtensatire mit Oliver Welke - Oliver Welke berichtet über eine rappelvolle Bude und Catchphrase, einen unheimlichen Hype, die Verfilmung eines Sozialdramas und vom Arsch der Welt. Im Team heute: Tina Hausten, Gernot Hassknecht, Lutz van der Horst, Albrecht Humboldt, Sebastian Pufpaff</desc>
+        <desc lang="de">Nachrichtensatire mit Oliver Welke - Oliver Welke berichtet über eine
+            rappelvolle Bude und Catchphrase, einen unheimlichen Hype, die Verfilmung eines
+            Sozialdramas und vom Arsch der Welt. Im Team heute: Tina Hausten, Gernot Hassknecht,
+            Lutz van der Horst, Albrecht Humboldt, Sebastian Pufpaff
+        </desc>
         <date>2017</date>
         <category lang="de">Show</category>
         <category lang="de">Nachrichtensatire</category>
-        <icon src="http://tvdigitalepg.images.dvbdata.com/3178715/3178715_478x268.jpg" />
+        <icon src="http://tvdigitalepg.images.dvbdata.com/3178715/3178715_478x268.jpg"/>
         <country>D</country>
         <star-rating>
             <value>4.0</value>
@@ -81,7 +96,13 @@ contents. For details, please see the documentation of XmlTvParser class.
         video-type="HTTP_PROGRESSIVE">
         <title lang="de">Outcast</title>
         <sub-title lang="de">Tausend Scherben</sub-title>
-        <desc lang="de">Tausend Scherben - Ein Unbekannter namens Sidney stellt sich Kyle vor. Zur selben Zeit schöpft Chief Giles einen schwerwiegenden Verdacht gegen einen seiner Freunde. Reverend Anderson und Kyle sind derweil mit einem neuen Fall beschäftigt. Zudem droht ein Geheimnis aus Megans Vergangenheit aufgedeckt zu werden, obwohl sie mit allen Mitteln versucht, das zu verhindern. Die Folgen der Serie "Outcast" sind nach der jeweiligen Ausstrahlung in ZDFneo über die funk App von ARD und ZDF online verfügbar</desc>
+        <desc lang="de">Tausend Scherben - Ein Unbekannter namens Sidney stellt sich Kyle vor. Zur
+            selben Zeit schöpft Chief Giles einen schwerwiegenden Verdacht gegen einen seiner
+            Freunde. Reverend Anderson und Kyle sind derweil mit einem neuen Fall beschäftigt. Zudem
+            droht ein Geheimnis aus Megans Vergangenheit aufgedeckt zu werden, obwohl sie mit allen
+            Mitteln versucht, das zu verhindern. Die Folgen der Serie "Outcast" sind nach der
+            jeweiligen Ausstrahlung in ZDFneo über die funk App von ARD und ZDF online verfügbar
+        </desc>
         <credits>
             <director>Julius Ramsay</director>
             <actor>Patrick Fugit</actor>
@@ -95,7 +116,7 @@ contents. For details, please see the documentation of XmlTvParser class.
         <date>2016</date>
         <category lang="de">Serie</category>
         <category lang="de">Horrorserie</category>
-        <icon src="http://tvdigitalepg.images.dvbdata.com/3559641/3559641_478x268.jpg" />
+        <icon src="http://tvdigitalepg.images.dvbdata.com/3559641/3559641_478x268.jpg"/>
         <country>USA</country>
         <episode-num system="onscreen">S1 E4</episode-num>
         <star-rating>
@@ -115,7 +136,7 @@ contents. For details, please see the documentation of XmlTvParser class.
         <date>2017</date>
         <category lang="de">Information</category>
         <category lang="de">Magazin</category>
-        <icon src="http://tvdigitalepg.images.dvbdata.com/3067954/3067954_478x268.jpg" />
+        <icon src="http://tvdigitalepg.images.dvbdata.com/3067954/3067954_478x268.jpg"/>
         <country>D</country>
         <star-rating>
             <value>4.0</value>
@@ -129,7 +150,30 @@ contents. For details, please see the documentation of XmlTvParser class.
         video-type="HTTP_PROGRESSIVE">
         <title lang="de">Jack Taylor</title>
         <sub-title lang="de">Auge um Auge</sub-title>
-        <desc lang="de">Auge um Auge - Nach einem Jahr in London kehrt Jack Taylor (Iain Glen) nach Galway zurück, erholt und erstaunlich nüchtern. Er hat den Sauftouren und der schmutzigen Detektivarbeit abgeschworen. Doch er wird gleich wieder auf eine harte Probe gestellt, als der Vater eines Freundes aus Kindertagen ihn um Hilfe bittet. Dessen Sohn Niall sei unter mysteriösen Umständen gestorben. Die Polizei geht von Suizid aus, aber der Vater zweifelt und spricht von Mord. Jack nimmt den Fall an. Bei seinen Ermittlungen kommt er einer Bürgerwehr auf die Spur, den sogenannten Pikemen, die als Reaktion auf die rapide steigende Verbrechensrate in Galway offenbar Selbstjustiz übt. Vieles spricht dafür, dass auch Niall ihr Opfer geworden sein könnte. Seit Jack wieder in Galway ist, folgt ihm praktisch auf Schritt und Tritt ein etwas aufdringlicher, junger Mann namens Cody (Killian Scott), der unbedingt als Partner in die Detektei einsteigen will. Jack nimmt ihn nicht ernst, doch Cody lässt nicht locker. Jede Strasse Galways hält für Jack Erinnerungen parat. Er trifft seine große Liebe Anne (Tara Breathnach) wieder, die ihn immer noch fasziniert, inzwischen aber mit dem ebenso erfolgreichen wie dubiosen Bauunternehmer Tim Caffrey (Stuart Graham) liiert ist. Als Jack entdeckt, dass Anne von Caffrey geschlagen wird, legt er sich mit seinem Nebenbuhler an. Auf einer Party in Caffreys noblem Haus droht Jack dem Hausherrn, ihm in einem unerwarteten Moment aufzulauern. Für diese recht eindeutige Ankündigung gibt es viele Zeugen, unter anderem Superintendent Clancy (Frank O'Sullivan). Als Tim Caffrey erschlagen auf einer seiner Baustellen gefunden wird, wird Jack als Hauptverdächtiger von Superintendent Clancy festgenommen. Niemand glaubt mehr an Jacks Unschuld, nicht einmal seine beste Freundin, die Polizistin Kate (Nora Jane Noone). Jack gelingt die Flucht aus der Haft und findet einen einzigen, treuen Verbündeten: Cody</desc>
+        <desc lang="de">Auge um Auge - Nach einem Jahr in London kehrt Jack Taylor (Iain Glen) nach
+            Galway zurück, erholt und erstaunlich nüchtern. Er hat den Sauftouren und der
+            schmutzigen Detektivarbeit abgeschworen. Doch er wird gleich wieder auf eine harte Probe
+            gestellt, als der Vater eines Freundes aus Kindertagen ihn um Hilfe bittet. Dessen Sohn
+            Niall sei unter mysteriösen Umständen gestorben. Die Polizei geht von Suizid aus, aber
+            der Vater zweifelt und spricht von Mord. Jack nimmt den Fall an. Bei seinen Ermittlungen
+            kommt er einer Bürgerwehr auf die Spur, den sogenannten Pikemen, die als Reaktion auf
+            die rapide steigende Verbrechensrate in Galway offenbar Selbstjustiz übt. Vieles spricht
+            dafür, dass auch Niall ihr Opfer geworden sein könnte. Seit Jack wieder in Galway ist,
+            folgt ihm praktisch auf Schritt und Tritt ein etwas aufdringlicher, junger Mann namens
+            Cody (Killian Scott), der unbedingt als Partner in die Detektei einsteigen will. Jack
+            nimmt ihn nicht ernst, doch Cody lässt nicht locker. Jede Strasse Galways hält für Jack
+            Erinnerungen parat. Er trifft seine große Liebe Anne (Tara Breathnach) wieder, die ihn
+            immer noch fasziniert, inzwischen aber mit dem ebenso erfolgreichen wie dubiosen
+            Bauunternehmer Tim Caffrey (Stuart Graham) liiert ist. Als Jack entdeckt, dass Anne von
+            Caffrey geschlagen wird, legt er sich mit seinem Nebenbuhler an. Auf einer Party in
+            Caffreys noblem Haus droht Jack dem Hausherrn, ihm in einem unerwarteten Moment
+            aufzulauern. Für diese recht eindeutige Ankündigung gibt es viele Zeugen, unter anderem
+            Superintendent Clancy (Frank O'Sullivan). Als Tim Caffrey erschlagen auf einer seiner
+            Baustellen gefunden wird, wird Jack als Hauptverdächtiger von Superintendent Clancy
+            festgenommen. Niemand glaubt mehr an Jacks Unschuld, nicht einmal seine beste Freundin,
+            die Polizistin Kate (Nora Jane Noone). Jack gelingt die Flucht aus der Haft und findet
+            einen einzigen, treuen Verbündeten: Cody
+        </desc>
         <credits>
             <director>Stuart Orme</director>
             <actor>Iain Glen</actor>
@@ -143,7 +187,7 @@ contents. For details, please see the documentation of XmlTvParser class.
         <date>2011</date>
         <category lang="de">Spielfilm</category>
         <category lang="de">Krimi</category>
-        <icon src="http://tvdigitalepg.images.dvbdata.com/1831686/1831686_478x268.jpg" />
+        <icon src="http://tvdigitalepg.images.dvbdata.com/1831686/1831686_478x268.jpg"/>
         <country>IRL/D</country>
         <episode-num system="onscreen">S1 E2</episode-num>
         <star-rating>

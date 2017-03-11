@@ -50,7 +50,7 @@ public class ChannelsDB {
     //TODO: do networking and parsing in background service
     public List<Channel> getChannels(Context context) {
 
-        filter = new SettingsHelper(context).loadSelectedChannelsMap("selectedChannels");
+        filter = new SettingsHelper(context).loadSelectedChannelsMap();
         List<Channel> channels = new ArrayList<>();
 
         Log.d(TAG, "refreshing channels");

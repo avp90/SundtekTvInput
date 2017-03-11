@@ -11,7 +11,6 @@ import android.util.Log;
 
 import com.google.android.media.tv.companionlibrary.model.Channel;
 
-import org.tb.sundtektvinput.R;
 import org.tb.sundtektvinput.parser.SundtekJsonParser;
 import org.tb.sundtektvinput.ui.setup.base.SetupBaseFragment;
 import org.tb.sundtektvinput.util.SettingsHelper;
@@ -59,7 +58,7 @@ public class ChannelSelectFragment extends SetupBaseFragment {
     @Override
     public void onCreateActions(@NonNull List<GuidedAction> actions, Bundle savedInstanceState) {
         allChannels = getChannels();
-        selectedChannels = new SettingsHelper(getActivity()).loadSelectedChannelsMap(getString(R.string.selectedChannelsFile));
+        selectedChannels = new SettingsHelper(getActivity()).loadSelectedChannelsMap();
         selectedChannelMap = new HashMap<>();
         Log.d("LOADED", loaded.toString());
         String id;
@@ -124,7 +123,7 @@ public class ChannelSelectFragment extends SetupBaseFragment {
 
         if (action.getId() == ACTION_ID_CONTINUE) {
             new SettingsHelper(getActivity())
-                    .saveChannelIds(selectedChannels, getString(R.string.selectedChannelsFile));
+                    .saveChannelIds(selectedChannels);
             Bundle args = new Bundle();
             args.putSerializable("channels", selectedChannelMap);
             SetupBaseFragment fragment = new ChannelNumbersFragment();

@@ -254,14 +254,19 @@ public abstract class EpgSyncJobService extends JobService {
      * of deleting and inserting a new program to keep the user's intent, eg. recording this
      * program.
      */
+    private static final String PROG_IPD_EPG_EVENT_ID = "epgEventId";
+
     public boolean shouldUpdateProgramMetadata(Program oldProgram, Program newProgram) {
         // NOTE: Here, we update the old program if it has the same title and overlaps with the
         // new program. The test logic is just an example and you can modify this. E.g. check
         // whether the both programs have the same program ID if your EPG supports any ID for
         // the programs.
-        return oldProgram.getTitle().equals(newProgram.getTitle())
-                && oldProgram.getStartTimeUtcMillis() <= newProgram.getEndTimeUtcMillis()
-                && newProgram.getStartTimeUtcMillis() <= oldProgram.getEndTimeUtcMillis();
+        try {
+            return String.valueOf(oldProgram.getInternalProviderData().get(PROG_IPD_EPG_EVENT_ID)).equals(String.valueOf(newProgram.getInternalProviderData().get(PROG_IPD_EPG_EVENT_ID)));
+        } catch (InternalProviderData.ParseException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     /**

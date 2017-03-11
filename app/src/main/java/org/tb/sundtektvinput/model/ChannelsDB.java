@@ -66,7 +66,7 @@ public class ChannelsDB {
         for (Channel channel : channels) {
             String key = String.valueOf(channel.getOriginalNetworkId());
             if (filter.contains(key)) {
-                newChannel = new Channel.Builder(channel).setDisplayNumber(String.valueOf(newChannelNumber++)).build();
+                newChannel = new Channel.Builder(channel).setDisplayNumber(String.valueOf(++newChannelNumber)).build();
                 channelMap.put(Integer.valueOf(key), newChannel);
                 Log.d(TAG, "Found " + channelMap.size() + " Channels");
             }

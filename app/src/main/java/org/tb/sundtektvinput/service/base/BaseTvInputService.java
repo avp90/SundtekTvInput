@@ -65,7 +65,7 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class BaseTvInputService extends TvInputService {
     private static final String TAG = BaseTvInputService.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     /**
      * Used for interacting with {@link SharedPreferences}.
@@ -184,6 +184,7 @@ public abstract class BaseTvInputService extends TvInputService {
         private long mElapsedProgramTime;
         private long mTimeShiftedPlaybackPosition = TvInputManager.TIME_SHIFT_INVALID_TIME;
         private boolean mTimeShiftIsPaused;
+        private long liveStartTime;
 
         private boolean mNeedToCheckChannelAd;
         private long mElapsedAdsTime;
@@ -321,7 +322,7 @@ public abstract class BaseTvInputService extends TvInputService {
                 mElapsedAdsTime = 0;
                 mElapsedProgramTime = getTvPlayer().getCurrentPosition();
                 long elapsedProgramTimeAdjusted = mElapsedProgramTime +
-                        mCurrentProgram.getStartTimeUtcMillis();
+                        liveStartTime;
                 if (mCurrentProgram.getInternalProviderData() != null) {
                     List<Advertisement> ads = mCurrentProgram.getInternalProviderData().getAds();
                     // First, sort the ads in time order.
@@ -418,7 +419,7 @@ public abstract class BaseTvInputService extends TvInputService {
                 if (mPlayingRecordedProgram) {
                     return mRecordedPlaybackStartTime;
                 } else {
-                    return mCurrentProgram.getStartTimeUtcMillis();
+                    return liveStartTime;
                 }
             }
             return TvInputManager.TIME_SHIFT_INVALID_TIME;
@@ -444,13 +445,13 @@ public abstract class BaseTvInputService extends TvInputService {
                 } else {
                     mElapsedProgramTime = getTvPlayer().getCurrentPosition();
                     mTimeShiftedPlaybackPosition = mElapsedProgramTime + mElapsedAdsTime +
-                            mCurrentProgram.getStartTimeUtcMillis();
+                            liveStartTime;
                     if (DEBUG) {
                         Log.d(TAG, "Time Shift Current Position");
                         Log.d(TAG, "Elapsed program time: " + mElapsedProgramTime);
                         Log.d(TAG, "Elapsed ads time: " + mElapsedAdsTime);
                         Log.d(TAG, "Total elapsed time: " + (mTimeShiftedPlaybackPosition -
-                                mCurrentProgram.getStartTimeUtcMillis()));
+                                liveStartTime));
                         Log.d(TAG, "Time shift difference: " + (System.currentTimeMillis() -
                                 mTimeShiftedPlaybackPosition));
                         Log.d(TAG, "============================");
@@ -576,7 +577,7 @@ public abstract class BaseTvInputService extends TvInputService {
         private void calculateElapsedTimesFromCurrentTime() {
             long currentTimeMs = getCurrentTime();
             mElapsedAdsTime = 0;
-            mElapsedProgramTime = currentTimeMs - mCurrentProgram.getStartTimeUtcMillis();
+            mElapsedProgramTime = currentTimeMs - liveStartTime;
             if (mCurrentProgram.getInternalProviderData() != null) {
                 List<Advertisement> ads = mCurrentProgram.getInternalProviderData().getAds();
                 for (Advertisement ad : ads) {
@@ -603,6 +604,7 @@ public abstract class BaseTvInputService extends TvInputService {
             if (!scheduleNextAd()) {
                 return false;
             }
+            liveStartTime = System.currentTimeMillis();
             return onPlayProgram(mCurrentChannel, mCurrentProgram, mElapsedProgramTime);
         }
 
@@ -682,7 +684,7 @@ public abstract class BaseTvInputService extends TvInputService {
                         timeShiftedDifference > TIME_SHIFTED_MINIMUM_DIFFERENCE_MILLIS) {
                     mElapsedAdsTime += ad.getStopTimeUtcMillis() - ad.getStartTimeUtcMillis();
                     mTimeShiftedPlaybackPosition = mElapsedProgramTime + mElapsedAdsTime +
-                            mCurrentProgram.getStartTimeUtcMillis();
+                            liveStartTime;
                     scheduleNextAd();
                     scheduleNextProgram();
 

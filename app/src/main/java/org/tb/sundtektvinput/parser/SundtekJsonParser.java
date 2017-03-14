@@ -39,7 +39,8 @@ public class SundtekJsonParser {
     private static final int CHANNEL_LOGO = 2;
     private static final int CHANNEL_ID = 4;
 
-    private static final String CHANNEL_IPD_MEDIA_URL = "mediaUrl";
+    public static final String CHANNEL_IPD_MEDIA_URL = "mediaUrl";
+    public static final String CHANNEL_IPD_MEDIA_TYPE = "mediaType";
 
 
     private static final int PROG_START = 0;
@@ -151,6 +152,7 @@ public class SundtekJsonParser {
             internalProviderData = new InternalProviderData();
             internalProviderData.setRepeatable(false);
             internalProviderData.put(CHANNEL_IPD_MEDIA_URL, mediaUrl);
+            internalProviderData.put(CHANNEL_IPD_MEDIA_TYPE, Util.TYPE_OTHER);
 
 
             channels.put(String.valueOf(originalNetworkId), new Channel.Builder()
@@ -316,18 +318,14 @@ public class SundtekJsonParser {
         connection.setReadTimeout(300000);
         connection.connect();
 
-
         InputStream stream = connection.getInputStream();
-
         reader = new BufferedReader(new InputStreamReader(stream));
-
         StringBuilder buffer = new StringBuilder();
         String line;
 
         while ((line = reader.readLine()) != null) {
             buffer.append(line).append("\n");
         }
-
         return buffer.toString();
     }
 }

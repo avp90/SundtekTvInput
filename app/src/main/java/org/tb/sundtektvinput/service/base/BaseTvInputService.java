@@ -393,20 +393,22 @@ public abstract class BaseTvInputService extends TvInputService {
                         return;
                     }
 
-                    mTimeShiftedPlaybackPosition = timeMs;
-                    // Elapsed ad time and program time will need to be recalculated
-                    // as if we just tuned to the channel at mTimeShiftPlaybackPosition.
-                    calculateElapsedTimesFromCurrentTime();
-                    scheduleNextAd();
-                    scheduleNextProgram();
-                    getTvPlayer().seekTo(mElapsedProgramTime);
-                    onTimeShiftGetCurrentPosition();
+                    if (timeMs > getTvPlayer().getCurrentPosition()) {
+                        mTimeShiftedPlaybackPosition = timeMs;
+                        // Elapsed ad time and program time will need to be recalculated
+                        // as if we just tuned to the channel at mTimeShiftPlaybackPosition.
+                        calculateElapsedTimesFromCurrentTime();
+                        scheduleNextAd();
+                        scheduleNextProgram();
+                        getTvPlayer().seekTo(mElapsedProgramTime);
+                        onTimeShiftGetCurrentPosition();
 
-                    // After adjusting necessary elapsed playback times based on new
-                    // time shift position, content should not continue to play if previously
-                    // in a paused state.
-                    if (mTimeShiftIsPaused) {
-                        onTimeShiftPause();
+                        // After adjusting necessary elapsed playback times based on new
+                        // time shift position, content should not continue to play if previously
+                        // in a paused state.
+                        if (mTimeShiftIsPaused) {
+                            onTimeShiftPause();
+                        }
                     }
                 }
             }
@@ -565,6 +567,8 @@ public abstract class BaseTvInputService extends TvInputService {
             }
 
             if (playCurrentProgram()) {
+                liveStartTime = System.currentTimeMillis();
+
                 setTvPlayerSurface(mSurface);
                 setTvPlayerVolume(mVolume);
                 if (mCurrentProgram != null) {
@@ -577,7 +581,7 @@ public abstract class BaseTvInputService extends TvInputService {
         private void calculateElapsedTimesFromCurrentTime() {
             long currentTimeMs = getCurrentTime();
             mElapsedAdsTime = 0;
-            mElapsedProgramTime = currentTimeMs - liveStartTime;
+            mElapsedProgramTime = currentTimeMs - mCurrentProgram.getStartTimeUtcMillis();
             if (mCurrentProgram.getInternalProviderData() != null) {
                 List<Advertisement> ads = mCurrentProgram.getInternalProviderData().getAds();
                 for (Advertisement ad : ads) {
@@ -604,7 +608,6 @@ public abstract class BaseTvInputService extends TvInputService {
             if (!scheduleNextAd()) {
                 return false;
             }
-            liveStartTime = System.currentTimeMillis();
             return onPlayProgram(mCurrentChannel, mCurrentProgram, mElapsedProgramTime);
         }
 

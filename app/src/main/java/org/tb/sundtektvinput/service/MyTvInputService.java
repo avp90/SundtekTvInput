@@ -58,6 +58,10 @@ import org.tb.sundtektvinput.service.base.EpgSyncJobService;
 import java.util.ArrayList;
 import java.util.List;
 
+
+import static org.tb.sundtektvinput.parser.SundtekJsonParser.CHANNEL_IPD_MEDIA_TYPE;
+import static org.tb.sundtektvinput.parser.SundtekJsonParser.CHANNEL_IPD_MEDIA_URL;
+
 //import com.google.android.media.tv.companionlibrary.EpgSyncJobService;
 
 //import org.tb.sundtektvinput.service.base.EpgSyncJobService;
@@ -204,21 +208,35 @@ public class MyTvInputService extends BaseTvInputService {
         }
 
         @Override
+        public void onPlayChannel(Channel channel) {
+            try {
+                Log.d(TAG, channel.getInternalProviderData().get(CHANNEL_IPD_MEDIA_TYPE).toString());
+                Log.d(TAG, channel.getInternalProviderData().get(CHANNEL_IPD_MEDIA_URL).toString());
+
+                createPlayer( Integer.valueOf(channel.getInternalProviderData().get(CHANNEL_IPD_MEDIA_TYPE).toString()), Uri.parse(String.valueOf(channel.getInternalProviderData().get(CHANNEL_IPD_MEDIA_URL))));
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    notifyTimeShiftStatusChanged(TvInputManager.TIME_SHIFT_STATUS_AVAILABLE);
+                }
+                mPlayer.setPlayWhenReady(true);
+
+            } catch (InternalProviderData.ParseException e) {
+                Log.d(TAG, "onPlayChannel: Could not get media for channel " + channel.getDisplayName());
+                e.printStackTrace();
+            }
+        }
+
+        @Override
         public boolean onPlayProgram(Channel channel, Program program, long startPosMs) {
             if (program == null) {
                 requestEpgSync(getCurrentChannelUri());
-                notifyVideoUnavailable(TvInputManager.VIDEO_UNAVAILABLE_REASON_TUNING);
                 return false;
             }
-            createPlayer(program.getInternalProviderData().getVideoType(),
-                    Uri.parse(program.getInternalProviderData().getVideoUrl()));
-            if (startPosMs > 0) {
-                mPlayer.seekTo(startPosMs);
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                notifyTimeShiftStatusChanged(TvInputManager.TIME_SHIFT_STATUS_AVAILABLE);
-            }
-            mPlayer.setPlayWhenReady(true);
+
+//            if (startPosMs > 0) {
+//                mPlayer.seekTo(startPosMs);
+//            }
+
             return true;
         }
 

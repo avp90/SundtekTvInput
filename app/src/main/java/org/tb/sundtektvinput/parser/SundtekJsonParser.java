@@ -292,8 +292,8 @@ public class SundtekJsonParser {
 
         URL url = new URL(jUrl);
         connection = (HttpURLConnection) url.openConnection();
-        connection.setConnectTimeout(300000);
-        connection.setReadTimeout(300000);
+        connection.setConnectTimeout(10000);
+        connection.setReadTimeout(10000);
         connection.connect();
 
         InputStream stream = connection.getInputStream();

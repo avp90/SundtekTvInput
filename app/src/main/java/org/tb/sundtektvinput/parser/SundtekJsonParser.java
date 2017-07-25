@@ -31,6 +31,7 @@ import java.util.Map;
 
 public class SundtekJsonParser {
 
+    private static final boolean DEBUG = true;
 
     private static final String TAG = SundtekJsonParser.class.getSimpleName();
 
@@ -53,6 +54,7 @@ public class SundtekJsonParser {
     private static final int PROG_CHANNEL_NAME = 1;
     private static final int PROG_SERVICE_ID = 2;
 
+    private static final int DETAILS_DESCRIPTION = 5;
 
     private String IP_ADDRESS;// = "192.168.3.26";
     private static final String SERVER_PORT = "22000";
@@ -60,11 +62,11 @@ public class SundtekJsonParser {
     private String BASE_URL;// = "http://" + IP_ADDRESS + ":" + SERVER_PORT;
     private static final String BASE_STREAM_URL = "/stream/";
     private static final String BASE_SERVERCMD_URL = "/servercmd.xhx?";
-    private static final String QUERY_CHANNELS_SD = "chantype=sdtv&filter=publictv-privatetv";
-    private static final String QUERY_CHANNELS_HD = "chantype=hdtv&filter=publictv-privatetv";
-    private static final String QUERY_PROGRAMS_NOW = "epgmode=now&epgfilter=now-publictv-privatetv&channels=1%2C2%2C3%2C4%2C5";
-    private static final String QUERY_PROGRAMS_TODAY = "epgmode=today&epgfilter=today-publictv-privatetv&channels=1%2C2%2C3%2C4%2C5";
-    private static final String QUERY_PROGRAMS_TOMORROW = "epgmode=tomorrow&epgfilter=tomorrow-publictv-privatetv&channels=1%2C2%2C3%2C4%2C5";
+
+    private static final String QUERY_CHANNELS_FAV = "cmd=chlist&mode=favlist&groups=%5B\"favs\"%5D&filter=sd-hd";
+
+    private static final String QUERY_PROGRAMS_FAV = "epgmode=now&epgfilter=now-group&groups=%255B%2522favs%2522%255D&channels=1%2C2%2C3%2C4%2C5";
+
 
     private static final String PROG_IPD_EPG_EVENT_ID = "epgEventId";
     private static final String PROG_IPD_SERVICE_ID = "serviceId";
@@ -76,39 +78,30 @@ public class SundtekJsonParser {
     private HashMap<String, Channel> channelMap;
     private int channelNumber = 1;
 
-    private Context mContext;
-
 
     public SundtekJsonParser(Context context) {
-        mContext = context;
         String ip = new SettingsHelper(context).loadIp();
         if (ip != null)
             IP_ADDRESS = ip;
         else
-            IP_ADDRESS = "192.168.3.26";
+            IP_ADDRESS = "192.168.3.21";
 
         BASE_URL = "http://" + IP_ADDRESS + ":" + SERVER_PORT;
-
-
     }
 
-    public HashMap<String, Channel> getChannelMap() throws JSONException, IOException {
+    private HashMap<String, Channel> getChannelMap() throws JSONException, IOException {
 
         if (channelMap == null) {
             channelMap = new HashMap<>();
-
-            Log.d(TAG, BASE_URL + BASE_SERVERCMD_URL + QUERY_CHANNELS_HD);
-            Log.d(TAG, "Fetch HD channels");
-
-            JSONArray responseChannlesHdJson = new JSONArray(getJson(BASE_URL + BASE_SERVERCMD_URL + QUERY_CHANNELS_HD));
-            channelMap.putAll(parseChannles(responseChannlesHdJson));
-
-            Log.d(TAG, "Fetch SD channels");
-            JSONArray responseChannlesSdJson = new JSONArray(getJson(BASE_URL + BASE_SERVERCMD_URL + QUERY_CHANNELS_SD));
+            if (DEBUG) {
+                Log.d(TAG, BASE_URL + BASE_SERVERCMD_URL + QUERY_CHANNELS_FAV);
+                Log.d(TAG, "Fetch FAV channels");
+            }
+            JSONArray responseChannlesSdJson = new JSONArray(getJson(BASE_URL + BASE_SERVERCMD_URL + QUERY_CHANNELS_FAV));
             channelMap.putAll(parseChannles(responseChannlesSdJson));
 
-
-            Log.d(TAG, "total channels found: " + channelMap.size());
+            if (DEBUG)
+                Log.d(TAG, "total channels found: " + channelMap.size());
         }
         return channelMap;
     }
@@ -137,33 +130,35 @@ public class SundtekJsonParser {
         int originalNetworkId;
         int serviceId;
 
-
+        channelsJson = (JSONArray) channelsJson.get(0);
         for (int i = 0; i < channelsJson.length(); i++) {
-            jsonChannel = channelsJson.getJSONArray(i);
-            channelName = jsonChannel.get(CHANNEL_NAME).toString();
-            channelLogo = jsonChannel.get(CHANNEL_LOGO).toString();
-            mediaUrl = jsonChannel.get(CHANNEL_MEDIA).toString();
-            originalNetworkId = channelLogo.hashCode();
+            if (channelsJson.get(i) instanceof JSONArray) { // filter out non channel data
+                jsonChannel = channelsJson.getJSONArray(i);
+                channelName = jsonChannel.get(CHANNEL_NAME).toString();
+                channelLogo = jsonChannel.get(CHANNEL_LOGO).toString();
+                mediaUrl = jsonChannel.get(CHANNEL_MEDIA).toString();
+                originalNetworkId = channelName.hashCode();
 
-            String serviceIdString = jsonChannel.get(CHANNEL_ID).toString();
-            serviceIdString = serviceIdString.substring(0, serviceIdString.indexOf("_"));
-            serviceId = Integer.parseInt(serviceIdString);
+                String serviceIdString = jsonChannel.get(CHANNEL_ID).toString();
+                serviceIdString = serviceIdString.substring(0, serviceIdString.indexOf("_"));
+                serviceId = Integer.parseInt(serviceIdString);
 
-            internalProviderData = new InternalProviderData();
-            internalProviderData.setRepeatable(false);
-            internalProviderData.put(CHANNEL_IPD_MEDIA_URL, mediaUrl);
-            internalProviderData.put(CHANNEL_IPD_MEDIA_TYPE, Util.TYPE_OTHER);
+                internalProviderData = new InternalProviderData();
+                internalProviderData.setRepeatable(false);
+                internalProviderData.put(CHANNEL_IPD_MEDIA_URL, mediaUrl);
+                internalProviderData.put(CHANNEL_IPD_MEDIA_TYPE, Util.TYPE_OTHER);
 
 
-            channels.put(String.valueOf(originalNetworkId), new Channel.Builder()
-                    .setDisplayName(channelName)
-                    .setDisplayNumber(String.valueOf(channelNumber++))
-//                    .setChannelLogo(channelLogo)
-                    .setOriginalNetworkId(originalNetworkId)
-                    .setInternalProviderData(internalProviderData)
-                    .setServiceId(serviceId)
-                    .build()
-            );
+                channels.put(String.valueOf(originalNetworkId), new Channel.Builder()
+                                .setDisplayName(channelName)
+                                .setDisplayNumber(String.valueOf(channelNumber++))
+//                                .setChannelLogo(channelLogo)
+                                .setOriginalNetworkId(originalNetworkId)
+                                .setInternalProviderData(internalProviderData)
+                                .setServiceId(serviceId)
+                                .build()
+                );
+            }
         }
 
         return channels;
@@ -172,29 +167,19 @@ public class SundtekJsonParser {
 
     public List<Program> getPrograms() {
         List<Program> programList = new ArrayList<>();
-        List<Program> programNow = new ArrayList<>();
-        List<Program> programToday = new ArrayList<>();
-        List<Program> programTomorrow = new ArrayList<>();
 
         try {
-            Log.d(TAG, "Fetch programs for NOW");
-            JSONArray responseProgramsNowJson = new JSONArray(getJson(BASE_URL + BASE_SERVERCMD_URL + QUERY_PROGRAMS_NOW));
-            programNow = parsePrograms(responseProgramsNowJson, true);
-            programList.addAll(programNow);
-            Log.d(TAG, "Found " + programNow.size() + " programs for NOW");
+            if (DEBUG)
+                Log.d(TAG, "Fetch programs for NOW");
 
-//            Log.d(TAG, "Fetch programs for TODAY");
-//            JSONArray responseProgramsTodayJson = new JSONArray(getJson(BASE_URL + BASE_SERVERCMD_URL + QUERY_PROGRAMS_TODAY));
-//            programToday = parsePrograms(responseProgramsTodayJson, true);
-//            programList.addAll(programToday);
-//            Log.d(TAG, "Found " + programToday.size() + " programs for TODAY");
-//
-//            Log.d(TAG, "Fetch programs for TOMORROW");
-//            JSONArray responseProgramsTomorrowJson = new JSONArray(getJson(BASE_URL + BASE_SERVERCMD_URL + QUERY_PROGRAMS_TOMORROW));
-//            programTomorrow = parsePrograms(responseProgramsTomorrowJson, true);
-//            programList.addAll(programTomorrow);
-//            Log.d(TAG, "Found " + programTomorrow.size() + " programs for TOMORROW");
-//
+            JSONArray responseProgramsNowJson = new JSONArray(getJson(BASE_URL + BASE_SERVERCMD_URL + QUERY_PROGRAMS_FAV));
+            programList = parsePrograms(responseProgramsNowJson, true);
+
+            if (DEBUG) {
+                Log.d(TAG, "Found " + programList.size() + " programs");
+                Log.d(TAG, programList.toString());
+            }
+
         } catch (JSONException | IOException e) {
             e.printStackTrace();
         }
@@ -219,19 +204,20 @@ public class SundtekJsonParser {
         String mediaUrl = "empty";
         String epgEventId;
         String serviceId;
-        String description = "";
+        String description;
         String channelName;
         int genreIndex = 0;
 
         InternalProviderData internalProviderData;
 
         for (int resp = 0; resp < programsJson.length(); resp++) {
-            JSONArray channelJson = programsJson.getJSONArray(resp);
+            JSONArray channelProgramsJson = programsJson.getJSONArray(resp);
 
-            logo = channelJson.get(PROG_ICON_SRC).toString();
-            originalNetworkId = logo.hashCode();
-            serviceId = channelJson.getString(PROG_SERVICE_ID);
-            channelName = channelJson.get(PROG_CHANNEL_NAME).toString();
+            logo = channelProgramsJson.get(PROG_ICON_SRC).toString();
+            serviceId = channelProgramsJson.getString(PROG_SERVICE_ID);
+            channelName = channelProgramsJson.get(PROG_CHANNEL_NAME).toString();
+            originalNetworkId = channelName.hashCode();
+
             try {
                 mediaUrl = (String) getChannelMap().get(String.valueOf(originalNetworkId)).getInternalProviderData().get(CHANNEL_IPD_MEDIA_URL);
             } catch (IOException e) {
@@ -247,20 +233,19 @@ public class SundtekJsonParser {
             internalProviderData.put(PROG_IPD_EPG_EVENT_ID, originalNetworkId);
             internalProviderData.put(PROG_IPD_CHANNEL_NAME, channelName);
 
-            if (channelJson.length() > (JSON_EPG_START_INDEX + 1)) {
-                for (int i = JSON_EPG_START_INDEX; i < channelJson.length(); i++) {
-                    if (channelJson.get(i) instanceof JSONArray) {
-                        prog = new JSONArray(channelJson.get(i).toString());
+            if (channelProgramsJson.length() > (JSON_EPG_START_INDEX + 1)) {
+                for (int i = JSON_EPG_START_INDEX; i < channelProgramsJson.length(); i++) {
+                    if (channelProgramsJson.get(i) instanceof JSONArray) {
+                        prog = new JSONArray(channelProgramsJson.get(i).toString());
                         title = prog.get(PROG_TITLE).toString();
                         subtitle = prog.get(PROG_SUBTITLE).toString();
 
-                        title = subtitle.equals("") ? title : title + " - " + subtitle;
+                        title = subtitle.isEmpty() ? title : title + " - " + subtitle;
                         start = (prog.getLong(PROG_START) * 1000L);
                         duration = (prog.getLong(PROG_DURATION) * 1000L);
                         end = start + duration;
                         epgEventId = prog.getString(PROG_EVENTID);
                         internalProviderData.put(PROG_IPD_EPG_EVENT_ID, epgEventId);
-                        if (parseDescription && !epgEventId.equals("") && !serviceId.equals("empty"))
                             description = getJsonDescription(serviceId, epgEventId);
                         //TODO:REMOVE FAKE GENRES
                         String[] genre = new String[]{ProgramsDB.getAllGenres()[(genreIndex++) % ProgramsDB.getAllGenres().length]};
@@ -287,16 +272,17 @@ public class SundtekJsonParser {
 
 
     private String getJsonDescription(String serviceId, String epgEventId) {
-        if (!epgEventId.equals("") && (!serviceId.equals("")))
+        if (!epgEventId.isEmpty() && !serviceId.isEmpty())
             try {
                 JSONArray detailsJson = new JSONArray(getJson(BASE_URL + BASE_SERVERCMD_URL + "epgserviceid=" + serviceId + "&epgeventid=" + epgEventId + "&delsys=1"));
 
-                for (int k = 0; k < detailsJson.length(); k++) {
-                    if (!detailsJson.isNull(k) && (detailsJson.get(k) instanceof JSONArray)) {
-                        JSONArray detailsArray = detailsJson.getJSONArray(k);
-                        if (!detailsArray.isNull(5) && !detailsArray.get(5).equals("")) {
-                            Log.d(TAG, "added Description for event: " + epgEventId);
-                            return detailsArray.getString(5);
+                for (int i = 0; i < detailsJson.length(); i++) {
+                    if (!detailsJson.isNull(i) && (detailsJson.get(i) instanceof JSONArray)) {
+                        JSONArray detailsArray = detailsJson.getJSONArray(i);
+                        if (!detailsArray.isNull(DETAILS_DESCRIPTION) && !detailsArray.getString(DETAILS_DESCRIPTION).isEmpty()) {
+                                if (DEBUG)
+                                Log.d(TAG, "added Description for event: " + epgEventId);
+                            return detailsArray.getString(DETAILS_DESCRIPTION);
                         }
                     }
                 }

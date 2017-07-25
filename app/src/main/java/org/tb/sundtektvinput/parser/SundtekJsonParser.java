@@ -31,7 +31,7 @@ import java.util.Map;
 
 public class SundtekJsonParser {
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private static final String TAG = SundtekJsonParser.class.getSimpleName();
 
@@ -218,15 +218,7 @@ public class SundtekJsonParser {
             channelName = channelProgramsJson.get(PROG_CHANNEL_NAME).toString();
             originalNetworkId = channelName.hashCode();
 
-            try {
-                mediaUrl = (String) getChannelMap().get(String.valueOf(originalNetworkId)).getInternalProviderData().get(CHANNEL_IPD_MEDIA_URL);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
             internalProviderData = new InternalProviderData();
-            internalProviderData.setVideoUrl(mediaUrl);
-            internalProviderData.setVideoType(Util.TYPE_OTHER);
             internalProviderData.put(PROG_IPD_SERVICE_ID, serviceId);
             internalProviderData.put(PROG_IPD_ORIGINAL_NETWORK_ID, originalNetworkId);
             //set originalNetworkId as fake eventId in case there are no real events for the channel

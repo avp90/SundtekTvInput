@@ -1,42 +1,50 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion '25.0.2'
+    def globalConfiguration = rootProject.extensions.getByName("ext")
+
+    compileSdkVersion globalConfiguration["androidCompileSdkVersion"]
+    buildToolsVersion globalConfiguration["buildToolsVersion"]
 
     defaultConfig {
-        applicationId "org.tb.sundtektvinput"
-        minSdkVersion 24
-        targetSdkVersion 26
+        applicationId globalConfiguration["applicationId"]
+        minSdkVersion globalConfiguration["androidMinSdkVersion"]
+        targetSdkVersion globalConfiguration["androidTargetSdkVersion"]
+
         versionCode 2
         versionName "1.1"
+        multiDexEnabled true
+
     }
 
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            minifyEnabled true
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+
         }
     }
 
     packagingOptions {
-        exclude  'jsr305_annotations/Jsr305_annotations.gwt.xml'
-        exclude  'build-data.properties'
+        exclude 'jsr305_annotations/Jsr305_annotations.gwt.xml'
+        exclude 'build-data.properties'
     }
 }
 
 dependencies {
-    compile 'com.google.android.exoplayer:exoplayer:r1.5.16'
-    compile 'com.google.android.libraries.tv:companionlibrary:0.2'
-    compile 'com.android.support:appcompat-v7:26.0.0'
-    compile 'com.android.support:support-core-utils:26.0.0'
-    compile 'com.android.support:support-compat:26.0.0'
-    compile 'com.android.support:leanback-v17:26.0.0'
-    compile 'com.android.support:recyclerview-v7:26.0.0'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.google.firebase:firebase-crash:10.0.1'
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile "com.google.android.exoplayer:exoplayer:r1.5.16"
+    compile "com.google.android.libraries.tv:companionlibrary:0.1"
+    compile "com.android.support:appcompat-v7:$supportLibraryVersion"
+    compile "com.android.support:support-core-utils:$supportLibraryVersion"
+    compile "com.android.support:support-compat:$supportLibraryVersion"
+    compile "com.android.support:leanback-v17:$supportLibraryVersion"
+    compile "com.android.support:recyclerview-v7:$supportLibraryVersion"
+    compile "com.google.firebase:firebase-crash:10.0.1"
+    compile "com.android.support.constraint:constraint-layout:1.0.2"
 
 }
 
-
 apply plugin: 'com.google.gms.google-services'
+//apply plugin: 'com.getkeepsafe.dexcount'

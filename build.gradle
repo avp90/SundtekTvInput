@@ -5,12 +5,30 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.3.3'
-        classpath 'com.google.gms:google-services:3.0.0'
+        classpath 'com.google.gms:google-services:3.1.0'
+//        classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.7.3'
+
     }
+}
+
+ext {
+    androidCompileSdkVersion = 26
+    androidMinSdkVersion = 24
+    androidTargetSdkVersion = 26
+
+    buildToolsVersion = '26.0.1'
+    applicationId = "org.tb.sundtektvinput"
+
+    supportLibraryVersion = '26.0.1'
 }
 
 allprojects {
     repositories {
         jcenter()
+        mavenCentral()
+        maven {
+            url 'https://maven.google.com'
+            // Alternative URL is 'https://dl.google.com/dl/android/maven2/'
+        }
     }
 }

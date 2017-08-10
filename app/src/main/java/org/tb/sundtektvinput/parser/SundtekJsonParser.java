@@ -10,19 +10,18 @@ import com.google.android.media.tv.companionlibrary.model.Program;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.tb.sundtektvinput.SundtekTvInputApp;
 import org.tb.sundtektvinput.model.ProgramsDB;
 import org.tb.sundtektvinput.util.SettingsHelper;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import okhttp3.Request;
+import okhttp3.Response;
 
 
 /**
@@ -238,7 +237,7 @@ public class SundtekJsonParser {
                         end = start + duration;
                         epgEventId = prog.getString(PROG_EVENTID);
                         internalProviderData.put(PROG_IPD_EPG_EVENT_ID, epgEventId);
-                            description = getJsonDescription(serviceId, epgEventId);
+                        description = getJsonDescription(serviceId, epgEventId);
                         //TODO:REMOVE FAKE GENRES
                         String[] genre = new String[]{ProgramsDB.getAllGenres()[(genreIndex++) % ProgramsDB.getAllGenres().length]};
 
@@ -272,7 +271,7 @@ public class SundtekJsonParser {
                     if (!detailsJson.isNull(i) && (detailsJson.get(i) instanceof JSONArray)) {
                         JSONArray detailsArray = detailsJson.getJSONArray(i);
                         if (!detailsArray.isNull(DETAILS_DESCRIPTION) && !detailsArray.getString(DETAILS_DESCRIPTION).isEmpty()) {
-                                if (DEBUG)
+                            if (DEBUG)
                                 Log.d(TAG, "added Description for event: " + epgEventId);
                             return detailsArray.getString(DETAILS_DESCRIPTION);
                         }
@@ -285,25 +284,14 @@ public class SundtekJsonParser {
         return "";
     }
 
+    private static String getJson(String jUrl) throws IOException {
+        Request request = new Request.Builder()
+                .url(jUrl)
+                .build();
 
-    private String getJson(String jUrl) throws IOException {
-        HttpURLConnection connection;
-        BufferedReader reader;
-
-        URL url = new URL(jUrl);
-        connection = (HttpURLConnection) url.openConnection();
-        connection.setConnectTimeout(10000);
-        connection.setReadTimeout(10000);
-        connection.connect();
-
-        InputStream stream = connection.getInputStream();
-        reader = new BufferedReader(new InputStreamReader(stream));
-        StringBuilder buffer = new StringBuilder();
-        String line;
-
-        while ((line = reader.readLine()) != null) {
-            buffer.append(line).append("\n");
-        }
-        return buffer.toString();
+        Response response = SundtekTvInputApp.httpClient.newCall(request).execute();
+        return response.body().string();
     }
+
 }
+

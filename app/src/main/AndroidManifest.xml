@@ -43,6 +43,7 @@
         android:required="true"/>
 
     <application
+        android:name="org.tb.sundtektvinput.SundtekTvInputApp"
         android:allowBackup="false"
         android:banner="@drawable/ic_launcher"
         android:icon="@drawable/ic_launcher"

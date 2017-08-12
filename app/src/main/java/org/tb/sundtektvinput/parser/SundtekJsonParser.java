@@ -65,7 +65,7 @@ public class SundtekJsonParser {
     private static final String QUERY_CHANNELS_FAV = "cmd=chlist&mode=favlist&groups=%5B\"favs\"%5D&filter=sd-hd";
 
     private static final String QUERY_PROGRAMS_FAV = "epgmode=now&epgfilter=now-group&groups=%255B%2522favs%2522%255D&channels=1%2C2%2C3%2C4%2C5";
-
+    private static final String QUERY_PROGRAMS_FAV_TODAY = "epgmode=today&epgfilter=today-group&groups=%255B%2522favs%2522%255D&epgstart=1&epgstop=2&channels=1%2C2%2C3%2C4%2C5";
 
     private static final String PROG_IPD_EPG_EVENT_ID = "epgEventId";
     private static final String PROG_IPD_SERVICE_ID = "serviceId";
@@ -171,7 +171,7 @@ public class SundtekJsonParser {
             if (DEBUG)
                 Log.d(TAG, "Fetch programs for NOW");
 
-            JSONArray responseProgramsNowJson = new JSONArray(getJson(BASE_URL + BASE_SERVERCMD_URL + QUERY_PROGRAMS_FAV));
+            JSONArray responseProgramsNowJson = new JSONArray(getJson(BASE_URL + BASE_SERVERCMD_URL + QUERY_PROGRAMS_FAV_TODAY));
             programList = parsePrograms(responseProgramsNowJson, true);
 
             if (DEBUG) {

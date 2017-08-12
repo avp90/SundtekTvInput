@@ -169,9 +169,9 @@ public abstract class EpgSyncJobService extends JobService {
     /**
      * The default period between full EPG syncs, one day.
      */
-    public static final long DEFAULT_SYNC_PERIOD_MILLIS = 1000 * 60 * 60 * 2; // 6 hour
+    public static final long DEFAULT_SYNC_PERIOD_MILLIS = 1000 * 60 * 60 * 6; // 6 hour
     public static final long DEFAULT_IMMEDIATE_EPG_DURATION_MILLIS = 1000 * 60 * 60 * 6; // 6 Hour
-    public static final long DEFAULT_PERIODIC_EPG_DURATION_MILLIS = 1000 * 60 * 60 * 48; // 48 Hour
+    public static final long DEFAULT_PERIODIC_EPG_DURATION_MILLIS = 1000 * 60 * 60 * 24; // 48 Hour
 
     private static final int PERIODIC_SYNC_JOB_ID = 0;
     private static final int REQUEST_SYNC_JOB_ID = 1;
@@ -355,6 +355,14 @@ public abstract class EpgSyncJobService extends JobService {
                 jobServiceComponent);
     }
 
+    public static void requestImmediateFullSync(Context context, String inputId,
+            ComponentName jobServiceComponent) {
+        requestImmediateSync(context, inputId, DEFAULT_PERIODIC_EPG_DURATION_MILLIS,
+                jobServiceComponent);
+    }
+
+
+
     /**
      * Manually requests a job to run now.
      * <p>
@@ -513,7 +521,7 @@ public abstract class EpgSyncJobService extends JobService {
                     intent.putExtra(EpgSyncJobService.SYNC_STATUS, EpgSyncJobService.SYNC_SCANNED);
                     LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
                 } else {
-                    Log.d(TAG, "no programs forund for " + channelMap.valueAt(i).getDisplayName());
+                    Log.d(TAG, "no programs found for " + channelMap.valueAt(i).getDisplayName());
                 }
             }
             return null;

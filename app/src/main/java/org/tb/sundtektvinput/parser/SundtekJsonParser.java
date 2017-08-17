@@ -1,6 +1,7 @@
 package org.tb.sundtektvinput.parser;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.android.exoplayer.util.Util;
@@ -16,13 +17,18 @@ import org.tb.sundtektvinput.util.SettingsHelper;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import okhttp3.FormBody;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
+
+import static android.media.tv.TvContract.Channels.TYPE_OTHER;
 
 /**
  * Created by Tamim Baschour on 26.02.2017.
@@ -34,6 +40,13 @@ public class SundtekJsonParser {
 
     private static final String TAG = SundtekJsonParser.class.getSimpleName();
 
+    private final String BASE_URL;        // = "http://" + IP_ADDRESS + ":" + SERVER_PORT;
+    private static final String BASE_SERVERCMD_URL = "/servercmd.xhx";
+    private static final String SERVER_PORT = "22000";
+
+    private static final String CHANNEL_LIST = "favs";
+
+
     private static final int CHANNEL_NAME = 0;
     private static final int CHANNEL_MEDIA = 1;
     private static final int CHANNEL_LOGO = 2;
@@ -41,7 +54,6 @@ public class SundtekJsonParser {
 
     public static final String CHANNEL_IPD_MEDIA_URL = "mediaUrl";
     public static final String CHANNEL_IPD_MEDIA_TYPE = "mediaType";
-
 
     private static final int PROG_START = 0;
     private static final int PROG_DURATION = 1;
@@ -53,19 +65,7 @@ public class SundtekJsonParser {
     private static final int PROG_CHANNEL_NAME = 1;
     private static final int PROG_SERVICE_ID = 2;
 
-    private static final int DETAILS_DESCRIPTION = 5;
-
-    private String IP_ADDRESS;// = "192.168.3.26";
-    private static final String SERVER_PORT = "22000";
-
-    private String BASE_URL;// = "http://" + IP_ADDRESS + ":" + SERVER_PORT;
-    private static final String BASE_STREAM_URL = "/stream/";
-    private static final String BASE_SERVERCMD_URL = "/servercmd.xhx?";
-
-    private static final String QUERY_CHANNELS_FAV = "cmd=chlist&mode=favlist&groups=%5B\"favs\"%5D&filter=sd-hd";
-
-    private static final String QUERY_PROGRAMS_FAV = "epgmode=now&epgfilter=now-group&groups=%255B%2522favs%2522%255D&channels=1%2C2%2C3%2C4%2C5";
-    private static final String QUERY_PROGRAMS_FAV_TODAY = "epgmode=today&epgfilter=today-group&groups=%255B%2522favs%2522%255D&epgstart=1&epgstop=2&channels=1%2C2%2C3%2C4%2C5";
+    private static final int PROG_DETAILS_DESCRIPTION = 5;
 
     private static final String PROG_IPD_EPG_EVENT_ID = "epgEventId";
     private static final String PROG_IPD_SERVICE_ID = "serviceId";
@@ -74,12 +74,59 @@ public class SundtekJsonParser {
 
     private static final int JSON_EPG_START_INDEX = 3;
 
+    private static final String CMD_PARAM = "cmd";
+    private static final String CMD_GET_GROUPS = "getgroups";
+    private static final String CMD_PROVIDERS = "providers";
+    private static final String CMD_CHANNELLIST = "chlist";
+
+    private static final String CHANNEL_MODE_PARAM = "mode";
+    private static final String CHANNEL_MODE_SCANLIST = "scanlist";
+    private static final String CHANNEL_MODE_FAVLIST = "favlist";
+
+    private static final String DEVICE_SERIAL_PARAM = "devserial";
+
+    private static final String PRID_PARAM = "prid";
+
+    private static final String CHANNEL_FILTER_PARAM = "filter";
+    private static final String CHANNEL_FILTER_RADIO_FTA = "radio";
+    private static final String CHANNEL_FILTER_SD_FTA = "sd";
+    private static final String CHANNEL_FILTER_HD_FTA = "hd";
+    private static final String CHANNEL_FILTER_RADIO_PTV = "pradio";
+    private static final String CHANNEL_FILTER_SD_PTV = "psd";
+    private static final String CHANNEL_FILTER_HD_PTV = "phd";
+
+    private static final String GROUPS_PARAM = "groups";
+
+    private static final String EPG_MODE_PARAM = "epgmode";
+    private static final String EPG_MODE_NOW = "now";
+    private static final String EPG_MODE_TODAY = "today";
+    private static final String EPG_MODE_TOMORROW = "tomorrow";
+    private static final String EPG_MODE_CALENDAR = "calendar";
+
+    private static final String EPG_FILTER_PARAM = "epgfilter";
+    private static final String EPG_FILTER_NOW = "now";
+    private static final String EPG_FILTER_TODAY = "today";
+    private static final String EPG_FILTER_TOMORROW = "tomorrow";
+    private static final String EPG_FILTER_GROUP = "group";
+
+
+    private static final String EPG_START_MS_PARAM = "epgstart";
+    private static final String EPG_STOP_MS_PARAM = "epgstop";
+    private static final String EPG_DATE_PARAM = "date";
+
+
+    private static final String EPG_SERVICE_ID_PARAM = "epgserviceid";
+    private static final String EPG_EVENT_ID_PARAM = "epgeventid";
+    private static final String EPG_DEL_SYS_PARAM = "delsys";
+
     private HashMap<String, Channel> channelMap;
+
     private int channelNumber = 1;
 
 
     public SundtekJsonParser(Context context) {
         String ip = new SettingsHelper(context).loadIp();
+        String IP_ADDRESS;
         if (ip != null)
             IP_ADDRESS = ip;
         else
@@ -93,11 +140,26 @@ public class SundtekJsonParser {
         if (channelMap == null) {
             channelMap = new HashMap<>();
             if (DEBUG) {
-                Log.d(TAG, BASE_URL + BASE_SERVERCMD_URL + QUERY_CHANNELS_FAV);
                 Log.d(TAG, "Fetch FAV channels");
             }
-            JSONArray responseChannlesSdJson = new JSONArray(getJson(BASE_URL + BASE_SERVERCMD_URL + QUERY_CHANNELS_FAV));
-            channelMap.putAll(parseChannles(responseChannlesSdJson));
+            JSONArray responseChannlesJson = new JSONArray(
+                    getJson(
+                            BASE_URL + BASE_SERVERCMD_URL,
+                            buildChannelPostBody(
+                                    CHANNEL_LIST,
+                                    CHANNEL_MODE_FAVLIST,
+                                    Arrays.asList(
+                                            CHANNEL_FILTER_SD_FTA,
+                                            CHANNEL_FILTER_HD_FTA,
+                                            CHANNEL_FILTER_HD_PTV,
+                                            CHANNEL_FILTER_SD_PTV,
+                                            CHANNEL_FILTER_RADIO_FTA,
+                                            CHANNEL_FILTER_RADIO_PTV
+                                    )
+                            )
+                    )
+            );
+            channelMap.putAll(parseChannles(responseChannlesJson));
 
             if (DEBUG)
                 Log.d(TAG, "total channels found: " + channelMap.size());
@@ -155,6 +217,7 @@ public class SundtekJsonParser {
                                 .setOriginalNetworkId(originalNetworkId)
                                 .setInternalProviderData(internalProviderData)
                                 .setServiceId(serviceId)
+                                .setType(TYPE_OTHER)
                                 .build()
                 );
             }
@@ -169,9 +232,21 @@ public class SundtekJsonParser {
 
         try {
             if (DEBUG)
-                Log.d(TAG, "Fetch programs for NOW");
+                Log.d(TAG, "Fetch programs");
 
-            JSONArray responseProgramsNowJson = new JSONArray(getJson(BASE_URL + BASE_SERVERCMD_URL + QUERY_PROGRAMS_FAV_TODAY));
+            JSONArray responseProgramsNowJson = new JSONArray(
+                    getJson(
+                            BASE_URL + BASE_SERVERCMD_URL,
+                            buildProgramsPostBody(
+                                    CHANNEL_LIST,
+                                    EPG_MODE_TODAY,
+                                    Arrays.asList(
+                                            "now",
+                                            "group"
+                                    )
+                            )
+                    )
+            );
             programList = parsePrograms(responseProgramsNowJson, true);
 
             if (DEBUG) {
@@ -195,15 +270,13 @@ public class SundtekJsonParser {
         JSONArray prog;
         String title;
         String subtitle;
-        String logo;
         int originalNetworkId;
         long start;
         long end;
         long duration;
-        String mediaUrl = "empty";
         String epgEventId;
         String serviceId;
-        String description;
+        String description = "";
         String channelName;
         int genreIndex = 0;
 
@@ -212,7 +285,6 @@ public class SundtekJsonParser {
         for (int resp = 0; resp < programsJson.length(); resp++) {
             JSONArray channelProgramsJson = programsJson.getJSONArray(resp);
 
-            logo = channelProgramsJson.get(PROG_ICON_SRC).toString();
             serviceId = channelProgramsJson.getString(PROG_SERVICE_ID);
             channelName = channelProgramsJson.get(PROG_CHANNEL_NAME).toString();
             originalNetworkId = channelName.hashCode();
@@ -237,7 +309,8 @@ public class SundtekJsonParser {
                         end = start + duration;
                         epgEventId = prog.getString(PROG_EVENTID);
                         internalProviderData.put(PROG_IPD_EPG_EVENT_ID, epgEventId);
-                        description = getJsonDescription(serviceId, epgEventId);
+                        if (parseDescription)
+                            description = getJsonDescription(serviceId, epgEventId);
                         //TODO:REMOVE FAKE GENRES
                         String[] genre = new String[]{ProgramsDB.getAllGenres()[(genreIndex++) % ProgramsDB.getAllGenres().length]};
 
@@ -251,7 +324,7 @@ public class SundtekJsonParser {
                                     .setLongDescription(description)
                                     .setCanonicalGenres(genre)
 //                                    .setPosterArtUri(logo)
-                                    .setThumbnailUri(logo)
+//                                    .setThumbnailUri(logo)
                                     .build());
                     }
                 }
@@ -265,15 +338,24 @@ public class SundtekJsonParser {
     private String getJsonDescription(String serviceId, String epgEventId) {
         if (!epgEventId.isEmpty() && !serviceId.isEmpty())
             try {
-                JSONArray detailsJson = new JSONArray(getJson(BASE_URL + BASE_SERVERCMD_URL + "epgserviceid=" + serviceId + "&epgeventid=" + epgEventId + "&delsys=1"));
+                JSONArray detailsJson = new JSONArray(
+                        getJson(
+                                BASE_URL + BASE_SERVERCMD_URL,
+                                buildDescriptionPostBody(
+                                        serviceId,
+                                        epgEventId,
+                                        "1"
+                                )
+                        )
+                );
 
                 for (int i = 0; i < detailsJson.length(); i++) {
                     if (!detailsJson.isNull(i) && (detailsJson.get(i) instanceof JSONArray)) {
                         JSONArray detailsArray = detailsJson.getJSONArray(i);
-                        if (!detailsArray.isNull(DETAILS_DESCRIPTION) && !detailsArray.getString(DETAILS_DESCRIPTION).isEmpty()) {
+                        if (!detailsArray.isNull(PROG_DETAILS_DESCRIPTION) && !detailsArray.getString(PROG_DETAILS_DESCRIPTION).isEmpty()) {
                             if (DEBUG)
                                 Log.d(TAG, "added Description for event: " + epgEventId);
-                            return detailsArray.getString(DETAILS_DESCRIPTION);
+                            return detailsArray.getString(PROG_DETAILS_DESCRIPTION);
                         }
                     }
                 }
@@ -284,14 +366,42 @@ public class SundtekJsonParser {
         return "";
     }
 
-    private static String getJson(String jUrl) throws IOException {
+
+    private RequestBody buildChannelPostBody(String groups, String channelMode, List<String> channelFilters) {
+        return new FormBody.Builder()
+                .add(CMD_PARAM, CMD_CHANNELLIST)
+                .add(CHANNEL_MODE_PARAM, channelMode)
+                .add(GROUPS_PARAM, "[" + (groups.isEmpty() ? groups : "\"" + groups + "\"") + "]")
+                .add(CHANNEL_FILTER_PARAM, TextUtils.join("-", channelFilters))
+                .build();
+    }
+
+
+    private RequestBody buildProgramsPostBody(String groups, String epgMode, List<String> epgFilter) {
+        return new FormBody.Builder()
+                .add(EPG_MODE_PARAM, epgMode)
+                .add(EPG_FILTER_PARAM, TextUtils.join("-", epgFilter))
+                .add(GROUPS_PARAM, "[" + (groups.isEmpty() ? groups : "\"" + groups + "\"") + "]")
+                .build();
+    }
+
+    private RequestBody buildDescriptionPostBody(String serviceId, String eventId, String delsys) {
+        return new FormBody.Builder()
+                .add(EPG_SERVICE_ID_PARAM, serviceId)
+                .add(EPG_EVENT_ID_PARAM, eventId)
+                .add(EPG_DEL_SYS_PARAM, delsys)
+                .build();
+    }
+
+    private static String getJson(String url, RequestBody requestBody) throws IOException {
         Request request = new Request.Builder()
-                .url(jUrl)
+                .url(url)
+                .post(requestBody)
                 .build();
 
         Response response = SundtekTvInputApp.httpClient.newCall(request).execute();
+
         return response.body().string();
     }
-
 }
 

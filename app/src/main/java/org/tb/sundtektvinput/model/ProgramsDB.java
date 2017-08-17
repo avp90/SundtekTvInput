@@ -53,7 +53,7 @@ public class ProgramsDB {
 
 
     //TODO: do networking and parsing in background service
-    private boolean getPrograms(Context context) {
+    private boolean getPrograms(Context context, Channel channel, long startMs, long endMs) {
 
         if (allProgramMap.isEmpty() || (lastUpdate + MAX_AGE_MILLIS) <= (System.currentTimeMillis())) {
             List<Program> programs;
@@ -110,7 +110,7 @@ public class ProgramsDB {
 
     public ArrayList<Program> getProgramsForChannel(Context context, Channel channel, long startMs, long endMs) {
 
-        getPrograms(context);
+        getPrograms(context, channel, startMs, endMs);
 
         String channelKey = String.valueOf(channel.getOriginalNetworkId());
 

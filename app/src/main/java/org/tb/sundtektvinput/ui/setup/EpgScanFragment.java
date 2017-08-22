@@ -129,7 +129,7 @@ public class EpgScanFragment extends SetupBaseFragment {
         if (DEBUG)
             Log.d(TAG, "onScanStarted");
         EpgSyncJobService.cancelAllSyncRequests(getActivity());
-        EpgSyncJobService.requestImmediateFullSync(getActivity(), mInputId,
+        EpgSyncJobService.requestImmediateSync(getActivity(), mInputId,
                 new ComponentName(getActivity(), MyJobService.class));
 
         // Set up SharedPreference to share inputId. If there is not periodic sync job after reboot,

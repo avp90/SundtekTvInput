@@ -355,13 +355,6 @@ public abstract class EpgSyncJobService extends JobService {
                 jobServiceComponent);
     }
 
-    public static void requestImmediateFullSync(Context context, String inputId,
-            ComponentName jobServiceComponent) {
-        requestImmediateSync(context, inputId, DEFAULT_PERIODIC_EPG_DURATION_MILLIS,
-                jobServiceComponent);
-    }
-
-
 
     /**
      * Manually requests a job to run now.

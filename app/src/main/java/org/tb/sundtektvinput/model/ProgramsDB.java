@@ -62,8 +62,11 @@ public class ProgramsDB {
         channelProgramsMap.clear();
         allProgramMap.clear();
 
-        List<Program> programs;
-        programs = new SundtekJsonParser(context).getPrograms();
+        ArrayList<Program> programs = new ArrayList<>();
+        SundtekJsonParser parser = new SundtekJsonParser(context);
+
+        programs.addAll(parser.getPrograms(SundtekJsonParser.EPG_MODE_TODAY));
+        programs.addAll(parser.getPrograms(SundtekJsonParser.EPG_MODE_TOMORROW));
 
         Log.d(TAG, "refreshing programs");
 

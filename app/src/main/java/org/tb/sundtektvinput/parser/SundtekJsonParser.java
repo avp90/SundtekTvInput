@@ -99,15 +99,15 @@ public class SundtekJsonParser {
 
     private static final String EPG_MODE_PARAM = "epgmode";
     private static final String EPG_MODE_NOW = "now";
-    private static final String EPG_MODE_TODAY = "today";
-    private static final String EPG_MODE_TOMORROW = "tomorrow";
+    public static final String EPG_MODE_TODAY = "today";
+    public static final String EPG_MODE_TOMORROW = "tomorrow";
     private static final String EPG_MODE_CALENDAR = "calendar";
 
     private static final String EPG_FILTER_PARAM = "epgfilter";
-    private static final String EPG_FILTER_NOW = "now";
-    private static final String EPG_FILTER_TODAY = "today";
-    private static final String EPG_FILTER_TOMORROW = "tomorrow";
-    private static final String EPG_FILTER_GROUP = "group";
+    public static final String EPG_FILTER_NOW = "now";
+    public static final String EPG_FILTER_TODAY = "today";
+    public static final String EPG_FILTER_TOMORROW = "tomorrow";
+    public static final String EPG_FILTER_GROUP = "group";
 
 
     private static final String EPG_START_MS_PARAM = "epgstart";
@@ -227,8 +227,8 @@ public class SundtekJsonParser {
     }
 
 
-    public List<Program> getPrograms() {
-        List<Program> programList = new ArrayList<>();
+    public ArrayList<Program> getPrograms(String epgMode) {
+        ArrayList<Program> programList = new ArrayList<>();
 
         try {
             if (DEBUG)
@@ -239,15 +239,11 @@ public class SundtekJsonParser {
                             BASE_URL + BASE_SERVERCMD_URL,
                             buildProgramsPostBody(
                                     CHANNEL_LIST,
-                                    EPG_MODE_TODAY,
-                                    Arrays.asList(
-                                            "now",
-                                            "group"
-                                    )
+                                    epgMode
                             )
                     )
             );
-            programList = parsePrograms(responseProgramsNowJson, true);
+            programList = parsePrograms(responseProgramsNowJson, false);
 
             if (DEBUG) {
                 Log.d(TAG, "Found " + programList.size() + " programs");
@@ -262,10 +258,10 @@ public class SundtekJsonParser {
     }
 
 
-    private List<Program> parsePrograms(JSONArray programsJson, Boolean parseDescription) throws
+    private ArrayList<Program> parsePrograms(JSONArray programsJson, Boolean parseDescription) throws
             JSONException {
 
-        List<Program> programList = new ArrayList<>();
+        ArrayList<Program> programList = new ArrayList<>();
 
         JSONArray prog;
         String title;
@@ -377,10 +373,9 @@ public class SundtekJsonParser {
     }
 
 
-    private RequestBody buildProgramsPostBody(String groups, String epgMode, List<String> epgFilter) {
+    private RequestBody buildProgramsPostBody(String groups, String epgMode) {
         return new FormBody.Builder()
                 .add(EPG_MODE_PARAM, epgMode)
-                .add(EPG_FILTER_PARAM, TextUtils.join("-", epgFilter))
                 .add(GROUPS_PARAM, "[" + (groups.isEmpty() ? groups : "\"" + groups + "\"") + "]")
                 .build();
     }

@@ -65,8 +65,9 @@ public class ProgramsDB {
         ArrayList<Program> programs = new ArrayList<>();
         SundtekJsonParser parser = new SundtekJsonParser(context);
 
-        programs.addAll(parser.getPrograms(SundtekJsonParser.EPG_MODE_TODAY));
-        programs.addAll(parser.getPrograms(SundtekJsonParser.EPG_MODE_TOMORROW));
+        programs.addAll(parser.getPrograms(SundtekJsonParser.EPG_MODE_NOW, true));
+        programs.addAll(parser.getPrograms(SundtekJsonParser.EPG_MODE_TODAY, false));
+        programs.addAll(parser.getPrograms(SundtekJsonParser.EPG_MODE_TOMORROW, false));
 
         Log.d(TAG, "refreshing programs");
 

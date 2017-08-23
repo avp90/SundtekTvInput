@@ -98,7 +98,7 @@ public class SundtekJsonParser {
     private static final String GROUPS_PARAM = "groups";
 
     private static final String EPG_MODE_PARAM = "epgmode";
-    private static final String EPG_MODE_NOW = "now";
+    public static final String EPG_MODE_NOW = "now";
     public static final String EPG_MODE_TODAY = "today";
     public static final String EPG_MODE_TOMORROW = "tomorrow";
     private static final String EPG_MODE_CALENDAR = "calendar";
@@ -227,7 +227,7 @@ public class SundtekJsonParser {
     }
 
 
-    public ArrayList<Program> getPrograms(String epgMode) {
+    public ArrayList<Program> getPrograms(String epgMode, boolean parseProgramDescriptions) {
         ArrayList<Program> programList = new ArrayList<>();
 
         try {
@@ -243,7 +243,7 @@ public class SundtekJsonParser {
                             )
                     )
             );
-            programList = parsePrograms(responseProgramsNowJson, false);
+            programList = parsePrograms(responseProgramsNowJson, parseProgramDescriptions);
 
             if (DEBUG) {
                 Log.d(TAG, "Found " + programList.size() + " programs");
@@ -258,7 +258,7 @@ public class SundtekJsonParser {
     }
 
 
-    private ArrayList<Program> parsePrograms(JSONArray programsJson, Boolean parseDescription) throws
+    private ArrayList<Program> parsePrograms(JSONArray programsJson, boolean parseProgramDescriptions) throws
             JSONException {
 
         ArrayList<Program> programList = new ArrayList<>();
@@ -305,7 +305,7 @@ public class SundtekJsonParser {
                         end = start + duration;
                         epgEventId = prog.getString(PROG_EVENTID);
                         internalProviderData.put(PROG_IPD_EPG_EVENT_ID, epgEventId);
-                        if (parseDescription)
+                        if (parseProgramDescriptions)
                             description = getJsonDescription(serviceId, epgEventId);
                         //TODO:REMOVE FAKE GENRES
                         String[] genre = new String[]{ProgramsDB.getAllGenres()[(genreIndex++) % ProgramsDB.getAllGenres().length]};

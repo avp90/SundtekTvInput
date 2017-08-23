@@ -33,6 +33,7 @@ import java.util.List;
 public class MyJobService extends EpgSyncJobService {
 
     private static String TAG = MyJobService.class.getSimpleName();
+    private static final boolean DEBUG = true;
 
 
     @Override
@@ -43,11 +44,16 @@ public class MyJobService extends EpgSyncJobService {
 
     @Override
     public List<Program> getProgramsForChannel(Uri channelUri, Channel channel, long startMs,
-            long endMs) {
+                                               long endMs) {
+        if (DEBUG)
+            Log.d(TAG, "Trying to get programs for " + channel.getDisplayName());
 
-        Log.d(TAG, "Trying to get programs for " + channel.getDisplayName());
-        return ProgramsDB.getInstance().getProgramsForChannel(getApplicationContext(), channel, startMs, endMs);
+        List<Program> programs = ProgramsDB.getInstance().getProgramsForChannel(getApplicationContext(), channel, startMs, endMs);
+
+        if (DEBUG)
+            Log.d(TAG, "got " + (programs == null ? "no" : programs.size()) + " programs for " + channel.getDisplayName());
+
+        return programs;
     }
-
 
 }

@@ -23,10 +23,13 @@ import java.util.List;
 public class ProgramsDB {
 
     private static final String TAG = ProgramsDB.class.getSimpleName();
+    private static final boolean DEBUG = true;
 
     private static ProgramsDB myProgramsDB;
-    private HashMap<String, Program> allProgramMap;
-    private HashMap<String, ArrayList<Program>> channelProgramsMap;
+    //allProgramMap eventid-program
+    private final HashMap<String, Program> allProgramMap;
+    //channelProgramsMap channelNetworkId-program
+    private final HashMap<String, ArrayList<Program>> channelProgramsMap;
 
     private long lastUpdate;
     private static long MAX_AGE_MILLIS = 1000 * 60 * 60 * 1; // 1h
@@ -48,99 +51,75 @@ public class ProgramsDB {
     private ProgramsDB() {
         Log.d(TAG, "new ProgramsDB Instance");
         allProgramMap = new HashMap<>();
-
+        channelProgramsMap = new HashMap<>();
     }
 
 
-    //TODO: do networking and parsing in background service
+    //TODO: Only get programs for given channel when sundtek api is ready
     private boolean getPrograms(Context context, Channel channel, long startMs, long endMs) {
+        lastUpdate = System.currentTimeMillis();
 
-        if (allProgramMap.isEmpty() || (lastUpdate + MAX_AGE_MILLIS) <= (System.currentTimeMillis())) {
-            List<Program> programs;
-            programs = new SundtekJsonParser(context).getPrograms();
-            lastUpdate = System.currentTimeMillis();
-            Log.d(TAG, "refreshing programs");
+        channelProgramsMap.clear();
+        allProgramMap.clear();
 
-            List<String> keyList = new ArrayList<>();
-            String eventId = "error";
+        List<Program> programs;
+        programs = new SundtekJsonParser(context).getPrograms();
 
-            for (Program program : programs) {
-                try {
+        Log.d(TAG, "refreshing programs");
 
-                    InternalProviderData ipd = program.getInternalProviderData();
+        String channelId;
+        String eventId;
+        String newEventId;
+        InternalProviderData ipd;
 
-                    // Event ids are not unique so we pair them with the corresponding originalNetworkId
-                    eventId = ipd.get(PROG_IPD_EPG_EVENT_ID) + "/" + ipd.get(PROG_IPD_ORIGINAL_NETWORK_ID);
+        for (Program program : programs) {
+            try {
+                ipd = program.getInternalProviderData();
+                channelId = (String) ipd.get(PROG_IPD_ORIGINAL_NETWORK_ID);
+                eventId = (String) ipd.get(PROG_IPD_EPG_EVENT_ID);
 
-                    if (eventId.equals(ipd.get(PROG_IPD_ORIGINAL_NETWORK_ID) + "/" + ipd.get(PROG_IPD_ORIGINAL_NETWORK_ID)))
-                        Log.d(TAG, "No program data for " + ipd.get(PROG_IPD_CHANNEL_NAME));
+                // Event ids are not unique so we pair them with the corresponding originalNetworkId
+                newEventId = eventId + "/" + channelId;
+                if (DEBUG)
+                    Log.d(TAG, ipd.get(PROG_IPD_CHANNEL_NAME) + " - EventId: " + newEventId);
 
-                } catch (InternalProviderData.ParseException e) {
-                    e.printStackTrace();
-                }
-                keyList.add(eventId);
-                allProgramMap.put(eventId, program);
-            }
-            allProgramMap.keySet().retainAll(keyList);
-            Log.d(TAG, "Found " + allProgramMap.size() + " Programs");
-
-            channelProgramsMap = new HashMap<>();
-
-            for (Program program : allProgramMap.values()) {
-                try {
-                    String key = (String) program.getInternalProviderData().get(PROG_IPD_ORIGINAL_NETWORK_ID);
-
-                    if (!channelProgramsMap.containsKey(key))
-                        channelProgramsMap.put(key, new ArrayList<Program>());
-
-                    channelProgramsMap.get(key).add(program);
-
-                } catch (InternalProviderData.ParseException e) {
-                    e.printStackTrace();
-                }
+            } catch (InternalProviderData.ParseException e) {
+                channelId = "error";
+                newEventId = "error";
+                e.printStackTrace();
             }
 
-            Log.d(TAG, "found programs for " + channelProgramsMap.values().size() + "channels");
-
-            return true;
+            if (!channelProgramsMap.containsKey(channelId))
+                channelProgramsMap.put(channelId, new ArrayList<Program>());
+            channelProgramsMap.get(channelId).add(program);
+            allProgramMap.put(newEventId, program);
         }
 
-        return false;
+        if (DEBUG) {
+            Log.d(TAG, "Got " + allProgramMap.size() + " Programs for " + channelProgramsMap.values().size() + " channels");
+        }
+        return true;
     }
 
+
     public ArrayList<Program> getProgramsForChannel(Context context, Channel channel, long startMs, long endMs) {
+        if (channelProgramsMap.isEmpty() || ((lastUpdate + MAX_AGE_MILLIS) <= (System.currentTimeMillis()))) {
+            if (DEBUG) {
+                Log.d(TAG, "channelProgramsMap.isEmpty(): " + channelProgramsMap.isEmpty());
+                Log.d(TAG, "data too old: " + (lastUpdate + MAX_AGE_MILLIS <= System.currentTimeMillis()));
+            }
+            getPrograms(context, channel, startMs, endMs);
+        }
 
-        getPrograms(context, channel, startMs, endMs);
+        String channelId = String.valueOf(channel.getOriginalNetworkId());
 
-        String channelKey = String.valueOf(channel.getOriginalNetworkId());
+        ArrayList<Program> programList = channelProgramsMap.get(channelId);
+        if (programList == null)
+            programList = new ArrayList<>();
 
-//        if (!channelProgramsMap.containsKey(channelKey)) {
-//            Log.d(TAG, "No programdata found for channel: " + channel.getDisplayName());
-//            return makeDummyProgram(channel, startMs, endMs);
-//        } else if (channelProgramsMap.get(channelKey) == null || channelProgramsMap.get(channelKey).isEmpty()) {
-//            channelProgramsMap.remove(channelKey);
-//            Log.d(TAG, "Removed empty programlist from Map for: " + channel.getDisplayName());
-//            return makeDummyProgram(channel, startMs, endMs);
-//        }
-//
-        ArrayList<Program> programList = channelProgramsMap.get(channelKey);
-        if (!(channelProgramsMap.get(channelKey) == null))
-            Log.d(TAG, "found " + channelProgramsMap.get(channelKey).size() + " programs for " + channel.getDisplayName());
-//
-//
-        // TODO: Implement method in ProgramsDB to get program by time for given channel
-        // Find a single program for the given time. If there is none a dummyprogram will be added
-//        Boolean hasProgramForGivenTime= false;
-//        for(Program program : programList) {
-//            if (program.getEndTimeUtcMillis() >= startMs && program.getStartTimeUtcMillis() <= startMs) {
-//                hasProgramForGivenTime = true;
-//                break;
-//            }
-//        }
-//        if(!hasProgramForGivenTime)
-//            programList.add(makeDummyProgram(channel, startMs, endMs).get(0));
-//
-//
+        if (DEBUG)
+            Log.d(TAG, "found " + programList.size() + " programs for " + channel.getDisplayName());
+
         return programList;
     }
 

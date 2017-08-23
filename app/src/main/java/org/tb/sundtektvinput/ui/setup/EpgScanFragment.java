@@ -182,6 +182,7 @@ public class EpgScanFragment extends SetupBaseFragment {
                 break;
             case EpgSyncJobService.ERROR_NO_PROGRAMS:
                 Log.d(TAG, "Scanerror: " + getString(R.string.sync_error_no_programs));
+                break;
             case EpgSyncJobService.ERROR_NO_CHANNELS:
                 mErrorFound = true;
                 Log.d(TAG, "Scanerror: " + getString(R.string.sync_error_no_channels));

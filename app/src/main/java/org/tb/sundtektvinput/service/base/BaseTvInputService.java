@@ -140,6 +140,7 @@ public abstract class BaseTvInputService extends TvInputService {
 
     /**
      * Adds the Session to the list of currently available sessions.
+     *
      * @param session The newly created session.
      * @return The session that was created.
      */
@@ -231,7 +232,8 @@ public abstract class BaseTvInputService extends TvInputService {
                     mCurrentProgram = (Program) msg.obj;
                     if (mCurrentProgram == null) {
                         mCurrentProgram = ProgramsDB.getInstance().getDummyProgram(mCurrentChannel);
-                        Log.d(TAG, "DUMMYPROG" + mCurrentProgram.toString());
+                        if (DEBUG)
+                            Log.d(TAG, "DUMMYPROG" + mCurrentProgram.toString());
                     }
                     playCurrentContent();
                     return true;
@@ -1004,6 +1006,7 @@ public abstract class BaseTvInputService extends TvInputService {
          * {@link RecordedProgram} and call {@link #notifyRecordingStopped(Uri)} with the URI to
          * that entry. If the stop request cannot be fulfilled, the session must call
          * {@link #notifyError(int)}.
+         *
          * @param programToRecord The program set by the user to be recorded.
          */
         public abstract void onStopRecording(Program programToRecord);

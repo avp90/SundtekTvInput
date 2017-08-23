@@ -170,7 +170,7 @@ public abstract class EpgSyncJobService extends JobService {
      * The default period between full EPG syncs, one day.
      */
     public static final long DEFAULT_SYNC_PERIOD_MILLIS = 1000 * 60 * 60 * 6; // 6 hour
-    public static final long DEFAULT_IMMEDIATE_EPG_DURATION_MILLIS = 1000 * 60 * 60 * 6; // 6 Hour
+    public static final long DEFAULT_IMMEDIATE_EPG_DURATION_MILLIS = 1000 * 60 * 60 * 24; // 6 Hour
     public static final long DEFAULT_PERIODIC_EPG_DURATION_MILLIS = 1000 * 60 * 60 * 24; // 48 Hour
 
     private static final int PERIODIC_SYNC_JOB_ID = 0;
@@ -185,12 +185,14 @@ public abstract class EpgSyncJobService extends JobService {
 
     /**
      * Returns the channels that your app contains.
+     *
      * @return The list of channels for your app.
      */
     public abstract List<Channel> getChannels();
 
     /**
      * Returns the programs that will appear for each channel.
+     *
      * @param channelUri The Uri corresponding to the channel.
      * @param channel    The channel your programs will appear on.
      * @param startMs    The starting time in milliseconds since the epoch to generate programs. If
@@ -200,7 +202,7 @@ public abstract class EpgSyncJobService extends JobService {
      * @return A list of programs for a given channel.
      */
     public abstract List<Program> getProgramsForChannel(Uri channelUri, Channel channel,
-            long startMs, long endMs);
+                                                        long startMs, long endMs);
 
 
     @Override
@@ -267,6 +269,8 @@ public abstract class EpgSyncJobService extends JobService {
             e.printStackTrace();
         }
         return false;
+
+
     }
 
     /**
@@ -285,19 +289,21 @@ public abstract class EpgSyncJobService extends JobService {
     /**
      * Initializes a job that will periodically update the app's channels and programs with a
      * default period of 24 hours.
+     *
      * @param context             Application's context.
      * @param inputId             Component name for the app's TvInputService. This can be received through an
      *                            Intent extra parameter {@link TvInputInfo#EXTRA_INPUT_ID}.
      * @param jobServiceComponent The {@link EpgSyncJobService} component name that will run.
      */
     public static void setUpPeriodicSync(Context context, String inputId,
-            ComponentName jobServiceComponent) {
+                                         ComponentName jobServiceComponent) {
         setUpPeriodicSync(context, inputId, jobServiceComponent, DEFAULT_SYNC_PERIOD_MILLIS,
                 DEFAULT_PERIODIC_EPG_DURATION_MILLIS);
     }
 
     /**
      * Initializes a job that will periodically update the app's channels and programs.
+     *
      * @param context             Application's context.
      * @param inputId             Component name for the app's TvInputService. This can be received through an
      *                            Intent extra parameter {@link TvInputInfo#EXTRA_INPUT_ID}.
@@ -308,7 +314,7 @@ public abstract class EpgSyncJobService extends JobService {
      *                            this should be relatively short. For a background sync this should be long.
      */
     public static void setUpPeriodicSync(Context context, String inputId,
-            ComponentName jobServiceComponent, long fullSyncPeriod, long syncDuration) {
+                                         ComponentName jobServiceComponent, long fullSyncPeriod, long syncDuration) {
         if (jobServiceComponent.getClass().isAssignableFrom(EpgSyncJobService.class)) {
             throw new IllegalArgumentException("This class does not extend EpgSyncJobService");
         }
@@ -344,13 +350,14 @@ public abstract class EpgSyncJobService extends JobService {
 
     /**
      * Manually requests a job to run now to retrieve EPG content for the next hour.
+     *
      * @param context             Application's context.
      * @param inputId             Component name for the app's TvInputService. This can be received through an
      *                            Intent extra parameter {@link TvInputInfo#EXTRA_INPUT_ID}.
      * @param jobServiceComponent The {@link EpgSyncJobService} class that will run.
      */
     public static void requestImmediateSync(Context context, String inputId,
-            ComponentName jobServiceComponent) {
+                                            ComponentName jobServiceComponent) {
         requestImmediateSync(context, inputId, DEFAULT_IMMEDIATE_EPG_DURATION_MILLIS,
                 jobServiceComponent);
     }
@@ -371,6 +378,7 @@ public abstract class EpgSyncJobService extends JobService {
      * {@link android.media.tv.TvInputService}. If you're calling this from your setup activity,
      * you can get the extra parameter {@link TvInputInfo#EXTRA_INPUT_ID}.
      * <p/>
+     *
      * @param context             Application's context.
      * @param inputId             Component name for the app's TvInputService. This can be received through an
      *                            Intent extra parameter {@link TvInputInfo#EXTRA_INPUT_ID}.
@@ -379,7 +387,7 @@ public abstract class EpgSyncJobService extends JobService {
      * @param jobServiceComponent The {@link EpgSyncJobService} class that will run.
      */
     public static void requestImmediateSync(Context context, String inputId, long syncDuration,
-            ComponentName jobServiceComponent) {
+                                            ComponentName jobServiceComponent) {
         if (jobServiceComponent.getClass().isAssignableFrom(EpgSyncJobService.class)) {
             Log.d(TAG, "This class does not extend EpgSyncJobService");
             throw new IllegalArgumentException("This class does not extend EpgSyncJobService");
@@ -403,6 +411,7 @@ public abstract class EpgSyncJobService extends JobService {
 
     /**
      * Cancels all pending jobs.
+     *
      * @param context Application's context.
      */
     public static void cancelAllSyncRequests(Context context) {
@@ -477,45 +486,39 @@ public abstract class EpgSyncJobService extends JobService {
                 List<Program> programs = getProgramsForChannel(channelUri, channelMap.valueAt(i),
                         startMs, endMs);
 
-                if (!(programs == null)) {
-                    Log.d(TAG, "programs found for channel " + channelMap.valueAt(i).getDisplayName() + " : " + programs.size());
-                    if (DEBUG)
-                        Log.d(TAG, programs.toString());
 
-                    for (int index = 0; index < programs.size(); index++) {
-                        if (programs.get(index).getChannelId() == -1) {
-                            // Automatically set the channel id if not set
-                            programs.set(index,
-                                    new Program.Builder(programs.get(index))
-                                            .setChannelId(channelMap.valueAt(i).getId())
-                                            .build());
-                        }
+                Log.d(TAG, "programs found for channel " + channelMap.valueAt(i).getDisplayName() + " : " + programs.size());
+                if (DEBUG)
+                    Log.d(TAG, programs.toString());
 
-
-                        // Double check if the job is cancelled, so that this task can be finished faster
-                        // after cancel() is called.
-                        if (isCancelled()) {
-                            broadcastError(ERROR_EPG_SYNC_CANCELED);
-                            Log.d(TAG, "EpgSyncTask: ERROR_EPG_SYNC_CANCELED");
-                            return null;
-                        }
-
-                        updatePrograms(channelUri,
-                                getPrograms(channelMap.valueAt(i), programs, startMs, endMs));
+                for (int index = 0; index < programs.size(); index++) {
+                    if (programs.get(index).getChannelId() == -1) {
+                        // Automatically set the channel id if not set
+                        programs.set(index,
+                                new Program.Builder(programs.get(index))
+                                        .setChannelId(channelMap.valueAt(i).getId())
+                                        .build());
                     }
-                    Intent intent = new Intent(ACTION_SYNC_STATUS_CHANGED);
-                    intent.putExtra(EpgSyncJobService.BUNDLE_KEY_INPUT_ID, mInputId);
-                    intent.putExtra(EpgSyncJobService.BUNDLE_KEY_CHANNELS_SCANNED, i);
-                    intent.putExtra(EpgSyncJobService.BUNDLE_KEY_CHANNEL_COUNT, channelMap.size());
-                    intent.putExtra(EpgSyncJobService.BUNDLE_KEY_SCANNED_CHANNEL_DISPLAY_NAME,
-                            channelMap.valueAt(i).getDisplayName());
-                    intent.putExtra(EpgSyncJobService.BUNDLE_KEY_SCANNED_CHANNEL_DISPLAY_NUMBER,
-                            channelMap.valueAt(i).getDisplayNumber());
-                    intent.putExtra(EpgSyncJobService.SYNC_STATUS, EpgSyncJobService.SYNC_SCANNED);
-                    LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
-                } else {
-                    Log.d(TAG, "no programs found for " + channelMap.valueAt(i).getDisplayName());
                 }
+
+                // Double check if the job is cancelled, so that this task can be finished faster
+                // after cancel() is called.
+                if (isCancelled()) {
+                    broadcastError(ERROR_EPG_SYNC_CANCELED);
+                    return null;
+                }
+                updatePrograms(channelUri,
+                        getPrograms(channelMap.valueAt(i), programs, startMs, endMs));
+                Intent intent = new Intent(ACTION_SYNC_STATUS_CHANGED);
+                intent.putExtra(EpgSyncJobService.BUNDLE_KEY_INPUT_ID, mInputId);
+                intent.putExtra(EpgSyncJobService.BUNDLE_KEY_CHANNELS_SCANNED, i);
+                intent.putExtra(EpgSyncJobService.BUNDLE_KEY_CHANNEL_COUNT, channelMap.size());
+                intent.putExtra(EpgSyncJobService.BUNDLE_KEY_SCANNED_CHANNEL_DISPLAY_NAME,
+                        channelMap.valueAt(i).getDisplayName());
+                intent.putExtra(EpgSyncJobService.BUNDLE_KEY_SCANNED_CHANNEL_DISPLAY_NUMBER,
+                        channelMap.valueAt(i).getDisplayNumber());
+                intent.putExtra(EpgSyncJobService.SYNC_STATUS, EpgSyncJobService.SYNC_SCANNED);
+                LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
             }
             return null;
         }
@@ -556,6 +559,7 @@ public abstract class EpgSyncJobService extends JobService {
 
         /**
          * Returns a list of programs for the given time range.
+         *
          * @param channel     The {@link Channel} for the programs to return.
          * @param programs    The feed fetched from cloud.
          * @param startTimeMs The start time of the range requested.
@@ -566,7 +570,7 @@ public abstract class EpgSyncJobService extends JobService {
          */
         @VisibleForTesting
         public List<Program> getPrograms(Channel channel, List<Program> programs,
-                long startTimeMs, long endTimeMs) {
+                                         long startTimeMs, long endTimeMs) {
             if (startTimeMs > endTimeMs) {
                 throw new IllegalArgumentException("Start time must be before end time");
             }
@@ -635,11 +639,12 @@ public abstract class EpgSyncJobService extends JobService {
         /**
          * Shift advertisement time to match program playback time. For channels with repeated program,
          * the time for current program may vary from what it was defined previously.
+         *
          * @param oldProgramStartTimeMs Outdated program start time.
          * @param newProgramStartTimeMs Updated program start time.
          */
         private void shiftAdsTimeWithProgram(InternalProviderData internalProviderData,
-                long oldProgramStartTimeMs, long newProgramStartTimeMs) {
+                                             long oldProgramStartTimeMs, long newProgramStartTimeMs) {
             if (internalProviderData == null) {
                 return;
             }
@@ -660,6 +665,7 @@ public abstract class EpgSyncJobService extends JobService {
          * <p>
          * <p>If there is any overlap between the given and existing programs, the existing ones
          * will be updated with the given ones if they have the same title or replaced.
+         *
          * @param channelUri  The channel where the program info will be added.
          * @param newPrograms A list of {@link Program} instances which includes program
          *                    information.
@@ -700,32 +706,30 @@ public abstract class EpgSyncJobService extends JobService {
                         // Exact match. No need to update. Move on to the next programs.
                         oldProgramsIndex++;
                         newProgramsIndex++;
-                    } else
-                        if (shouldUpdateProgramMetadata(oldProgram, newProgram)) {
-                            // Partial match. Update the old program with the new one.
-                            // NOTE: Use 'update' in this case instead of 'insert' and 'delete'. There
-                            // could be application specific settings which belong to the old program.
-                            ops.add(ContentProviderOperation.newUpdate(
-                                    TvContract.buildProgramUri(oldProgram.getId()))
-                                    .withValues(newProgram.toContentValues())
-                                    .build());
-                            oldProgramsIndex++;
-                            newProgramsIndex++;
-                        } else
-                            if (oldProgram.getEndTimeUtcMillis()
-                                    < newProgram.getEndTimeUtcMillis()) {
-                                // No match. Remove the old program first to see if the next program in
-                                // {@code oldPrograms} partially matches the new program.
-                                ops.add(ContentProviderOperation.newDelete(
-                                        TvContract.buildProgramUri(oldProgram.getId()))
-                                        .build());
-                                oldProgramsIndex++;
-                            } else {
-                                // No match. The new program does not match any of the old programs. Insert
-                                // it as a new program.
-                                addNewProgram = true;
-                                newProgramsIndex++;
-                            }
+                    } else if (shouldUpdateProgramMetadata(oldProgram, newProgram)) {
+                        // Partial match. Update the old program with the new one.
+                        // NOTE: Use 'update' in this case instead of 'insert' and 'delete'. There
+                        // could be application specific settings which belong to the old program.
+                        ops.add(ContentProviderOperation.newUpdate(
+                                TvContract.buildProgramUri(oldProgram.getId()))
+                                .withValues(newProgram.toContentValues())
+                                .build());
+                        oldProgramsIndex++;
+                        newProgramsIndex++;
+                    } else if (oldProgram.getEndTimeUtcMillis()
+                            < newProgram.getEndTimeUtcMillis()) {
+                        // No match. Remove the old program first to see if the next program in
+                        // {@code oldPrograms} partially matches the new program.
+                        ops.add(ContentProviderOperation.newDelete(
+                                TvContract.buildProgramUri(oldProgram.getId()))
+                                .build());
+                        oldProgramsIndex++;
+                    } else {
+                        // No match. The new program does not match any of the old programs. Insert
+                        // it as a new program.
+                        addNewProgram = true;
+                        newProgramsIndex++;
+                    }
                 } else {
                     // No old programs. Just insert new programs.
                     addNewProgram = true;

@@ -79,7 +79,7 @@ public class EpgScanFragment extends SetupBaseFragment {
         GuidedActionsStylist stylist = new GuidedActionsStylist() {
             @Override
             public int onProvideItemLayoutId() {
-                return R.layout.setup_epg_layout2;
+                return R.layout.setup_epg_layout;
             }
         };
         return stylist;

@@ -53,33 +53,6 @@
 
         <!-- Launched by the TV app before it uses MyTvInputService. This registers channels and
         sets up MyJobService to provide program information in the background. -->
-        <activity android:name="org.tb.sundtektvinput.ui.old.TvInputSetupActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-            </intent-filter>
-        </activity>
-
-        <!-- A full-screen activity which will be launched by the TV app when a user clicks
-        the app-link connected to this activity. -->
-        <activity
-            android:name="org.tb.sundtektvinput.ui.AppLinkDetailsActivity"
-            android:theme="@style/Theme.Transparent">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-            </intent-filter>
-        </activity>
-
-        <!-- A side-panel activity which will be launched by the TV app when a user clicks
-        the app-link connected to this activity. -->
-        <activity
-            android:name="org.tb.sundtektvinput.ui.AppLinkSidePanelActivity"
-            android:theme="@style/Theme.Panel">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-            </intent-filter>
-        </activity>
-
-
         <activity
             android:name="org.tb.sundtektvinput.ui.setup.SetupActivity"
             android:theme="@style/Theme.Transparent">
@@ -89,6 +62,7 @@
 
             </intent-filter>
         </activity>
+
 
         <!-- TV input which provides channels based on the streaming contents.
         Requires "android.permission.BIND_TV_INPUT" to ensure that only system services can bind.

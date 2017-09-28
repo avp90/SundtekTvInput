@@ -280,7 +280,7 @@ public class SundtekJsonParser {
         String serviceId;
         String description = "";
         String channelName;
-        int genre = 0;
+        String genre;
 
         InternalProviderData internalProviderData;
 
@@ -298,6 +298,8 @@ public class SundtekJsonParser {
             internalProviderData.put(PROG_IPD_EPG_EVENT_ID, originalNetworkId);
             internalProviderData.put(PROG_IPD_CHANNEL_NAME, channelName);
 
+            Program newProg;
+
             if (channelProgramsJson.length() > (JSON_EPG_START_INDEX + 1)) {
                 for (int i = JSON_EPG_START_INDEX; i < channelProgramsJson.length(); i++) {
                     if (channelProgramsJson.get(i) instanceof JSONArray) {
@@ -311,22 +313,35 @@ public class SundtekJsonParser {
                         end = start + duration;
                         epgEventId = prog.getString(PROG_EVENTID);
                         internalProviderData.put(PROG_IPD_EPG_EVENT_ID, epgEventId);
-                        genre = prog.getInt(PROG_GENRE);
+
+                        if (prog.getInt(PROG_GENRE) > 0)
+                            genre = genreMap.get(prog.getInt(PROG_GENRE));
+                        else
+                            genre = "";
+
+
                         if (parseProgramDescriptions)
                             description = URLDecoder.decode(getJsonDescription(serviceId, epgEventId), "UTF-8");
 
-                        if (!(end == start || end < start))
-                            programList.add(new Program.Builder()
+                        if (!(end == start || end < start)) {
+                            newProg = new Program.Builder()
                                     .setTitle(title)
                                     .setStartTimeUtcMillis(start)
                                     .setEndTimeUtcMillis(end)
                                     .setInternalProviderData(internalProviderData)
                                     .setDescription(description.length() > 256 ? description.substring(0, 255) : description)
                                     .setLongDescription(description)
-                                    .setCanonicalGenres(new String[]{genreMap.get(genre)})
 //                                    .setPosterArtUri(logo)
 //                                    .setThumbnailUri(logo)
-                                    .build());
+                                    .build();
+
+                            if (genre == null || genre.isEmpty())
+                                programList.add(newProg);
+                            else
+                                programList.add(new Program.Builder(newProg)
+                                        .setCanonicalGenres(new String[]{genre})
+                                        .build());
+                        }
                     }
                 }
             }

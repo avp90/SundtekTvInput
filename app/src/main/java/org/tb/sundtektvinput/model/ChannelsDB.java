@@ -24,9 +24,9 @@ public class ChannelsDB {
 
     private static long MAX_AGE = 1000 * 60 * 60 / 12; //5mins;
     private static ChannelsDB myChannelsDB;
-    private HashMap<Integer, Channel> channelMap;
+    private HashMap<Long, Channel> channelMap;
     private long lastUpdate;
-    private ArrayList<String> filter;
+    private ArrayList<Long> filter;
 
 
     /**
@@ -47,7 +47,6 @@ public class ChannelsDB {
     }
 
 
-    //TODO: do networking and parsing in background service
     public List<Channel> getChannels(Context context) {
 
         filter = new SettingsHelper(context).loadSelectedChannelsMap();
@@ -61,13 +60,12 @@ public class ChannelsDB {
 
         channelMap.clear();
 
-        Channel newChannel;
-        int newChannelNumber = 0;
+//        Channel newChannel;
         for (Channel channel : channels) {
-            String key = String.valueOf(channel.getOriginalNetworkId());
+            long key = channel.getOriginalNetworkId();
             if (filter.contains(key)) {
-                newChannel = new Channel.Builder(channel).setDisplayNumber(String.valueOf(++newChannelNumber)).build();
-                channelMap.put(Integer.valueOf(key), newChannel);
+//                newChannel = new Channel.Builder(channel).build();
+                channelMap.put(key, channel);
                 Log.d(TAG, "Found " + channelMap.size() + " Channels");
             }
         }

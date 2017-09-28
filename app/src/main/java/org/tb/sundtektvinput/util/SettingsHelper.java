@@ -60,7 +60,7 @@ public class SettingsHelper {
     }
 
 
-    public void saveChannelIds(ArrayList<String> input) {
+    public void saveChannelIds(ArrayList<Long> input) {
         SharedPreferences pSharedPref = context.getSharedPreferences(CONFIG_FILE, Context.MODE_PRIVATE);
         if (pSharedPref != null) {
             JSONArray jsonArray = new JSONArray(input);
@@ -72,15 +72,15 @@ public class SettingsHelper {
         }
     }
 
-    public ArrayList<String> loadSelectedChannelsMap() {
-        ArrayList<String> outputArraylist = new ArrayList<>();
+    public ArrayList<Long> loadSelectedChannelsMap() {
+        ArrayList<Long> outputArraylist = new ArrayList<>();
         SharedPreferences pSharedPref = context.getSharedPreferences(CONFIG_FILE, Context.MODE_PRIVATE);
         try {
             if (pSharedPref != null) {
                 String jsonString = pSharedPref.getString("selectedChannels", new JSONArray().toString());
                 JSONArray jsonArray = new JSONArray(jsonString);
                 for (int i = 0; i < jsonArray.length(); i++)
-                    outputArraylist.add(jsonArray.getString(i));
+                    outputArraylist.add(jsonArray.getLong(i));
             }
         } catch (JSONException e1) {
             e1.printStackTrace();

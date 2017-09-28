@@ -1,8 +1,10 @@
 package org.tb.sundtektvinput.parser;
 
 import android.content.Context;
+import android.media.tv.TvContract;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.SparseArray;
 
 import com.google.android.exoplayer.util.Util;
 import com.google.android.media.tv.companionlibrary.model.Channel;
@@ -12,10 +14,11 @@ import com.google.android.media.tv.companionlibrary.model.Program;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.tb.sundtektvinput.SundtekTvInputApp;
-import org.tb.sundtektvinput.model.ProgramsDB;
 import org.tb.sundtektvinput.util.SettingsHelper;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -44,7 +47,7 @@ public class SundtekJsonParser {
     private static final String BASE_SERVERCMD_URL = "/servercmd.xhx";
     private static final String SERVER_PORT = "22000";
 
-    private static final String CHANNEL_LIST = "favs";
+    private static final String CHANNEL_LIST = "TV";
 
 
     private static final int CHANNEL_NAME = 0;
@@ -60,12 +63,14 @@ public class SundtekJsonParser {
     private static final int PROG_EVENTID = 2;
     private static final int PROG_TITLE = 3;
     private static final int PROG_SUBTITLE = 4;
+    private static final int PROG_DETAILS_DESCRIPTION = 5;
+    private static final int PROG_GENRE = 6;
+
 
     private static final int PROG_ICON_SRC = 0;
     private static final int PROG_CHANNEL_NAME = 1;
     private static final int PROG_SERVICE_ID = 2;
 
-    private static final int PROG_DETAILS_DESCRIPTION = 5;
 
     private static final String PROG_IPD_EPG_EVENT_ID = "epgEventId";
     private static final String PROG_IPD_SERVICE_ID = "serviceId";
@@ -119,7 +124,7 @@ public class SundtekJsonParser {
     private static final String EPG_EVENT_ID_PARAM = "epgeventid";
     private static final String EPG_DEL_SYS_PARAM = "delsys";
 
-    private HashMap<String, Channel> channelMap;
+    private HashMap<Long, Channel> channelMap;
 
     private int channelNumber = 1;
 
@@ -135,7 +140,7 @@ public class SundtekJsonParser {
         BASE_URL = "http://" + IP_ADDRESS + ":" + SERVER_PORT;
     }
 
-    private HashMap<String, Channel> getChannelMap() throws JSONException, IOException {
+    private HashMap<Long, Channel> getChannelMap() throws JSONException, IOException {
 
         if (channelMap == null) {
             channelMap = new HashMap<>();
@@ -178,9 +183,9 @@ public class SundtekJsonParser {
     }
 
 
-    private Map<String, Channel> parseChannles(JSONArray channelsJson) throws JSONException {
+    private Map<Long, Channel> parseChannles(JSONArray channelsJson) throws JSONException, UnsupportedEncodingException {
 
-        HashMap<String, Channel> channels = new HashMap<>();
+        HashMap<Long, Channel> channels = new HashMap<>();
 
         InternalProviderData internalProviderData;
         JSONArray jsonChannel;
@@ -188,21 +193,22 @@ public class SundtekJsonParser {
         String channelName;
         String channelLogo;
         String mediaUrl;
-        int originalNetworkId;
+        long originalNetworkId;
         int serviceId;
 
         channelsJson = (JSONArray) channelsJson.get(0);
         for (int i = 0; i < channelsJson.length(); i++) {
             if (channelsJson.get(i) instanceof JSONArray) { // filter out non channel data
                 jsonChannel = channelsJson.getJSONArray(i);
-                channelName = jsonChannel.get(CHANNEL_NAME).toString();
-                channelLogo = jsonChannel.get(CHANNEL_LOGO).toString();
-                mediaUrl = jsonChannel.get(CHANNEL_MEDIA).toString();
+                channelName = URLDecoder.decode(jsonChannel.getString(CHANNEL_NAME), "UTF-8");
+                channelLogo = URLDecoder.decode(jsonChannel.getString(CHANNEL_LOGO), "UTF-8");
+                mediaUrl = URLDecoder.decode(jsonChannel.getString(CHANNEL_MEDIA), "UTF-8");
                 originalNetworkId = channelName.hashCode();
 
-                String serviceIdString = jsonChannel.get(CHANNEL_ID).toString();
+                String serviceIdString = jsonChannel.getString(CHANNEL_ID);
                 serviceIdString = serviceIdString.substring(0, serviceIdString.indexOf("_"));
                 serviceId = Integer.parseInt(serviceIdString);
+
 
                 internalProviderData = new InternalProviderData();
                 internalProviderData.setRepeatable(false);
@@ -210,11 +216,11 @@ public class SundtekJsonParser {
                 internalProviderData.put(CHANNEL_IPD_MEDIA_TYPE, Util.TYPE_OTHER);
 
 
-                channels.put(String.valueOf(originalNetworkId), new Channel.Builder()
+                channels.put(originalNetworkId, new Channel.Builder()
                                 .setDisplayName(channelName)
                                 .setDisplayNumber(String.valueOf(channelNumber++))
 //                                .setChannelLogo(channelLogo)
-                                .setOriginalNetworkId(originalNetworkId)
+                                .setOriginalNetworkId((int) originalNetworkId)
                                 .setInternalProviderData(internalProviderData)
                                 .setServiceId(serviceId)
                                 .setType(TYPE_OTHER)
@@ -259,7 +265,7 @@ public class SundtekJsonParser {
 
 
     private ArrayList<Program> parsePrograms(JSONArray programsJson, boolean parseProgramDescriptions) throws
-            JSONException {
+            JSONException, UnsupportedEncodingException {
 
         ArrayList<Program> programList = new ArrayList<>();
 
@@ -274,7 +280,7 @@ public class SundtekJsonParser {
         String serviceId;
         String description = "";
         String channelName;
-        int genreIndex = 0;
+        int genre = 0;
 
         InternalProviderData internalProviderData;
 
@@ -282,7 +288,7 @@ public class SundtekJsonParser {
             JSONArray channelProgramsJson = programsJson.getJSONArray(resp);
 
             serviceId = channelProgramsJson.getString(PROG_SERVICE_ID);
-            channelName = channelProgramsJson.get(PROG_CHANNEL_NAME).toString();
+            channelName = URLDecoder.decode(channelProgramsJson.getString(PROG_CHANNEL_NAME), "UTF-8");
             originalNetworkId = channelName.hashCode();
 
             internalProviderData = new InternalProviderData();
@@ -295,9 +301,9 @@ public class SundtekJsonParser {
             if (channelProgramsJson.length() > (JSON_EPG_START_INDEX + 1)) {
                 for (int i = JSON_EPG_START_INDEX; i < channelProgramsJson.length(); i++) {
                     if (channelProgramsJson.get(i) instanceof JSONArray) {
-                        prog = new JSONArray(channelProgramsJson.get(i).toString());
-                        title = prog.get(PROG_TITLE).toString();
-                        subtitle = prog.get(PROG_SUBTITLE).toString();
+                        prog = new JSONArray(channelProgramsJson.getString(i));
+                        title = URLDecoder.decode(prog.getString(PROG_TITLE), "UTF-8");
+                        subtitle = URLDecoder.decode(prog.getString(PROG_SUBTITLE), "UTF-8");
 
                         title = subtitle.isEmpty() ? title : title + " - " + subtitle;
                         start = (prog.getLong(PROG_START) * 1000L);
@@ -305,10 +311,9 @@ public class SundtekJsonParser {
                         end = start + duration;
                         epgEventId = prog.getString(PROG_EVENTID);
                         internalProviderData.put(PROG_IPD_EPG_EVENT_ID, epgEventId);
+                        genre = prog.getInt(PROG_GENRE);
                         if (parseProgramDescriptions)
-                            description = getJsonDescription(serviceId, epgEventId);
-                        //TODO:REMOVE FAKE GENRES
-                        String[] genre = new String[]{ProgramsDB.getAllGenres()[(genreIndex++) % ProgramsDB.getAllGenres().length]};
+                            description = URLDecoder.decode(getJsonDescription(serviceId, epgEventId), "UTF-8");
 
                         if (!(end == start || end < start))
                             programList.add(new Program.Builder()
@@ -318,7 +323,7 @@ public class SundtekJsonParser {
                                     .setInternalProviderData(internalProviderData)
                                     .setDescription(description.length() > 256 ? description.substring(0, 255) : description)
                                     .setLongDescription(description)
-                                    .setCanonicalGenres(genre)
+                                    .setCanonicalGenres(new String[]{genreMap.get(genre)})
 //                                    .setPosterArtUri(logo)
 //                                    .setThumbnailUri(logo)
                                     .build());
@@ -398,5 +403,79 @@ public class SundtekJsonParser {
 
         return response.body().string();
     }
+
+
+    public static final SparseArray<String> genreMap = new SparseArray<String>() {
+        {
+            append(16, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.MOVIES));
+            append(17, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.MOVIES));
+            append(18, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.MOVIES));
+            append(19, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.MOVIES));
+            append(20, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.COMEDY));
+            append(21, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.ENTERTAINMENT));
+            append(22, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.MOVIES));
+            append(23, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.DRAMA));
+            append(32, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.NEWS));
+            append(33, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.NEWS));
+            append(34, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.NEWS));
+            append(35, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.TECH_SCIENCE));
+            append(48, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.ENTERTAINMENT));
+            append(49, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.ENTERTAINMENT));
+            append(50, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.ENTERTAINMENT));
+            append(51, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.ENTERTAINMENT));
+            append(64, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.SPORTS));
+            append(65, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.SPORTS));
+            append(66, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.SPORTS));
+            append(67, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.SPORTS));
+            append(68, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.SPORTS));
+            append(69, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.SPORTS));
+            append(70, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.SPORTS));
+            append(71, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.SPORTS));
+            append(72, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.SPORTS));
+            append(73, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.SPORTS));
+            append(74, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.SPORTS));
+            append(75, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.SPORTS));
+            append(80, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.FAMILY_KIDS));
+            append(81, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.FAMILY_KIDS));
+            append(82, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.FAMILY_KIDS));
+            append(82, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.FAMILY_KIDS));
+            append(83, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.FAMILY_KIDS));
+            append(84, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.FAMILY_KIDS));
+            append(85, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.FAMILY_KIDS));
+            append(96, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.MUSIC));
+            append(97, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.MUSIC));
+            append(98, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.MUSIC));
+            append(99, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.MUSIC));
+            append(100, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.MUSIC));
+            append(101, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.MUSIC));
+            append(102, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.MUSIC));
+            append(112, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.ARTS));
+            append(113, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.ARTS));
+            append(114, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.ARTS));
+            append(115, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.ARTS));
+            append(116, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.ARTS));
+            append(117, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.ARTS));
+            append(118, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.MOVIES));
+            append(118, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.MOVIES));
+            append(120, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.NEWS));
+            append(121, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.NEWS));
+            append(122, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.ARTS));
+            append(129, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.TECH_SCIENCE));
+            append(144, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.TECH_SCIENCE));
+            append(145, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.ANIMAL_WILDLIFE));
+            append(146, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.TECH_SCIENCE));
+            append(147, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.TECH_SCIENCE));
+            append(148, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.TECH_SCIENCE));
+            append(150, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.EDUCATION));
+            append(160, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.LIFE_STYLE));
+            append(161, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.TRAVEL));
+            append(162, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.ARTS));
+            append(163, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.LIFE_STYLE));
+            append(164, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.LIFE_STYLE));
+            append(165, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.LIFE_STYLE));
+            append(166, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.SHOPPING));
+            append(167, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.LIFE_STYLE));
+        }
+    };
 }
 

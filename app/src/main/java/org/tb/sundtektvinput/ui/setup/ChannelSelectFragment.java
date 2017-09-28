@@ -28,9 +28,9 @@ import static com.google.ads.interactivemedia.v3.impl.w.c.loaded;
 
 public class ChannelSelectFragment extends SetupBaseFragment {
 
-    ArrayList<String> selectedChannels = new ArrayList<>();
-    HashMap<String, Channel> allChannels;
-    HashMap<String, Channel> selectedChannelMap;
+    ArrayList<Long> selectedChannels = new ArrayList<>();
+    HashMap<Long, Channel> allChannels;
+    HashMap<Long, Channel> selectedChannelMap;
 
     @NonNull
     public GuidanceStylist.Guidance onCreateGuidance(@NonNull Bundle savedInstanceState) {
@@ -45,7 +45,7 @@ public class ChannelSelectFragment extends SetupBaseFragment {
     public void onCreateButtonActions(@NonNull List<GuidedAction> actions, Bundle savedInstanceState) {
         actions.add(new GuidedAction.Builder(getActivity())
                 .id(ACTION_ID_CONTINUE)
-                .title("Continue")
+                .title("Fetch EPG")
                 .build());
 
         actions.add(new GuidedAction.Builder(getActivity())
@@ -61,9 +61,9 @@ public class ChannelSelectFragment extends SetupBaseFragment {
         selectedChannels = new SettingsHelper(getActivity()).loadSelectedChannelsMap();
         selectedChannelMap = new HashMap<>();
         Log.d("LOADED", loaded.toString());
-        String id;
+        long id;
         for (Channel channel : allChannels.values()) {
-            id = String.valueOf(channel.getOriginalNetworkId());
+            id = Long.valueOf(channel.getOriginalNetworkId());
 
             if (selectedChannels.contains(id)) {
                 selectedChannelMap.put(id, channel);
@@ -71,7 +71,8 @@ public class ChannelSelectFragment extends SetupBaseFragment {
             actions.add(
                     new GuidedAction.Builder(getActivity())
                             .checkSetId(CHECKBOX_CHECK_SET_ID)
-                            .description(id)
+                            .description(channel.getDisplayNumber())
+                            .id(id)
                             .title(channel.getDisplayName())
                             .checked(selectedChannels.contains(id))
                             .build());
@@ -79,7 +80,7 @@ public class ChannelSelectFragment extends SetupBaseFragment {
     }
 
 
-    HashMap<String, Channel> getChannels() {
+    HashMap<Long, Channel> getChannels() {
         ArrayList<Channel> resp = new ArrayList<>();
         try {
             resp = new getChannelsAsync().execute().get();
@@ -89,7 +90,7 @@ public class ChannelSelectFragment extends SetupBaseFragment {
 
         allChannels = new HashMap<>();
         for (Channel channel : resp)
-            allChannels.put(String.valueOf(channel.getOriginalNetworkId()), channel);
+            allChannels.put(Long.valueOf(channel.getOriginalNetworkId()), channel);
 
         return allChannels;
     }
@@ -111,23 +112,23 @@ public class ChannelSelectFragment extends SetupBaseFragment {
     @Override
     public void onGuidedActionClicked(GuidedAction action) {
         FragmentManager fm = getFragmentManager();
+
+        long id = action.getId();
         if (action.isChecked()) {
-            selectedChannels.add(action.getDescription().toString());
-            selectedChannelMap.put((String) action.getDescription(), allChannels.get(action.getDescription()));
+            selectedChannels.add(id);
+            selectedChannelMap.put(id, allChannels.get(id));
         } else {
-            if (selectedChannels.contains(action.getDescription())) {
-                selectedChannels.remove(action.getDescription());
-                selectedChannelMap.remove(action.getDescription());
+            if (selectedChannels.contains(id)) {
+                selectedChannels.remove(id);
+                selectedChannelMap.remove(id);
             }
         }
 
         if (action.getId() == ACTION_ID_CONTINUE) {
             new SettingsHelper(getActivity())
                     .saveChannelIds(selectedChannels);
-            Bundle args = new Bundle();
-            args.putSerializable("channels", selectedChannelMap);
-            SetupBaseFragment fragment = new ChannelNumbersFragment();
-            fragment.setArguments(args);
+
+            SetupBaseFragment fragment = new EpgScanFragment();
             GuidedStepFragment.add(fm, fragment);
         }
         if (action.getId() == ACTION_ID_CANCEL) {

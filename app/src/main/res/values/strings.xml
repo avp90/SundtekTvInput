@@ -37,10 +37,14 @@
     <string name="sync_error_no_channels">No channels found. Check your connection.</string>
     <string name="sync_error_other">Error code %1$d</string>
     <string name="selectedChannelsFile">selectedChannels</string>
-    <string name="ipsave">ip_address</string>
+    <string name="ipaddess">ip_address</string>
+    <string name="selected_list">selected_list</string>
     <string name="ip_not_valid">INVALID IP</string>
     <string name="ip_valid">VALID IP</string>
-    <string name="syncing_epg">Syncing EPG...</string>
+    <string name="syncing_epg">Syncing EPG…</string>
+    <string name="default_ip">127.0.0.1</string>
+    <string name="setup_enter_ip">Enter IP Address</string>
+    <string name="setup_ipaddress">IP Address</string>
 
 
 </resources>

@@ -27,27 +27,27 @@ public class IpAddressFragment extends SetupBaseFragment {
     private static final Pattern IP_PATTERN = Pattern.compile(
             "^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
 
-    private String ip;
+    private String ip = "127.0.0.1";
 
     @Override
     @NonNull
     public GuidanceStylist.Guidance onCreateGuidance(@NonNull Bundle savedInstanceState) {
         String title = "Enter IP";
-        String description = "Enter the IP Address of your streamingserver";
+        String description = "Enter the IP of your streamingserver";
         //  Drawable icon = getActivity().getDrawable(R.drawable.ic_launcher);
         return new GuidanceStylist.Guidance(title, description, breadcrumb, null);
     }
 
     @Override
     public void onCreateActions(@NonNull List<GuidedAction> actions, Bundle savedInstanceState) {
-        ip = new SettingsHelper(getActivity()).loadIp();
+        ip = new SettingsHelper(getContext()).loadIp();
 
         actions.add(new GuidedAction.Builder(getActivity())
                 .id(ACTION_EDIT_IP)
-                .title(validateIp(ip) ? ip : "Enter IP Address")
+                .title(validateIp(ip) ? ip : getString(R.string.setup_enter_ip))
                 .editTitle(ip)
                 .description(validateIp(ip) ? getString(R.string.ip_valid) : getString(R.string.ip_not_valid))
-                .editDescription("IP Address")
+                .editDescription(R.string.setup_ipaddress)
                 .editable(true)
                 .build()
         );
@@ -98,7 +98,7 @@ public class IpAddressFragment extends SetupBaseFragment {
         FragmentManager fm = getFragmentManager();
 
         if (action.getId() == ACTION_ID_CONTINUE) {
-            GuidedStepFragment.add(fm, new WelcomeFragment());
+            GuidedStepFragment.add(fm, new ListSelectFragment());
         }
         if (action.getId() == ACTION_ID_CANCEL) {
             finishGuidedStepFragments();

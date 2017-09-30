@@ -22,11 +22,8 @@ public class ChannelsDB {
 
     private static final String TAG = ChannelsDB.class.getSimpleName();
 
-    private static long MAX_AGE = 1000 * 60 * 60 / 12; //5mins;
     private static ChannelsDB myChannelsDB;
     private HashMap<Long, Channel> channelMap;
-    private long lastUpdate;
-    private ArrayList<Long> filter;
 
 
     /**
@@ -48,23 +45,20 @@ public class ChannelsDB {
 
 
     public List<Channel> getChannels(Context context) {
+        SettingsHelper helper = new SettingsHelper(context);
+        String activeList = helper.loadSelectedList();
+        ArrayList<Long> filter = helper.loadSelectedChannels(activeList);
 
-        filter = new SettingsHelper(context).loadSelectedChannelsMap();
         List<Channel> channels = new ArrayList<>();
 
         Log.d(TAG, "refreshing channels");
-        channels.addAll(new SundtekJsonParser(context).getChannels());
-        lastUpdate = System.currentTimeMillis();
-
-        Log.d(TAG, "ChannelDB Timestamp: " + lastUpdate);
+        channels.addAll(new SundtekJsonParser(context).getChannels(activeList));
 
         channelMap.clear();
 
-//        Channel newChannel;
         for (Channel channel : channels) {
             long key = channel.getOriginalNetworkId();
             if (filter.contains(key)) {
-//                newChannel = new Channel.Builder(channel).build();
                 channelMap.put(key, channel);
                 Log.d(TAG, "Found " + channelMap.size() + " Channels");
             }

@@ -13,6 +13,7 @@ import com.google.android.media.tv.companionlibrary.model.Program;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.tb.sundtektvinput.SundtekTvInputApp;
 import org.tb.sundtektvinput.util.SettingsHelper;
 
@@ -47,7 +48,13 @@ public class SundtekJsonParser {
     private static final String BASE_SERVERCMD_URL = "/servercmd.xhx";
     private static final String SERVER_PORT = "22000";
 
-    private static final String CHANNEL_LIST = "TV";
+//    private static final int GROUP_ACTIVE = 0;
+//    private static final int GROUP_AVAILABLE =  1;
+
+    private static final String GROUP_ACTIVE = "active_grp";
+    private static final String GROUP_AVAILABLE = "custom_grp";
+
+    private static final String ACTIVE_GROUP = "TV";
 
 
     private static final int CHANNEL_NAME = 0;
@@ -124,6 +131,7 @@ public class SundtekJsonParser {
     private static final String EPG_EVENT_ID_PARAM = "epgeventid";
     private static final String EPG_DEL_SYS_PARAM = "delsys";
 
+
     private HashMap<Long, Channel> channelMap;
 
     private int channelNumber = 1;
@@ -140,7 +148,7 @@ public class SundtekJsonParser {
         BASE_URL = "http://" + IP_ADDRESS + ":" + SERVER_PORT;
     }
 
-    private HashMap<Long, Channel> getChannelMap() throws JSONException, IOException {
+    private HashMap<Long, Channel> getChannelMap(String group) throws JSONException, IOException {
 
         if (channelMap == null) {
             channelMap = new HashMap<>();
@@ -151,7 +159,7 @@ public class SundtekJsonParser {
                     getJson(
                             BASE_URL + BASE_SERVERCMD_URL,
                             buildChannelPostBody(
-                                    CHANNEL_LIST,
+                                    group,
                                     CHANNEL_MODE_FAVLIST,
                                     Arrays.asList(
                                             CHANNEL_FILTER_SD_FTA,
@@ -172,9 +180,10 @@ public class SundtekJsonParser {
         return channelMap;
     }
 
-    public ArrayList<Channel> getChannels() {
+
+    public ArrayList<Channel> getChannels(String selectedList) {
         try {
-            return new ArrayList<>(getChannelMap().values());
+            return new ArrayList<>(getChannelMap(selectedList).values());
         } catch (JSONException | IOException e) {
             e.printStackTrace();
         }
@@ -233,7 +242,7 @@ public class SundtekJsonParser {
     }
 
 
-    public ArrayList<Program> getPrograms(String epgMode, boolean parseProgramDescriptions) {
+    public ArrayList<Program> getPrograms(String epgMode, boolean parseProgramDescriptions, String group) {
         ArrayList<Program> programList = new ArrayList<>();
 
         try {
@@ -244,7 +253,7 @@ public class SundtekJsonParser {
                     getJson(
                             BASE_URL + BASE_SERVERCMD_URL,
                             buildProgramsPostBody(
-                                    CHANNEL_LIST,
+                                    group,
                                     epgMode
                             )
                     )
@@ -382,13 +391,61 @@ public class SundtekJsonParser {
         return "";
     }
 
+    public ArrayList<String> getListsAvailable() {
+        ArrayList<String> channelLists = new ArrayList<>();
+
+        if (DEBUG) {
+            Log.d(TAG, "Fetch available lists");
+        }
+
+        JSONObject responseChannelListsJson = null;
+        try {
+            responseChannelListsJson = new JSONObject(
+                    getJson(
+                            BASE_URL + BASE_SERVERCMD_URL,
+                            buildListsPostBody()
+                    )
+            );
+
+            channelLists = parseListsAvailable(responseChannelListsJson);
+
+        } catch (JSONException | IOException e) {
+            e.printStackTrace();
+        }
+
+        Log.d(TAG, "Available lists found: " + channelLists.toString() );
+
+        return channelLists;
+    }
+
+    private ArrayList<String> parseListsAvailable(JSONObject resp) throws JSONException {
+        ArrayList<String> lists = new ArrayList<>();
+        JSONArray channelListsArray;
+
+        channelListsArray = resp.getJSONArray(GROUP_AVAILABLE);
+
+        if (!(channelListsArray == null)) {
+            for (int i = 0; i < channelListsArray.length(); i++) {
+                lists.add(channelListsArray.getString(i));
+            }
+        }
+
+        return lists;
+    }
+
 
     private RequestBody buildChannelPostBody(String groups, String channelMode, List<String> channelFilters) {
         return new FormBody.Builder()
                 .add(CMD_PARAM, CMD_CHANNELLIST)
                 .add(CHANNEL_MODE_PARAM, channelMode)
-                .add(GROUPS_PARAM, "[" + (groups.isEmpty() ? groups : "\"" + groups + "\"") + "]")
+                .add(GROUPS_PARAM, "[\"" + groups + "\"]")
                 .add(CHANNEL_FILTER_PARAM, TextUtils.join("-", channelFilters))
+                .build();
+    }
+
+    private RequestBody buildListsPostBody() {
+        return new FormBody.Builder()
+                .add(CMD_PARAM, CMD_GET_GROUPS)
                 .build();
     }
 
@@ -420,7 +477,7 @@ public class SundtekJsonParser {
     }
 
 
-    public static final SparseArray<String> genreMap = new SparseArray<String>() {
+    private static final SparseArray<String> genreMap = new SparseArray<String>() {
         {
             append(16, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.MOVIES));
             append(17, TvContract.Programs.Genres.encode(TvContract.Programs.Genres.MOVIES));

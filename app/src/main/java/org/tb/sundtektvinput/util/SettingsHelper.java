@@ -5,12 +5,11 @@ import android.content.SharedPreferences;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.tb.sundtektvinput.R;
+import org.tb.sundtektvinput.service.MyJobService;
+import org.tb.sundtektvinput.service.base.EpgSyncJobService;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.TreeMap;
 
 
 /**
@@ -27,78 +26,65 @@ public class SettingsHelper {
         this.context = context;
     }
 
-    public void saveChannelConfig(TreeMap<String, Long> input) {
-        SharedPreferences pSharedPref = context.getSharedPreferences(CONFIG_FILE, Context.MODE_PRIVATE);
-        if (pSharedPref != null) {
-            JSONObject jsonObject = new JSONObject(input);
-            String jsonString = jsonObject.toString();
-            SharedPreferences.Editor editor = pSharedPref.edit();
-            editor.remove("channelConfig").commit();
-            editor.putString("channelConfig", jsonString);
-            editor.commit();
-        }
-    }
 
-    public TreeMap<String, Long> loadChannelConfig() {
-        TreeMap<String, Long> outputMap = new TreeMap<>();
-        SharedPreferences pSharedPref = context.getSharedPreferences(CONFIG_FILE, Context.MODE_PRIVATE);
-        try {
-            if (pSharedPref != null) {
-                String jsonString = pSharedPref.getString("channelConfig", (new JSONObject()).toString());
-                JSONObject jsonObject = new JSONObject(jsonString);
-                Iterator<String> keysItr = jsonObject.keys();
-                while (keysItr.hasNext()) {
-                    String key = keysItr.next();
-                    long value = jsonObject.getLong(key);
-                    outputMap.put(key, value);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return outputMap;
-    }
-
-
-    public void saveChannelIds(ArrayList<Long> input) {
+    public void saveSelectedChannels(String list, ArrayList<Long> input) {
         SharedPreferences pSharedPref = context.getSharedPreferences(CONFIG_FILE, Context.MODE_PRIVATE);
         if (pSharedPref != null) {
             JSONArray jsonArray = new JSONArray(input);
             String jsonString = jsonArray.toString();
             SharedPreferences.Editor editor = pSharedPref.edit();
-            editor.remove("selectedChannels").commit();
-            editor.putString("selectedChannels", jsonString);
-            editor.commit();
+            editor.remove(list);
+            editor.putString(list, jsonString);
+            editor.apply();
         }
     }
 
-    public ArrayList<Long> loadSelectedChannelsMap() {
-        ArrayList<Long> outputArraylist = new ArrayList<>();
+    public ArrayList<Long> loadSelectedChannels(String list) {
+        ArrayList<Long> output = new ArrayList<>();
         SharedPreferences pSharedPref = context.getSharedPreferences(CONFIG_FILE, Context.MODE_PRIVATE);
         try {
             if (pSharedPref != null) {
-                String jsonString = pSharedPref.getString("selectedChannels", new JSONArray().toString());
+                String jsonString = pSharedPref.getString(list, new JSONArray().toString());
                 JSONArray jsonArray = new JSONArray(jsonString);
                 for (int i = 0; i < jsonArray.length(); i++)
-                    outputArraylist.add(jsonArray.getLong(i));
+                    output.add(jsonArray.getLong(i));
             }
         } catch (JSONException e1) {
             e1.printStackTrace();
         }
-        return outputArraylist;
+        return output;
+    }
+
+    public void saveSelectedList(String selectedList) {
+        SharedPreferences pSharedPref = context.getSharedPreferences(CONFIG_FILE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pSharedPref.edit();
+        editor.remove(context.getString(R.string.selected_list));
+        editor.putString(context.getString(R.string.selected_list), String.valueOf(selectedList));
+        editor.apply();
+    }
+
+    public String loadSelectedList() {
+        SharedPreferences pSharedPref = context.getSharedPreferences(CONFIG_FILE, Context.MODE_PRIVATE);
+        return pSharedPref.getString(context.getString(R.string.selected_list), "");
     }
 
     public void saveIp(String ip) {
         SharedPreferences pSharedPref = context.getSharedPreferences(CONFIG_FILE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pSharedPref.edit();
-        editor.remove(context.getString(R.string.ipsave)).commit();
-        editor.putString(context.getString(R.string.ipsave), String.valueOf(ip)).commit();
-        editor.commit();
+        editor.remove(context.getString(R.string.ipaddess));
+        editor.putString(context.getString(R.string.ipaddess), String.valueOf(ip));
+        editor.apply();
     }
 
     public String loadIp() {
         SharedPreferences pSharedPref = context.getSharedPreferences(CONFIG_FILE, Context.MODE_PRIVATE);
-        return pSharedPref.getString(context.getString(R.string.ipsave), "");
+        return pSharedPref.getString(context.getString(R.string.ipaddess), context.getString(R.string.default_ip));
+    }
+
+
+    public String getInputId() {
+        SharedPreferences pSharedPref = context.getSharedPreferences(EpgSyncJobService.PREFERENCE_EPG_SYNC, Context.MODE_PRIVATE);
+        return pSharedPref.getString(MyJobService.BUNDLE_KEY_INPUT_ID, null);
     }
 
 }

@@ -54,8 +54,7 @@ public class EpgScanFragment extends SetupBaseFragment {
     @NonNull
     @Override
     public GuidanceStylist.Guidance onCreateGuidance(Bundle savedInstanceState) {
-        GuidanceStylist.Guidance guidance = new GuidanceStylist.Guidance(title, description, breadcrumb, null);
-        return guidance;
+        return new GuidanceStylist.Guidance(title, description, breadcrumb, null);
     }
 
     @Override
@@ -76,13 +75,12 @@ public class EpgScanFragment extends SetupBaseFragment {
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public GuidedActionsStylist onCreateActionsStylist() {
-        GuidedActionsStylist stylist = new GuidedActionsStylist() {
+        return new GuidedActionsStylist() {
             @Override
             public int onProvideItemLayoutId() {
                 return R.layout.setup_epg_layout;
             }
         };
-        return stylist;
     }
 
 
@@ -106,10 +104,13 @@ public class EpgScanFragment extends SetupBaseFragment {
         actions.add(action);
     }
 
-    private void updateScanProgress(int channelsScanned, int channelCount) {
+    private void updateScanProgress(int channelsScanned, int channelCount, String channelName) {
         if (DEBUG)
             Log.d(TAG, "updateScanProgress: " + channelsScanned + " " + channelCount);
 
+        GuidedAction a = getActions().get(findActionPositionById(ACTION_ID_PROCESSING));
+        a.setTitle(channelsScanned + " / " + channelCount + "\t\t" + channelName);
+        notifyActionChanged(findActionPositionById(ACTION_ID_PROCESSING));
         onChannelScanCompleted(channelsScanned, channelCount);
     }
 
@@ -256,11 +257,13 @@ public class EpgScanFragment extends SetupBaseFragment {
                                     getIntExtra(EpgSyncJobService.BUNDLE_KEY_CHANNELS_SCANNED, 0);
                             int channelCount = intent.
                                     getIntExtra(EpgSyncJobService.BUNDLE_KEY_CHANNEL_COUNT, 0);
-                            updateScanProgress(++channelsScanned, channelCount);
                             String channelDisplayName = intent.getStringExtra(
                                     EpgSyncJobService.BUNDLE_KEY_SCANNED_CHANNEL_DISPLAY_NAME);
                             String channelDisplayNumber = intent.getStringExtra(
                                     EpgSyncJobService.BUNDLE_KEY_SCANNED_CHANNEL_DISPLAY_NUMBER);
+
+                            updateScanProgress(++channelsScanned, channelCount, channelDisplayName );
+
                             if (DEBUG) {
                                 Log.d(TAG, "Sync status: Channel Scanned");
                                 Log.d(TAG, "Scanned " + channelsScanned + " out of " + channelCount);

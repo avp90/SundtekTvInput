@@ -107,7 +107,7 @@ public class ProgramsDB {
     public ArrayList<Program> getProgramsForChannel(Context context, Channel channel, long startMs, long endMs) {
         activeList = new SettingsHelper(SundtekTvInputApp.getContext()).loadSelectedList();
 
-        if (channelProgramsMap.isEmpty() || ((lastUpdate + MAX_AGE_MILLIS) <= (System.currentTimeMillis())) || lastUpdateList.equals(activeList)) {
+        if (channelProgramsMap.isEmpty() || ((lastUpdate + MAX_AGE_MILLIS) <= (System.currentTimeMillis())) || !lastUpdateList.equals(activeList)) {
             if (DEBUG) {
                 Log.d(TAG, "New Channel List " + (!activeList.equals(lastUpdateList)));
                 Log.d(TAG, "is empty: " + channelProgramsMap.isEmpty());

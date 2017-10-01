@@ -19,7 +19,7 @@ ext {
     buildToolsVersion = '26.0.1'
     applicationId = "org.tb.sundtektvinput"
 
-    supportLibraryVersion = '26.0.1'
+    supportLibraryVersion = '26.1.0'
 }
 
 allprojects {

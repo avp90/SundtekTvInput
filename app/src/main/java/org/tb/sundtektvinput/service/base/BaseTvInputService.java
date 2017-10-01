@@ -229,6 +229,14 @@ public abstract class BaseTvInputService extends TvInputService {
         public boolean handleMessage(Message msg) {
             switch (msg.what) {
                 case MSG_PLAY_CONTENT:
+
+                    // When sequential tuning messages arrived, it skips middle tuning messages in order
+                    // to change to the last requested channel quickly.
+                    if (mHandler.hasMessages(MSG_PLAY_CONTENT)) {
+                        if (DEBUG)
+                            Log.d(TAG, "skip tuning request");
+                        return true;
+                    }
                     mCurrentProgram = (Program) msg.obj;
                     if (mCurrentProgram == null) {
                         mCurrentProgram = ProgramsDB.getInstance().getDummyProgram(mCurrentChannel);

@@ -486,10 +486,7 @@ public abstract class EpgSyncJobService extends JobService {
                 List<Program> programs = getProgramsForChannel(channelUri, channelMap.valueAt(i),
                         startMs, endMs);
 
-
                 Log.d(TAG, "programs found for channel " + channelMap.valueAt(i).getDisplayName() + " : " + programs.size());
-                if (DEBUG)
-                    Log.d(TAG, programs.toString());
 
                 for (int index = 0; index < programs.size(); index++) {
                     if (programs.get(index).getChannelId() == -1) {

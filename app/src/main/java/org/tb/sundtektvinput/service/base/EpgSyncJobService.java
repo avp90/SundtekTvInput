@@ -169,9 +169,9 @@ public abstract class EpgSyncJobService extends JobService {
     /**
      * The default period between full EPG syncs, one day.
      */
-    public static final long DEFAULT_SYNC_PERIOD_MILLIS = 1000 * 60 * 60 * 6; // 6 hour
-    public static final long DEFAULT_IMMEDIATE_EPG_DURATION_MILLIS = 1000 * 60 * 60 * 24; // 6 Hour
-    public static final long DEFAULT_PERIODIC_EPG_DURATION_MILLIS = 1000 * 60 * 60 * 24; // 48 Hour
+    public static final long DEFAULT_SYNC_PERIOD_MILLIS = 1000 * 60 * 60 * 3; // 3 hour
+    public static final long DEFAULT_IMMEDIATE_EPG_DURATION_MILLIS = 1000 * 60 * 60 * 48; // 48 Hour
+    public static final long DEFAULT_PERIODIC_EPG_DURATION_MILLIS = 1000 * 60 * 60 * 24 * 14;; // 2 weeks
 
     private static final int PERIODIC_SYNC_JOB_ID = 0;
     private static final int REQUEST_SYNC_JOB_ID = 1;

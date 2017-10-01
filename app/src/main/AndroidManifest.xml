@@ -45,8 +45,8 @@
     <application
         android:name="org.tb.sundtektvinput.SundtekTvInputApp"
         android:allowBackup="false"
-        android:banner="@drawable/ic_launcher"
-        android:icon="@drawable/ic_launcher"
+        android:banner="@drawable/ic_live_tv"
+        android:icon="@drawable/ic_live_tv"
         android:label="@string/app_name"
         android:theme="@style/Theme.Leanback">
 

@@ -341,9 +341,9 @@ public abstract class EpgSyncJobService extends JobService {
         scheduleJob(context, jobInfo);
         if (DEBUG) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Log.d(TAG, "Job has been scheduled for every " + fullSyncPeriod + "ms" + " > " + fullSyncPeriod / 1000 / 60 + "min - flextime: " + jobInfo.getFlexMillis() + " > " + jobInfo.getFlexMillis() / 1000 / 60 + " min");
+                Log.d(TAG, "Job has been scheduled for every " + fullSyncPeriod + "ms" + " = " + fullSyncPeriod / 1000 / 60 + "min - flextime: " + jobInfo.getFlexMillis() + " = " + jobInfo.getFlexMillis() / 1000 / 60 + " min");
             } else {
-                Log.d(TAG, "Job has been scheduled for every " + fullSyncPeriod + "ms " + " > " + fullSyncPeriod / 1000 / 60 + "min");
+                Log.d(TAG, "Job has been scheduled for every " + fullSyncPeriod + "ms " + " = " + fullSyncPeriod / 1000 / 60 + "min");
             }
         }
     }

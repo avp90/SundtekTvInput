@@ -50,7 +50,8 @@ public class ProgramsDB {
     }
 
     private ProgramsDB() {
-        Log.d(TAG, "new ProgramsDB Instance");
+        if (DEBUG)
+            Log.d(TAG, "new ProgramsDB Instance");
         allProgramMap = new HashMap<>();
         channelProgramsMap = new HashMap<>();
     }
@@ -106,7 +107,7 @@ public class ProgramsDB {
         }
 
         Log.d(TAG, "Programs " + "new: " + newCount + " replaced: " + replacedCount + " total: " + (newCount + replacedCount));
-        Log.d(TAG, "Got " + allProgramMap.size() + " Programs for " + channelProgramsMap.values().size() + " channels");
+        Log.d(TAG, "Got " + allProgramMap.size() + " Programs for " + channelProgramsMap.values().size() + " channels from server");
 
         if (DEBUG) {
             for (String key : channelProgramsMap.keySet()) {
@@ -123,9 +124,9 @@ public class ProgramsDB {
 
             Log.d(TAG,
                     "Reasons for EPG update:" +
-                    "\n new list: \t" + (!activeList.equals(lastUpdateList)) +
-                    "\n DB empty: \t" + channelProgramsMap.isEmpty() +
-                    "\n data too old: \t" + ((lastUpdate + MAX_AGE_MILLIS) <= System.currentTimeMillis())
+                            "\n new list: \t" + (!activeList.equals(lastUpdateList)) +
+                            "\n DB empty: \t" + channelProgramsMap.isEmpty() +
+                            "\n data too old: \t" + ((lastUpdate + MAX_AGE_MILLIS) <= System.currentTimeMillis())
             );
 
             lastUpdate = System.currentTimeMillis();
@@ -139,8 +140,7 @@ public class ProgramsDB {
         if (programList == null)
             programList = new ArrayList<>();
 
-        if (DEBUG)
-            Log.d(TAG, "found " + programList.size() + " programs for " + channel.getDisplayName());
+        Log.d(TAG, "return " + programList.size() + " programs for " + channel.getDisplayName());
 
         return programList;
     }
@@ -175,7 +175,8 @@ public class ProgramsDB {
                 .setEndTimeUtcMillis(startMs + 60 * 30 * 1000) //duration 10min
                 .build());
 
-        Log.d(TAG, "created dummy program info for channel: " + channel.getDisplayName());
+        if (DEBUG)
+            Log.d(TAG, "created dummy program info for channel: " + channel.getDisplayName());
 
         return dummy;
     }

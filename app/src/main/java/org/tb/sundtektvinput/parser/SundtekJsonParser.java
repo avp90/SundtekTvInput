@@ -153,7 +153,7 @@ public class SundtekJsonParser {
         if (channelMap == null) {
             channelMap = new HashMap<>();
             if (DEBUG) {
-                Log.d(TAG, "Fetch FAV channels");
+                Log.d(TAG, "Fetch channels for list: " + group);
             }
             JSONArray responseChannlesJson = new JSONArray(
                     getJson(
@@ -175,7 +175,7 @@ public class SundtekJsonParser {
             channelMap.putAll(parseChannles(responseChannlesJson));
 
             if (DEBUG)
-                Log.d(TAG, "total channels found: " + channelMap.size());
+                Log.d(TAG, "total channels found for list " + group +": " + channelMap.size());
         }
         return channelMap;
     }
@@ -247,7 +247,11 @@ public class SundtekJsonParser {
 
         try {
             if (DEBUG)
-                Log.d(TAG, "Fetch programs");
+                Log.d(TAG,
+                        "Fetch programs from server"
+                                + "\n list: " + group
+                                + "\n mode: " + epgMode
+                );
 
             JSONArray responseProgramsNowJson = new JSONArray(
                     getJson(
@@ -262,7 +266,6 @@ public class SundtekJsonParser {
 
             if (DEBUG) {
                 Log.d(TAG, "Found " + programList.size() + " programs");
-                Log.d(TAG, programList.toString());
             }
 
         } catch (JSONException | IOException e) {
@@ -395,7 +398,7 @@ public class SundtekJsonParser {
         ArrayList<String> channelLists = new ArrayList<>();
 
         if (DEBUG) {
-            Log.d(TAG, "Fetch available lists");
+            Log.d(TAG, "Fetch lists from server");
         }
 
         JSONObject responseChannelListsJson = null;
@@ -413,7 +416,7 @@ public class SundtekJsonParser {
             e.printStackTrace();
         }
 
-        Log.d(TAG, "Available lists found: " + channelLists.toString() );
+        Log.d(TAG, "lists found: " + channelLists.toString() );
 
         return channelLists;
     }

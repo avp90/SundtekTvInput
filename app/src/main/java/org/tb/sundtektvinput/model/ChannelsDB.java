@@ -21,6 +21,7 @@ import java.util.List;
 public class ChannelsDB {
 
     private static final String TAG = ChannelsDB.class.getSimpleName();
+    private static final boolean DEBUG = false;
 
     private static ChannelsDB myChannelsDB;
     private HashMap<Long, Channel> channelMap;
@@ -39,7 +40,8 @@ public class ChannelsDB {
 
     @SuppressLint("UseSparseArrays")
     private ChannelsDB() {
-        Log.d(TAG, "new ChannelsDB Instance");
+        if (DEBUG)
+            Log.d(TAG, "new ChannelsDB Instance");
         channelMap = new HashMap<>();
     }
 
@@ -60,9 +62,10 @@ public class ChannelsDB {
             long key = channel.getOriginalNetworkId();
             if (filter.contains(key)) {
                 channelMap.put(key, channel);
-                Log.d(TAG, "Found " + channelMap.size() + " Channels");
             }
         }
+        Log.d(TAG, "Found " + channelMap.size() + " Channels");
+
         return new ArrayList<>(channelMap.values());
 
     }

@@ -54,9 +54,8 @@ public class ProgramsDB {
             Log.d(TAG, "new ProgramsDB Instance");
         allProgramMap = new HashMap<>();
         channelProgramsMap = new HashMap<>();
-        //TODO:load settings for shared prefs
-//        lastUpdateList = new SettingsHelper(SundtekTvInputApp.getContext()).loadSelectedList();
-//        lastUpdate = new SettingsHelper(SundtekTvInputApp.getContext()).loadLastUpdateTimestamp();
+        lastUpdateList = new SettingsHelper(SundtekTvInputApp.getContext()).loadSelectedList();
+        lastUpdate = new SettingsHelper(SundtekTvInputApp.getContext()).loadLastUpdateTimestamp();
     }
 
 
@@ -134,8 +133,7 @@ public class ProgramsDB {
             );
 
             lastUpdate = System.currentTimeMillis();
-            //TODO:load settings for shared prefs
-//            new SettingsHelper(SundtekTvInputApp.getContext()).saveLastUpdateTimestamp(lastUpdate);
+            new SettingsHelper(SundtekTvInputApp.getContext()).saveLastUpdateTimestamp(lastUpdate);
             getPrograms(context, channel, startMs, endMs);
             lastUpdateList = activeList;
         }

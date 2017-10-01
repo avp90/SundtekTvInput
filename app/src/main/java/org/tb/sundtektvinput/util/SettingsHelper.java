@@ -59,7 +59,7 @@ public class SettingsHelper {
         SharedPreferences pSharedPref = context.getSharedPreferences(CONFIG_FILE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pSharedPref.edit();
         editor.remove(context.getString(R.string.selected_list));
-        editor.putString(context.getString(R.string.selected_list), String.valueOf(selectedList));
+        editor.putString(context.getString(R.string.selected_list), selectedList);
         editor.apply();
     }
 
@@ -72,7 +72,7 @@ public class SettingsHelper {
         SharedPreferences pSharedPref = context.getSharedPreferences(CONFIG_FILE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pSharedPref.edit();
         editor.remove(context.getString(R.string.ipaddess));
-        editor.putString(context.getString(R.string.ipaddess), String.valueOf(ip));
+        editor.putString(context.getString(R.string.ipaddess), ip);
         editor.apply();
     }
 

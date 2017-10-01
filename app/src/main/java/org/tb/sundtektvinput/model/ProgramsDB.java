@@ -54,6 +54,9 @@ public class ProgramsDB {
             Log.d(TAG, "new ProgramsDB Instance");
         allProgramMap = new HashMap<>();
         channelProgramsMap = new HashMap<>();
+        //TODO:load settings for shared prefs
+//        lastUpdateList = new SettingsHelper(SundtekTvInputApp.getContext()).loadSelectedList();
+//        lastUpdate = new SettingsHelper(SundtekTvInputApp.getContext()).loadLastUpdateTimestamp();
     }
 
 
@@ -106,9 +109,10 @@ public class ProgramsDB {
                 Log.d(TAG, channelName + " - EventId: " + newEventId + " : " + (newProgram ? "new" : "replaced"));
         }
 
-        Log.d(TAG, "Programs " + "new: " + newCount + " replaced: " + replacedCount + " total: " + (newCount + replacedCount));
-        Log.d(TAG, "Got " + allProgramMap.size() + " Programs for " + channelProgramsMap.values().size() + " channels from server");
-
+        if (DEBUG) {
+            Log.d(TAG, "Programs " + "new: " + newCount + " replaced: " + replacedCount + " total: " + (newCount + replacedCount));
+            Log.d(TAG, "Got " + allProgramMap.size() + " Programs for " + channelProgramsMap.values().size() + " channels from server");
+        }
         if (DEBUG) {
             for (String key : channelProgramsMap.keySet()) {
                 Log.d(TAG, "channelId " + key + " - " + channelProgramsMap.get(key).size() + " programs");
@@ -130,6 +134,8 @@ public class ProgramsDB {
             );
 
             lastUpdate = System.currentTimeMillis();
+            //TODO:load settings for shared prefs
+//            new SettingsHelper(SundtekTvInputApp.getContext()).saveLastUpdateTimestamp(lastUpdate);
             getPrograms(context, channel, startMs, endMs);
             lastUpdateList = activeList;
         }
@@ -140,7 +146,8 @@ public class ProgramsDB {
         if (programList == null)
             programList = new ArrayList<>();
 
-        Log.d(TAG, "return " + programList.size() + " programs for " + channel.getDisplayName());
+        if (DEBUG)
+            Log.d(TAG, "return " + programList.size() + " programs for " + channel.getDisplayName());
 
         return programList;
     }

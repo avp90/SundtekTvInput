@@ -72,7 +72,7 @@ import java.util.List;
  */
 public abstract class EpgSyncJobService extends JobService {
     private static final String TAG = "EpgSyncJobService";
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     /**
      * The action that will be broadcast when the job service's status changes.
@@ -171,7 +171,7 @@ public abstract class EpgSyncJobService extends JobService {
      */
     public static final long DEFAULT_SYNC_PERIOD_MILLIS = 1000 * 60 * 60 * 3; // 3 hour
     public static final long DEFAULT_IMMEDIATE_EPG_DURATION_MILLIS = 1000 * 60 * 60 * 48; // 48 Hour
-    public static final long DEFAULT_PERIODIC_EPG_DURATION_MILLIS = 1000 * 60 * 60 * 24 * 14;; // 2 weeks
+    public static final long DEFAULT_PERIODIC_EPG_DURATION_MILLIS = 1000 * 60 * 60 * 24 * 14; // 2 weeks
 
     private static final int PERIODIC_SYNC_JOB_ID = 0;
     private static final int REQUEST_SYNC_JOB_ID = 1;
@@ -339,12 +339,10 @@ public abstract class EpgSyncJobService extends JobService {
                     .build();
         }
         scheduleJob(context, jobInfo);
-        if (DEBUG) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Log.d(TAG, "Job has been scheduled for every " + fullSyncPeriod + "ms" + " = " + fullSyncPeriod / 1000 / 60 + "min - flextime: " + jobInfo.getFlexMillis() + " = " + jobInfo.getFlexMillis() / 1000 / 60 + " min");
-            } else {
-                Log.d(TAG, "Job has been scheduled for every " + fullSyncPeriod + "ms " + " = " + fullSyncPeriod / 1000 / 60 + "min");
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Log.d(TAG, "Job has been scheduled for every " + fullSyncPeriod + "ms" + " = " + fullSyncPeriod / 1000 / 60 + "min - flextime: " + jobInfo.getFlexMillis() + " = " + jobInfo.getFlexMillis() / 1000 / 60 + " min");
+        } else {
+            Log.d(TAG, "Job has been scheduled for every " + fullSyncPeriod + "ms " + " = " + fullSyncPeriod / 1000 / 60 + "min");
         }
     }
 

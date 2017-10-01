@@ -33,7 +33,7 @@ import java.util.List;
 public class MyJobService extends EpgSyncJobService {
 
     private static String TAG = MyJobService.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
 
     @Override

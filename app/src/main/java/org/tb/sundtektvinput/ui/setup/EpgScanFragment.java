@@ -36,7 +36,7 @@ public class EpgScanFragment extends SetupBaseFragment {
 
     private static final String TAG = EpgScanFragment.class.getSimpleName();
 
-    final static Boolean DEBUG = true;
+    final static Boolean DEBUG = false;
 
     private static final int ACTION_ID_PROCESSING = 1;
 
@@ -182,7 +182,8 @@ public class EpgScanFragment extends SetupBaseFragment {
                 Log.d(TAG, "Scanerror: " + getString(R.string.sync_error_canceled));
                 break;
             case EpgSyncJobService.ERROR_NO_PROGRAMS:
-                Log.d(TAG, "Scanerror: " + getString(R.string.sync_error_no_programs));
+                if (DEBUG)
+                    Log.d(TAG, "Scanerror: " + getString(R.string.sync_error_no_programs));
                 break;
             case EpgSyncJobService.ERROR_NO_CHANNELS:
                 mErrorFound = true;
@@ -229,7 +230,9 @@ public class EpgScanFragment extends SetupBaseFragment {
      * @param channelCount    The total number of channels that need to be scanned.
      */
     public void onChannelScanCompleted(int channelsScanned, int channelCount) {
-        Log.d(TAG, "onChannelScanCompleted : " + channelsScanned + " " + channelCount);
+        if (DEBUG) {
+            Log.d(TAG, "onChannelScanCompleted : " + channelsScanned + " " + channelCount);
+        }
     }
 
 
@@ -262,7 +265,7 @@ public class EpgScanFragment extends SetupBaseFragment {
                             String channelDisplayNumber = intent.getStringExtra(
                                     EpgSyncJobService.BUNDLE_KEY_SCANNED_CHANNEL_DISPLAY_NUMBER);
 
-                            updateScanProgress(++channelsScanned, channelCount, channelDisplayName );
+                            updateScanProgress(++channelsScanned, channelCount, channelDisplayName);
 
                             if (DEBUG) {
                                 Log.d(TAG, "Sync status: Channel Scanned");

@@ -29,12 +29,14 @@ public class SettingsHelper {
 
     public void saveSelectedChannels(String list, ArrayList<Long> input) {
         SharedPreferences pSharedPref = context.getSharedPreferences(CONFIG_FILE, Context.MODE_PRIVATE);
+        String saveString = context.getString(R.string.save_channels_prefix) + list;
+
         if (pSharedPref != null) {
             JSONArray jsonArray = new JSONArray(input);
             String jsonString = jsonArray.toString();
             SharedPreferences.Editor editor = pSharedPref.edit();
-            editor.remove(list);
-            editor.putString(list, jsonString);
+            editor.remove(saveString);
+            editor.putString(saveString, jsonString);
             editor.apply();
         }
     }
@@ -42,9 +44,10 @@ public class SettingsHelper {
     public ArrayList<Long> loadSelectedChannels(String list) {
         ArrayList<Long> output = new ArrayList<>();
         SharedPreferences pSharedPref = context.getSharedPreferences(CONFIG_FILE, Context.MODE_PRIVATE);
+        String saveString = context.getString(R.string.save_channels_prefix) + list;
         try {
             if (pSharedPref != null) {
-                String jsonString = pSharedPref.getString(list, new JSONArray().toString());
+                String jsonString = pSharedPref.getString(saveString, new JSONArray().toString());
                 JSONArray jsonArray = new JSONArray(jsonString);
                 for (int i = 0; i < jsonArray.length(); i++)
                     output.add(jsonArray.getLong(i));
@@ -58,27 +61,42 @@ public class SettingsHelper {
     public void saveSelectedList(String selectedList) {
         SharedPreferences pSharedPref = context.getSharedPreferences(CONFIG_FILE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pSharedPref.edit();
-        editor.remove(context.getString(R.string.selected_list));
-        editor.putString(context.getString(R.string.selected_list), selectedList);
+        editor.remove(context.getString(R.string.active_list));
+        editor.putString(context.getString(R.string.active_list), selectedList);
         editor.apply();
     }
 
     public String loadSelectedList() {
         SharedPreferences pSharedPref = context.getSharedPreferences(CONFIG_FILE, Context.MODE_PRIVATE);
-        return pSharedPref.getString(context.getString(R.string.selected_list), "");
+        return pSharedPref.getString(context.getString(R.string.active_list), "");
     }
+
+    public void saveLastUpdateTimestamp(long timestamp) {
+        SharedPreferences pSharedPref = context.getSharedPreferences(CONFIG_FILE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pSharedPref.edit();
+        editor.remove(context.getString(R.string.save_last_update_timestamp));
+        editor.putLong(context.getString(R.string.save_last_update_timestamp), timestamp);
+        editor.apply();
+    }
+
+    public long loadLastUpdateTimestamp() {
+        SharedPreferences pSharedPref = context.getSharedPreferences(CONFIG_FILE, Context.MODE_PRIVATE);
+        return pSharedPref.getLong(context.getString(R.string.save_last_update_timestamp), 0);
+    }
+
+
 
     public void saveIp(String ip) {
         SharedPreferences pSharedPref = context.getSharedPreferences(CONFIG_FILE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pSharedPref.edit();
-        editor.remove(context.getString(R.string.ipaddess));
-        editor.putString(context.getString(R.string.ipaddess), ip);
+        editor.remove(context.getString(R.string.save_ip));
+        editor.putString(context.getString(R.string.save_ip), ip);
         editor.apply();
     }
 
     public String loadIp() {
         SharedPreferences pSharedPref = context.getSharedPreferences(CONFIG_FILE, Context.MODE_PRIVATE);
-        return pSharedPref.getString(context.getString(R.string.ipaddess), context.getString(R.string.default_ip));
+        return pSharedPref.getString(context.getString(R.string.save_ip), context.getString(R.string.default_ip));
     }
 
 

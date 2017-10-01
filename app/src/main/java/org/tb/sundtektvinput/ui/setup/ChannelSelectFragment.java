@@ -63,7 +63,7 @@ public class ChannelSelectFragment extends SetupBaseFragment {
     @SuppressLint("UseSparseArrays")
     @Override
     public void onCreateActions(@NonNull List<GuidedAction> actions, Bundle savedInstanceState) {
-        selectedList = getArguments().getString((getContext().getString(R.string.selected_list)));
+        selectedList = getArguments().getString((getContext().getString(R.string.active_list)));
         if (selectedList.isEmpty()) {
             getFragmentManager().popBackStack();
             Toast.makeText(getActivity(), "No list selected", Toast.LENGTH_LONG).show();

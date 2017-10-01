@@ -121,7 +121,7 @@ public class ListSelectFragment extends SetupBaseFragment {
                 new SettingsHelper(getActivity())
                         .saveSelectedList(selectedList);
                 Bundle args = new Bundle();
-                args.putString(getContext().getString(R.string.selected_list), selectedList);
+                args.putString(getContext().getString(R.string.active_list), selectedList);
 
                 SetupBaseFragment fragment = new ChannelSelectFragment();
                 fragment.setArguments(args);

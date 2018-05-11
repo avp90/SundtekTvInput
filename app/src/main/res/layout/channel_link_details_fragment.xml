@@ -15,7 +15,7 @@
 -->
 <fragment xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/details_frag"
-    android:name="android.support.v17.leanback.supportleanbackshowcase.input.widget.ChannelLinkDetailsFragment"
+    android:name="com.example.android.sampletvinput.widget.ChannelLinkDetailsFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent" />
 

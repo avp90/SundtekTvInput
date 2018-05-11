@@ -1,0 +1,17 @@
+Executable : C:\AndroidSDK\cmake\3.6.4111459\bin\cmake.exe
+arguments : 
+-HC:\Users\Z400\Desktop\androidtv-sample-inputs-master\extensions\ffmpeg\src\main\cpp
+-BC:\Users\Z400\Desktop\androidtv-sample-inputs-master\extensions\ffmpeg\.externalNativeBuild\cmake\release\x86
+-DANDROID_ABI=x86
+-DANDROID_PLATFORM=android-23
+-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=C:\Users\Z400\Desktop\androidtv-sample-inputs-master\extensions\ffmpeg\build\intermediates\cmake\release\obj\x86
+-DCMAKE_BUILD_TYPE=Release
+-DANDROID_NDK=C:\AndroidSDK\ndk-bundle
+-DCMAKE_TOOLCHAIN_FILE=C:\AndroidSDK\ndk-bundle\build\cmake\android.toolchain.cmake
+-DCMAKE_MAKE_PROGRAM=C:\AndroidSDK\cmake\3.6.4111459\bin\ninja.exe
+-GAndroid Gradle - Ninja
+-DANDROID_PLATFORM=android-21
+-DANDROID_TOOLCHAIN=gcc
+-DANDROID_STL=gnustl_static
+jvmArgs : 
+

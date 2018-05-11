@@ -1,0 +1,73 @@
+
+{
+	"buildFiles" : 
+	[
+		"C:/Users/Z400/Desktop/androidtv-sample-inputs-master/extensions/ffmpeg/src/main/cpp/CMakeLists.txt"
+	],
+	"cleanCommands" : 
+	[
+		"C:\\AndroidSDK\\cmake\\3.6.4111459\\bin\\cmake.exe --build C:\\Users\\Z400\\Desktop\\androidtv-sample-inputs-master\\extensions\\ffmpeg\\.externalNativeBuild\\cmake\\release\\x86 --target clean"
+	],
+	"cppFileExtensions" : [ "cc" ],
+	"libraries" : 
+	{
+		"avcodec-Release-x86" : 
+		{
+			"abi" : "x86",
+			"artifactName" : "avcodec",
+			"buildType" : "release",
+			"output" : "C:/Users/Z400/Desktop/androidtv-sample-inputs-master/extensions/ffmpeg/src/main/cpp/ffmpeg/libs/x86/libavcodec.so",
+			"toolchain" : "1282776189"
+		},
+		"avresample-Release-x86" : 
+		{
+			"abi" : "x86",
+			"artifactName" : "avresample",
+			"buildType" : "release",
+			"output" : "C:/Users/Z400/Desktop/androidtv-sample-inputs-master/extensions/ffmpeg/src/main/cpp/ffmpeg/libs/x86/libavresample.so",
+			"toolchain" : "1282776189"
+		},
+		"avutil-Release-x86" : 
+		{
+			"abi" : "x86",
+			"artifactName" : "avutil",
+			"buildType" : "release",
+			"output" : "C:/Users/Z400/Desktop/androidtv-sample-inputs-master/extensions/ffmpeg/src/main/cpp/ffmpeg/libs/x86/libavutil.so",
+			"toolchain" : "1282776189"
+		},
+		"ffmpeg-Release-x86" : 
+		{
+			"abi" : "x86",
+			"artifactName" : "ffmpeg",
+			"buildCommand" : "C:\\AndroidSDK\\cmake\\3.6.4111459\\bin\\cmake.exe --build C:\\Users\\Z400\\Desktop\\androidtv-sample-inputs-master\\extensions\\ffmpeg\\.externalNativeBuild\\cmake\\release\\x86 --target ffmpeg",
+			"buildType" : "release",
+			"files" : 
+			[
+				
+				{
+					"flags" : "  --sysroot=C:/AndroidSDK/ndk-bundle/sysroot  -Dffmpeg_EXPORTS -IC:\\Users\\Z400\\Desktop\\androidtv-sample-inputs-master\\extensions\\ffmpeg\\src\\main\\cpp\\.\\include -isystem C:\\AndroidSDK\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem C:\\AndroidSDK\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\x86\\include -isystem C:\\AndroidSDK\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -isystem C:/AndroidSDK/ndk-bundle/sysroot/usr/include/i686-linux-android -D__ANDROID_API__=21 -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mstackrealign -Wa,--noexecstack -Wformat -Werror=format-security   -O2 -DNDEBUG  -fPIC    -c ",
+					"src" : "C:/Users/Z400/Desktop/androidtv-sample-inputs-master/extensions/ffmpeg/src/main/cpp/ffmpeg_jni.cc",
+					"workingDirectory" : "C:/Users/Z400/Desktop/androidtv-sample-inputs-master/extensions/ffmpeg/.externalNativeBuild/cmake/release/x86"
+				}
+			],
+			"output" : "C:/Users/Z400/Desktop/androidtv-sample-inputs-master/extensions/ffmpeg/build/intermediates/cmake/release/obj/x86/libffmpeg.so",
+			"toolchain" : "1282776189"
+		},
+		"swresample-Release-x86" : 
+		{
+			"abi" : "x86",
+			"artifactName" : "swresample",
+			"buildType" : "release",
+			"output" : "C:/Users/Z400/Desktop/androidtv-sample-inputs-master/extensions/ffmpeg/src/main/cpp/ffmpeg/libs/x86/libswresample.so",
+			"toolchain" : "1282776189"
+		}
+	},
+	"toolchains" : 
+	{
+		"1282776189" : 
+		{
+			"cCompilerExecutable" : "C:/AndroidSDK/ndk-bundle/toolchains/x86-4.9/prebuilt/windows-x86_64/bin/i686-linux-android-gcc.exe",
+			"cppCompilerExecutable" : "C:/AndroidSDK/ndk-bundle/toolchains/x86-4.9/prebuilt/windows-x86_64/bin/i686-linux-android-g++.exe"
+		}
+	}
+}

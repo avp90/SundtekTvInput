@@ -1,0 +1,3 @@
+C:/Users/Z400/Desktop/androidtv-sample-inputs-master/extensions/ffmpeg/.externalNativeBuild/cmake/debug/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/Z400/Desktop/androidtv-sample-inputs-master/extensions/ffmpeg/.externalNativeBuild/cmake/debug/armeabi-v7a/CMakeFiles/ffmpeg.dir
+C:/Users/Z400/Desktop/androidtv-sample-inputs-master/extensions/ffmpeg/.externalNativeBuild/cmake/debug/armeabi-v7a/CMakeFiles/rebuild_cache.dir

@@ -1,9 +1,9 @@
 package org.tb.sundtektvinput.ui.setup;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v17.leanback.widget.GuidanceStylist;
-import android.support.v17.leanback.widget.GuidedAction;
+import androidx.annotation.NonNull;
+import androidx.leanback.widget.GuidanceStylist;
+import androidx.leanback.widget.GuidedAction;
 import android.widget.Toast;
 
 import org.tb.sundtektvinput.ui.setup.base.SetupBaseFragment;
@@ -34,7 +34,7 @@ public class FinishFragment extends SetupBaseFragment {
     public void onGuidedActionClicked(GuidedAction action) {
         if (action.getId() == 0) {
             Toast.makeText(getActivity(), "NEXT", Toast.LENGTH_LONG).show();
-            finishGuidedStepFragments();
+            finishGuidedStepSupportFragments();
         }
     }
 }

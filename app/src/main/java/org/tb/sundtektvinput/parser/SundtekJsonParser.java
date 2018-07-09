@@ -140,10 +140,8 @@ public class SundtekJsonParser {
     public SundtekJsonParser(Context context) {
         String ip = new SettingsHelper(context).loadIp();
         String IP_ADDRESS;
-        if (ip != null)
-            IP_ADDRESS = ip;
-        else
-            IP_ADDRESS = "192.168.3.21";
+        IP_ADDRESS = ip;
+
 
         BASE_URL = "http://" + IP_ADDRESS + ":" + SERVER_PORT;
     }
@@ -175,7 +173,7 @@ public class SundtekJsonParser {
             channelMap.putAll(parseChannles(responseChannlesJson));
 
             if (DEBUG)
-                Log.d(TAG, "total channels found for list " + group +": " + channelMap.size());
+                Log.d(TAG, "total channels found for list " + group + ": " + channelMap.size());
         }
         return channelMap;
     }
@@ -401,7 +399,7 @@ public class SundtekJsonParser {
             Log.d(TAG, "Fetch lists from server");
         }
 
-        JSONObject responseChannelListsJson = null;
+        JSONObject responseChannelListsJson;
         try {
             responseChannelListsJson = new JSONObject(
                     getJson(
@@ -416,7 +414,7 @@ public class SundtekJsonParser {
             e.printStackTrace();
         }
 
-        Log.d(TAG, "lists found: " + channelLists.toString() );
+        Log.d(TAG, "lists found: " + channelLists.toString());
 
         return channelLists;
     }

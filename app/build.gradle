@@ -1,20 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    def globalConfiguration = rootProject.extensions.getByName("ext")
-
-    compileSdkVersion globalConfiguration["androidCompileSdkVersion"]
-    buildToolsVersion globalConfiguration["buildToolsVersion"]
-
+    compileSdkVersion 28
     defaultConfig {
-        applicationId globalConfiguration["applicationId"]
-        minSdkVersion globalConfiguration["androidMinSdkVersion"]
-        targetSdkVersion globalConfiguration["androidTargetSdkVersion"]
-
-        versionCode 2
-        versionName "1.1"
+        applicationId "org.tb.sundtektvinput"
+        minSdkVersion 23
+        targetSdkVersion 28
+        versionCode 3
+        versionName '1.2'
         multiDexEnabled false
-
+        versionNameSuffix 'beta'
     }
 
     buildTypes {
@@ -25,29 +20,25 @@ android {
 
         }
     }
-
     packagingOptions {
         exclude 'jsr305_annotations/Jsr305_annotations.gwt.xml'
         exclude 'build-data.properties'
     }
+    productFlavors {
+    }
 }
+
+
+
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile "com.google.android.exoplayer:exoplayer:r1.5.16"
-    compile "com.google.android.libraries.tv:companionlibrary:0.1"
-    compile "com.android.support:appcompat-v7:$supportLibraryVersion"
-    compile "com.android.support:support-core-utils:$supportLibraryVersion"
-    compile "com.android.support:support-compat:$supportLibraryVersion"
-    compile "com.android.support:leanback-v17:$supportLibraryVersion"
-    compile "com.android.support:recyclerview-v7:$supportLibraryVersion"
-//    compile "com.google.firebase:firebase-crash:10.0.1"
-    compile "com.android.support.constraint:constraint-layout:1.0.2"
-    compile "com.squareup.okhttp3:okhttp:3.8.1"
-//    compile "com.android.support:support-tv-provider:$supportLibraryVersion"
-
-
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.google.android.exoplayer:exoplayer:r1.5.16'
+    implementation 'com.google.android.libraries.tv:companionlibrary:0.2'
+    implementation 'androidx.appcompat:appcompat:1.0.0-beta01'
+    implementation 'androidx.legacy:legacy-support-core-utils:1.0.0-beta01'
+    implementation 'androidx.core:core:1.0.0-beta01'
+    implementation 'androidx.leanback:leanback:1.0.0-beta01'
+    implementation 'androidx.recyclerview:recyclerview:1.0.0-beta01'
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
 }
-
-//apply plugin: 'com.google.gms.google-services'
-//apply plugin: 'com.getkeepsafe.dexcount'

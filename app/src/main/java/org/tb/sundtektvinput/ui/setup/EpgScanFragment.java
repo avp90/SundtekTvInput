@@ -10,13 +10,14 @@ import android.content.SharedPreferences;
 import android.media.tv.TvInputInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
-import android.support.v17.leanback.app.GuidedStepFragment;
-import android.support.v17.leanback.widget.GuidanceStylist;
-import android.support.v17.leanback.widget.GuidedAction;
-import android.support.v17.leanback.widget.GuidedActionsStylist;
-import android.support.v4.content.LocalBroadcastManager;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.leanback.app.GuidedStepFragment;
+import androidx.leanback.app.GuidedStepSupportFragment;
+import androidx.leanback.widget.GuidanceStylist;
+import androidx.leanback.widget.GuidedAction;
+import androidx.leanback.widget.GuidedActionsStylist;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.android.media.tv.companionlibrary.model.Channel;
@@ -36,14 +37,14 @@ public class EpgScanFragment extends SetupBaseFragment {
 
     private static final String TAG = EpgScanFragment.class.getSimpleName();
 
-    final static Boolean DEBUG = false;
+    private final static Boolean DEBUG = false;
 
     private static final int ACTION_ID_PROCESSING = 1;
 
-    String title = "Scanning EPG";
-    String description = "This can take some time... please wait";
+    private String title = "Scanning EPG";
+    private String description = "This can take some time... please wait";
 
-    public static final long FULL_SYNC_FREQUENCY_MILLIS = 1000 * 60 * 60 * 3;  // 3 hour
+    private static final long FULL_SYNC_FREQUENCY_MILLIS = 1000 * 60 * 60 * 3;  // 3 hour
     private static final long FULL_SYNC_WINDOW_SEC = 1000 * 60 * 60 * 24 * 14;  // 2 weeks
 
     private String mInputId = null;
@@ -121,7 +122,7 @@ public class EpgScanFragment extends SetupBaseFragment {
                 .unregisterReceiver(mSyncStatusChangedReceiver);
     }
 
-    public void onScanStarted() {
+    private void onScanStarted() {
         if (DEBUG)
             Log.d(TAG, "onScanStarted");
         EpgSyncJobService.cancelAllSyncRequests(getActivity());
@@ -137,11 +138,11 @@ public class EpgScanFragment extends SetupBaseFragment {
         editor.apply();
     }
 
-    public String getInputId() {
+    private String getInputId() {
         return mInputId;
     }
 
-    public void onScanFinished() {
+    private void onScanFinished() {
         if (DEBUG)
             Log.d(TAG, "onScanFinished");
         if (!mErrorFound) {
@@ -157,7 +158,7 @@ public class EpgScanFragment extends SetupBaseFragment {
                 Log.d(TAG, "onScanFinished: RESULT_CANCELED");
             getActivity().setResult(Activity.RESULT_CANCELED);
         }
-        GuidedStepFragment fragment = new FinishFragment();
+        GuidedStepSupportFragment fragment = new FinishFragment();
         fragment.setArguments(getArguments());
         add(getFragmentManager(), fragment);
     }
@@ -175,7 +176,7 @@ public class EpgScanFragment extends SetupBaseFragment {
      *               {@link EpgSyncJobService#ERROR_DATABASE_INSERT},
      */
 
-    public void onScanError(int reason) {
+    private void onScanError(int reason) {
         switch (reason) {
             case EpgSyncJobService.ERROR_EPG_SYNC_CANCELED:
                 mErrorFound = true;
@@ -216,7 +217,7 @@ public class EpgScanFragment extends SetupBaseFragment {
      * @param displayName   {@link Channel#getDisplayName()} for the scanned channel.
      * @param displayNumber {@link Channel#getDisplayNumber()} ()} for the scanned channel.
      */
-    public void onScannedChannel(CharSequence displayName, CharSequence displayNumber) {
+    private void onScannedChannel(CharSequence displayName, CharSequence displayNumber) {
         if (DEBUG) {
             Log.d(TAG, "onScannedChannel Scanned channel data: " + displayName + ", " + displayNumber);
         }
@@ -229,7 +230,7 @@ public class EpgScanFragment extends SetupBaseFragment {
      * @param channelsScanned The number of channels that have been scanned so far.
      * @param channelCount    The total number of channels that need to be scanned.
      */
-    public void onChannelScanCompleted(int channelsScanned, int channelCount) {
+    private void onChannelScanCompleted(int channelsScanned, int channelCount) {
         if (DEBUG) {
             Log.d(TAG, "onChannelScanCompleted : " + channelsScanned + " " + channelCount);
         }

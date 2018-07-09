@@ -1,14 +1,14 @@
 package org.tb.sundtektvinput.ui.setup;
 
 import android.annotation.SuppressLint;
-import android.app.FragmentManager;
 import android.media.tv.TvInputInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v17.leanback.app.GuidedStepFragment;
-import android.support.v17.leanback.widget.GuidanceStylist;
-import android.support.v17.leanback.widget.GuidedAction;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
+import androidx.leanback.app.GuidedStepSupportFragment;
+import androidx.leanback.widget.GuidanceStylist;
+import androidx.leanback.widget.GuidedAction;
 import android.widget.Toast;
 
 import com.google.android.media.tv.companionlibrary.model.Channel;
@@ -25,16 +25,15 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 
-import static android.support.v17.leanback.widget.GuidedAction.ACTION_ID_CANCEL;
-import static android.support.v17.leanback.widget.GuidedAction.ACTION_ID_CONTINUE;
-import static android.support.v17.leanback.widget.GuidedAction.CHECKBOX_CHECK_SET_ID;
+import static androidx.leanback.widget.GuidedAction.ACTION_ID_CANCEL;
+import static androidx.leanback.widget.GuidedAction.ACTION_ID_CONTINUE;
+import static androidx.leanback.widget.GuidedAction.CHECKBOX_CHECK_SET_ID;
 
 public class ChannelSelectFragment extends SetupBaseFragment {
 
-    ArrayList<Long> selectedChannels = new ArrayList<>();
-    HashMap<Long, Channel> allChannels;
-    HashMap<Long, Channel> selectedChannelMap;
-    String selectedList;
+    private ArrayList<Long> selectedChannels = new ArrayList<>();
+    private HashMap<Long, Channel> allChannels;
+    private String selectedList;
 
 
     @NonNull
@@ -72,15 +71,11 @@ public class ChannelSelectFragment extends SetupBaseFragment {
 
             allChannels = getChannels(selectedList);
             selectedChannels = new SettingsHelper(getActivity()).loadSelectedChannels(selectedList);
-            selectedChannelMap = new HashMap<>();
 
             long id;
             for (Channel channel : allChannels.values()) {
                 id = (long) channel.getOriginalNetworkId();
 
-                if (selectedChannels.contains(id)) {
-                    selectedChannelMap.put(id, channel);
-                }
                 actions.add(
                         new GuidedAction.Builder(getActivity())
                                 .checkSetId(CHECKBOX_CHECK_SET_ID)
@@ -94,7 +89,7 @@ public class ChannelSelectFragment extends SetupBaseFragment {
     }
 
 
-    HashMap<Long, Channel> getChannels(String selectedList) {
+    private HashMap<Long, Channel> getChannels(String selectedList) {
         ArrayList<Channel> resp = new ArrayList<>();
         try {
             resp = new getChannelsAsync().execute(selectedList).get();
@@ -132,11 +127,9 @@ public class ChannelSelectFragment extends SetupBaseFragment {
         long id = action.getId();
         if (action.isChecked()) {
             selectedChannels.add(id);
-            selectedChannelMap.put(id, allChannels.get(id));
         } else {
             if (selectedChannels.contains(id)) {
                 selectedChannels.remove(id);
-                selectedChannelMap.remove(id);
             }
         }
 
@@ -152,7 +145,7 @@ public class ChannelSelectFragment extends SetupBaseFragment {
             }
 
             SetupBaseFragment fragment = new EpgScanFragment();
-            GuidedStepFragment.add(fm, fragment);
+            GuidedStepSupportFragment.add(fm, fragment);
 
 
         }

@@ -1,12 +1,13 @@
 package org.tb.sundtektvinput.ui.setup;
 
-import android.app.FragmentManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v17.leanback.app.GuidedStepFragment;
-import android.support.v17.leanback.widget.GuidanceStylist;
-import android.support.v17.leanback.widget.GuidedAction;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
+import androidx.leanback.app.GuidedStepFragment;
+import androidx.leanback.app.GuidedStepSupportFragment;
+import androidx.leanback.widget.GuidanceStylist;
+import androidx.leanback.widget.GuidedAction;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -19,10 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import static android.support.v17.leanback.widget.GuidedAction.ACTION_ID_CANCEL;
-import static android.support.v17.leanback.widget.GuidedAction.ACTION_ID_CONTINUE;
-import static android.support.v17.leanback.widget.GuidedAction.ACTION_ID_CURRENT;
-import static android.support.v17.leanback.widget.GuidedAction.DEFAULT_CHECK_SET_ID;
+import static androidx.leanback.widget.GuidedAction.ACTION_ID_CANCEL;
+import static androidx.leanback.widget.GuidedAction.ACTION_ID_CONTINUE;
+import static androidx.leanback.widget.GuidedAction.ACTION_ID_CURRENT;
+import static androidx.leanback.widget.GuidedAction.DEFAULT_CHECK_SET_ID;
 
 public class ListSelectFragment extends SetupBaseFragment {
 
@@ -125,7 +126,7 @@ public class ListSelectFragment extends SetupBaseFragment {
 
                 SetupBaseFragment fragment = new ChannelSelectFragment();
                 fragment.setArguments(args);
-                GuidedStepFragment.add(fm, fragment);
+                GuidedStepSupportFragment.add(fm, fragment);
             } else {
                 Toast.makeText(getActivity(), "You need to select a list"
                         , Toast.LENGTH_LONG).show();

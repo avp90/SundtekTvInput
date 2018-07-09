@@ -27,8 +27,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -472,7 +472,6 @@ public class MyTvInputService extends BaseTvInputService {
             // Program sources in this sample always include program info, so execution here
             // indicates an error.
             notifyError(TvInputManager.RECORDING_ERROR_UNKNOWN);
-            return;
         }
 
         @Override

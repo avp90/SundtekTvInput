@@ -1,11 +1,11 @@
 package org.tb.sundtektvinput.ui.setup;
 
-import android.app.FragmentManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v17.leanback.app.GuidedStepFragment;
-import android.support.v17.leanback.widget.GuidanceStylist;
-import android.support.v17.leanback.widget.GuidedAction;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
+import androidx.leanback.app.GuidedStepSupportFragment;
+import androidx.leanback.widget.GuidanceStylist;
+import androidx.leanback.widget.GuidedAction;
 
 import org.tb.sundtektvinput.R;
 import org.tb.sundtektvinput.ui.setup.base.SetupBaseFragment;
@@ -15,9 +15,9 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 
-import static android.support.v17.leanback.widget.GuidedAction.ACTION_ID_CANCEL;
-import static android.support.v17.leanback.widget.GuidedAction.ACTION_ID_CONTINUE;
-import static android.support.v17.leanback.widget.GuidedAction.ACTION_ID_CURRENT;
+import static androidx.leanback.widget.GuidedAction.ACTION_ID_CANCEL;
+import static androidx.leanback.widget.GuidedAction.ACTION_ID_CONTINUE;
+import static androidx.leanback.widget.GuidedAction.ACTION_ID_CURRENT;
 
 public class IpAddressFragment extends SetupBaseFragment {
 
@@ -68,7 +68,7 @@ public class IpAddressFragment extends SetupBaseFragment {
     }
 
 
-    public static boolean validateIp(final String ip) {
+    private static boolean validateIp(final String ip) {
         return IP_PATTERN.matcher(ip).matches();
     }
 
@@ -98,10 +98,10 @@ public class IpAddressFragment extends SetupBaseFragment {
         FragmentManager fm = getFragmentManager();
 
         if (action.getId() == ACTION_ID_CONTINUE) {
-            GuidedStepFragment.add(fm, new ListSelectFragment());
+            GuidedStepSupportFragment.add(fm, new ListSelectFragment());
         }
         if (action.getId() == ACTION_ID_CANCEL) {
-            finishGuidedStepFragments();
+            finishGuidedStepSupportFragments();
         }
     }
 

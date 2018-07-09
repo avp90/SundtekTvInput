@@ -34,8 +34,8 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.PersistableBundle;
 import android.os.RemoteException;
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.content.LocalBroadcastManager;
+import androidx.annotation.VisibleForTesting;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.util.Log;
 import android.util.LongSparseArray;
 import android.util.SparseArray;
@@ -45,8 +45,6 @@ import com.google.android.media.tv.companionlibrary.model.Channel;
 import com.google.android.media.tv.companionlibrary.model.InternalProviderData;
 import com.google.android.media.tv.companionlibrary.model.Program;
 import com.google.android.media.tv.companionlibrary.utils.TvContractUtils;
-
-import junit.framework.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -280,7 +278,6 @@ public abstract class EpgSyncJobService extends JobService {
         JobScheduler jobScheduler =
                 (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
         int result = jobScheduler.schedule(job);
-        Assert.assertEquals(result, JobScheduler.RESULT_SUCCESS);
         if (DEBUG) {
             Log.d(TAG, "Scheduling result is " + result);
         }

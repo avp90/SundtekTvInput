@@ -36,7 +36,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 import android.util.Log;
 import android.util.LongSparseArray;
 import android.view.Surface;
@@ -893,7 +893,7 @@ public abstract class BaseTvInputService extends TvInputService {
             @Override
             public void run() {
                 ContentResolver resolver = mContext.getContentResolver();
-                Program program = null;
+                Program program;
                 long timeShiftedDifference = System.currentTimeMillis() -
                         mTimeShiftedPlaybackPosition;
                 if (mTimeShiftedPlaybackPosition != TvInputManager.TIME_SHIFT_INVALID_TIME &&

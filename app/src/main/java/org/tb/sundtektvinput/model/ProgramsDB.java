@@ -108,11 +108,11 @@ public class ProgramsDB {
                 Log.d(TAG, channelName + " - EventId: " + newEventId + " : " + (newProgram ? "new" : "replaced"));
         }
 
+        Log.d(TAG, "Got " + allProgramMap.size() + " Programs for " + channelProgramsMap.values().size() + " channels from server");
+
         if (DEBUG) {
             Log.d(TAG, "Programs " + "new: " + newCount + " replaced: " + replacedCount + " total: " + (newCount + replacedCount));
-            Log.d(TAG, "Got " + allProgramMap.size() + " Programs for " + channelProgramsMap.values().size() + " channels from server");
-        }
-        if (DEBUG) {
+
             for (String key : channelProgramsMap.keySet()) {
                 Log.d(TAG, "channelId " + key + " - " + channelProgramsMap.get(key).size() + " programs");
             }

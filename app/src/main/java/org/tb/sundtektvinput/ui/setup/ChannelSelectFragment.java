@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.leanback.app.GuidedStepSupportFragment;
 import androidx.leanback.widget.GuidanceStylist;
@@ -113,7 +114,6 @@ public class ChannelSelectFragment extends SetupBaseFragment {
         }
     }
 
-
     @Override
     public void onGuidedActionClicked(GuidedAction action) {
         FragmentManager fm = getFragmentManager();
@@ -127,14 +127,15 @@ public class ChannelSelectFragment extends SetupBaseFragment {
             }
         }
 
+        FragmentActivity activity = getActivity();
         if (action.getId() == ACTION_ID_CONTINUE) {
-            new SettingsHelper(getActivity())
+            new SettingsHelper(activity)
                     .saveSelectedChannels(mSelectedList, mSelectedChannels);
 
-            String inputId = getActivity().getIntent().getStringExtra(TvInputInfo.EXTRA_INPUT_ID);
+            String inputId = activity.getIntent().getStringExtra(TvInputInfo.EXTRA_INPUT_ID);
             if (inputId == null) {
-                Toast.makeText(getActivity(), "Settings Saved", Toast.LENGTH_LONG).show();
-                getActivity().finish();
+                Toast.makeText(activity, "Settings Saved", Toast.LENGTH_LONG).show();
+                activity.finish();
             }
 
             SetupBaseFragment fragment = new EpgScanFragment();

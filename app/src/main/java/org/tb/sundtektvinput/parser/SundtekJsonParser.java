@@ -37,7 +37,7 @@ import static android.media.tv.TvContract.Channels.TYPE_OTHER;
  * Created by Tamim Baschour on 26.02.2017.
  */
 public class SundtekJsonParser {
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     private static final String TAG = SundtekJsonParser.class.getSimpleName();
     private static final String ENCODING = "UTF-8";
 

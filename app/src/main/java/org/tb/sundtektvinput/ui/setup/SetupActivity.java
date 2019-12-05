@@ -7,13 +7,10 @@ import androidx.leanback.app.GuidedStepSupportFragment;
 
 import org.tb.sundtektvinput.R;
 
-
 /**
  * Created by thomas on 03/09/16.
  */
 public class SetupActivity extends FragmentActivity {
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

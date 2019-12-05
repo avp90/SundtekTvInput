@@ -28,7 +28,7 @@ import com.google.android.media.tv.companionlibrary.TvPlayer;
 @RequiresApi(api = Build.VERSION_CODES.M)
 public class FakeTrickplayRunnable implements Runnable {
     private final static String TAG = FakeTrickplayRunnable.class.getSimpleName();
-    private final static boolean DEBUG = false;
+    private final static boolean DEBUG = true;
     private final static int DELAY_MILLIS = 1000; // 1 FPS
 
     private float mSpeed;

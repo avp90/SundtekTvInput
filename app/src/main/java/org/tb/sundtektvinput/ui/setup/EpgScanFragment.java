@@ -13,6 +13,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.fragment.app.FragmentActivity;
 import androidx.leanback.app.GuidedStepSupportFragment;
 import androidx.leanback.widget.GuidanceStylist;
 import androidx.leanback.widget.GuidedAction;
@@ -35,7 +36,7 @@ import java.util.List;
  */
 public class EpgScanFragment extends SetupBaseFragment {
     private static final String TAG = EpgScanFragment.class.getSimpleName();
-    private static final Boolean DEBUG = false;
+    private static final Boolean DEBUG = true;
 
     private static final int ACTION_ID_PROCESSING = 1;
 
@@ -119,16 +120,17 @@ public class EpgScanFragment extends SetupBaseFragment {
     }
 
     private void onScanStarted() {
-        if (DEBUG) Log.d(TAG, "onScanStarted");
-        EpgSyncJobService.cancelAllSyncRequests(getActivity());
-        EpgSyncJobService.requestImmediateSync(
-                getActivity(), mInputId, new ComponentName(getActivity(), EpgJobService.class));
+        if (DEBUG) Log.d(TAG, String.format("onScanStarted %s", mInputId));
+        FragmentActivity activity = getActivity();
+        EpgSyncJobService.cancelAllSyncRequests(activity);
+        EpgSyncJobService.requestImmediateSync(activity,
+                mInputId,
+                new ComponentName(activity, EpgJobService.class));
 
         // Set up SharedPreference to share inputId. If there is not periodic sync job after reboot,
         // BootReceiver can use the shared inputId to set up periodic sync job.
-        SharedPreferences sharedPreferences =
-                getActivity()
-                        .getSharedPreferences(EpgSyncJobService.PREFERENCE_EPG_SYNC, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = activity.getSharedPreferences(EpgSyncJobService.PREFERENCE_EPG_SYNC,
+                Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(EpgSyncJobService.BUNDLE_KEY_INPUT_ID, mInputId);
         editor.apply();

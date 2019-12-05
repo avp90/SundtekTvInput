@@ -20,7 +20,7 @@ import java.util.HashMap;
  */
 public class ProgramsDB {
     private static final String TAG = ProgramsDB.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     protected SundtekTvInputApp app;
 
     // allProgramMap eventid-program

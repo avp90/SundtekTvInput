@@ -20,8 +20,6 @@ import static androidx.leanback.widget.GuidedAction.ACTION_ID_CONTINUE;
 import static androidx.leanback.widget.GuidedAction.ACTION_ID_CURRENT;
 
 public class IpAddressFragment extends SetupBaseFragment {
-
-
     private static final int ACTION_EDIT_IP = 333;
 
     private static final Pattern IP_PATTERN = Pattern.compile(

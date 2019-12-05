@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class ChannelsDB {
     private static final String TAG = ChannelsDB.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     protected SundtekTvInputApp app;
     private HashMap<Long, Channel> channelMap;
 

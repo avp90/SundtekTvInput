@@ -32,11 +32,22 @@ import org.tb.sundtektvinput.service.base.EpgSyncJobService;
 public class EpgJobService extends EpgSyncJobService {
     private static String TAG = EpgJobService.class.getSimpleName();
     private static final boolean DEBUG = true;
-    public SundtekTvInputApp app = (SundtekTvInputApp)getApplication();
+    public SundtekTvInputApp app = null;
+
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        app = (SundtekTvInputApp)getApplication();
+    }
+
+    public SundtekTvInputApp getApp() {
+        return (SundtekTvInputApp)getApplication();
+    }
 
     @Override
     public List<Channel> getChannels() {
-        return app.getChannelsDB().getChannels(getApplicationContext());
+        return getApp().getChannelsDB().getChannels(getApplicationContext());
     }
 
     @Override
@@ -44,7 +55,7 @@ public class EpgJobService extends EpgSyncJobService {
             Uri channelUri, Channel channel, long startMs, long endMs) {
         if (DEBUG) Log.d(TAG, "Trying to get programs for " + channel.getDisplayName());
 
-        List<Program> programs = app.getProgramsDB()
+        List<Program> programs = getApp().getProgramsDB()
                 .getProgramsForChannel(getApplicationContext(), channel, startMs, endMs);
 
         if (DEBUG)

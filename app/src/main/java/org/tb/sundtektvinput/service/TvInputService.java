@@ -21,7 +21,6 @@ import android.content.Context;
 import android.graphics.Point;
 import android.media.tv.TvContentRating;
 import android.media.tv.TvInputManager;
-import android.media.tv.TvInputService;
 import android.media.tv.TvTrackInfo;
 import android.net.Uri;
 import android.os.Build;
@@ -50,7 +49,7 @@ import com.google.android.media.tv.companionlibrary.model.RecordedProgram;
 import com.google.android.media.tv.companionlibrary.utils.TvContractUtils;
 
 import org.tb.sundtektvinput.R;
-import org.tb.sundtektvinput.player.DemoPlayer;
+import org.tb.sundtektvinput.player.MediaPlayer;
 import org.tb.sundtektvinput.player.RendererBuilderFactory;
 import org.tb.sundtektvinput.service.base.BaseTvInputService;
 import org.tb.sundtektvinput.service.base.EpgSyncJobService;
@@ -58,28 +57,26 @@ import org.tb.sundtektvinput.service.base.EpgSyncJobService;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import static org.tb.sundtektvinput.parser.SundtekJsonParser.CHANNEL_IPD_MEDIA_TYPE;
 import static org.tb.sundtektvinput.parser.SundtekJsonParser.CHANNEL_IPD_MEDIA_URL;
 
-//import com.google.android.media.tv.companionlibrary.EpgSyncJobService;
-
-//import org.tb.sundtektvinput.service.base.EpgSyncJobService;
-
+// import com.google.android.media.tv.companionlibrary.EpgSyncJobService;
+// import org.tb.sundtektvinput.service.base.EpgSyncJobService;
 
 /**
  * TvInputService which provides a full implementation of EPG, subtitles, multi-audio, parental
  * controls, and overlay view.
  */
-public class MyTvInputService extends BaseTvInputService {
-    private static final String TAG = "MyTvInputService";
-    private static final boolean DEBUG = false;
+public class TvInputService extends BaseTvInputService {
+    private static final String TAG = TvInputService.class.getSimpleName();
+    private static final boolean DEBUG = true;
     private static final long EPG_SYNC_DELAYED_PERIOD_MS = 1000 * 2; // 2 Seconds
 
     private CaptioningManager mCaptioningManager;
 
     /**
      * Gets the track id of the track type and track index.
+     *
      * @param trackType  the type of the track e.g. TvTrackInfo.TYPE_AUDIO
      * @param trackIndex the index of that track within the media. e.g. 0, 1, 2...
      * @return the track id for the type & index combination.
@@ -90,6 +87,7 @@ public class MyTvInputService extends BaseTvInputService {
 
     /**
      * Gets the index of the track for a given track id.
+     *
      * @param trackId the track id.
      * @return the track index for the given id, as an integer.
      */
@@ -113,19 +111,19 @@ public class MyTvInputService extends BaseTvInputService {
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Nullable
     @Override
-    public TvInputService.RecordingSession onCreateRecordingSession(String inputId) {
-        return new RichRecordingSession(this, inputId);
+    public android.media.tv.TvInputService.RecordingSession onCreateRecordingSession(String inputId) {
+        return new TvInputServiceRecordingSession(this, inputId);
     }
 
-    class RichTvInputSessionImpl extends BaseTvInputService.Session implements
-            DemoPlayer.Listener, DemoPlayer.CaptionListener {
+    class RichTvInputSessionImpl extends BaseTvInputService.Session
+            implements MediaPlayer.Listener, MediaPlayer.CaptionListener {
         private static final float CAPTION_LINE_HEIGHT_RATIO = 0.0533f;
         private static final int TEXT_UNIT_PIXELS = 0;
         private static final String UNKNOWN_LANGUAGE = "und";
 
         private int mSelectedSubtitleTrackIndex;
         private SubtitleLayout mSubtitleView;
-        private DemoPlayer mPlayer;
+        private MediaPlayer mPlayer;
         private boolean mCaptionEnabled;
         private String mInputId;
         private Context mContext;
@@ -145,8 +143,7 @@ public class MyTvInputService extends BaseTvInputService {
             // Configure the subtitle view.
             CaptionStyleCompat captionStyle;
             float captionTextSize = getCaptionFontSize();
-            captionStyle = CaptionStyleCompat
-                    .createFromCaptionStyle(mCaptioningManager.getUserStyle());
+            captionStyle = CaptionStyleCompat.createFromCaptionStyle(mCaptioningManager.getUserStyle());
             captionTextSize *= mCaptioningManager.getFontScale();
             mSubtitleView.setStyle(captionStyle);
             mSubtitleView.setFixedTextSize(TEXT_UNIT_PIXELS, captionTextSize);
@@ -159,11 +156,7 @@ public class MyTvInputService extends BaseTvInputService {
             String trackId;
             List<TvTrackInfo> tracks = new ArrayList<>();
 
-            int[] trackTypes = {
-                    DemoPlayer.TYPE_AUDIO,
-                    DemoPlayer.TYPE_VIDEO,
-                    DemoPlayer.TYPE_TEXT
-            };
+            int[] trackTypes = {MediaPlayer.TYPE_AUDIO, MediaPlayer.TYPE_VIDEO, MediaPlayer.TYPE_TEXT};
 
             for (int trackType : trackTypes) {
                 int count = mPlayer.getTrackCount(trackType);
@@ -172,34 +165,31 @@ public class MyTvInputService extends BaseTvInputService {
                     trackId = getTrackId(trackType, i);
                     TvTrackInfo.Builder builder = new TvTrackInfo.Builder(trackType, trackId);
 
-                    if (trackType == DemoPlayer.TYPE_VIDEO) {
+                    if (trackType == MediaPlayer.TYPE_VIDEO) {
                         if (format.maxWidth != MediaFormat.NO_VALUE) {
                             builder.setVideoWidth(format.maxWidth);
-                        } else
-                            if (format.width != MediaFormat.NO_VALUE) {
-                                builder.setVideoWidth(format.width);
-                            }
+                        } else if (format.width != MediaFormat.NO_VALUE) {
+                            builder.setVideoWidth(format.width);
+                        }
+
                         if (format.maxHeight != MediaFormat.NO_VALUE) {
                             builder.setVideoHeight(format.maxHeight);
-                        } else
-                            if (format.height != MediaFormat.NO_VALUE) {
-                                builder.setVideoHeight(format.height);
-                            }
-                    } else
-                        if (trackType == DemoPlayer.TYPE_AUDIO) {
-                            builder.setAudioChannelCount(format.channelCount);
-                            builder.setAudioSampleRate(format.sampleRate);
-                            if (format.language != null && !UNKNOWN_LANGUAGE.equals(format.language)) {
-                                // TvInputInfo expects {@code null} for unknown language.
-                                builder.setLanguage(format.language);
-                            }
-                        } else
-                            if (trackType == DemoPlayer.TYPE_TEXT) {
-                                if (format.language != null && !UNKNOWN_LANGUAGE.equals(format.language)) {
-                                    // TvInputInfo expects {@code null} for unknown language.
-                                    builder.setLanguage(format.language);
-                                }
-                            }
+                        } else if (format.height != MediaFormat.NO_VALUE) {
+                            builder.setVideoHeight(format.height);
+                        }
+                    } else if (trackType == MediaPlayer.TYPE_AUDIO) {
+                        builder.setAudioChannelCount(format.channelCount);
+                        builder.setAudioSampleRate(format.sampleRate);
+                        if (format.language != null && !UNKNOWN_LANGUAGE.equals(format.language)) {
+                            // TvInputInfo expects {@code null} for unknown language.
+                            builder.setLanguage(format.language);
+                        }
+                    } else if (trackType == MediaPlayer.TYPE_TEXT) {
+                        if (format.language != null && !UNKNOWN_LANGUAGE.equals(format.language)) {
+                            // TvInputInfo expects {@code null} for unknown language.
+                            builder.setLanguage(format.language);
+                        }
+                    }
 
                     tracks.add(builder.build());
                 }
@@ -213,7 +203,11 @@ public class MyTvInputService extends BaseTvInputService {
                 Log.d(TAG, channel.getInternalProviderData().get(CHANNEL_IPD_MEDIA_TYPE).toString());
                 Log.d(TAG, channel.getInternalProviderData().get(CHANNEL_IPD_MEDIA_URL).toString());
 
-                createPlayer( Integer.valueOf(channel.getInternalProviderData().get(CHANNEL_IPD_MEDIA_TYPE).toString()), Uri.parse(String.valueOf(channel.getInternalProviderData().get(CHANNEL_IPD_MEDIA_URL))));
+                createPlayer(
+                        Integer.valueOf(
+                                channel.getInternalProviderData().get(CHANNEL_IPD_MEDIA_TYPE).toString()),
+                        Uri.parse(
+                                String.valueOf(channel.getInternalProviderData().get(CHANNEL_IPD_MEDIA_URL))));
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     notifyTimeShiftStatusChanged(TvInputManager.TIME_SHIFT_STATUS_AVAILABLE);
@@ -233,20 +227,21 @@ public class MyTvInputService extends BaseTvInputService {
                 return false;
             }
 
-//            if (startPosMs > 0) {
-//                mPlayer.seekTo(startPosMs);
-//            }
+            //if (startPosMs > 0) {
+            //    mPlayer.seekTo(startPosMs);
+            //}
 
             return true;
         }
 
         @RequiresApi(api = Build.VERSION_CODES.N)
         public boolean onPlayRecordedProgram(RecordedProgram recordedProgram) {
-            createPlayer(recordedProgram.getInternalProviderData().getVideoType(),
+            createPlayer(
+                    recordedProgram.getInternalProviderData().getVideoType(),
                     Uri.parse(recordedProgram.getInternalProviderData().getVideoUrl()));
 
-            long recordingStartTime = recordedProgram.getInternalProviderData()
-                    .getRecordedProgramStartTime();
+            long recordingStartTime =
+                    recordedProgram.getInternalProviderData().getRecordedProgramStartTime();
             mPlayer.seekTo(recordingStartTime - recordedProgram.getStartTimeUtcMillis());
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 notifyTimeShiftStatusChanged(TvInputManager.TIME_SHIFT_STATUS_AVAILABLE);
@@ -271,14 +266,15 @@ public class MyTvInputService extends BaseTvInputService {
 
         @Override
         public void onPlayAdvertisement(Advertisement advertisement) {
-            createPlayer(TvContractUtils.SOURCE_TYPE_HTTP_PROGRESSIVE,
-                    Uri.parse(advertisement.getRequestUrl()));
+            createPlayer(
+                    TvContractUtils.SOURCE_TYPE_HTTP_PROGRESSIVE, Uri.parse(advertisement.getRequestUrl()));
         }
 
         private void createPlayer(int videoType, Uri videoUrl) {
             releasePlayer();
-            mPlayer = new DemoPlayer(RendererBuilderFactory.createRendererBuilder(
-                    mContext, videoType, videoUrl));
+            mPlayer =
+                    new MediaPlayer(
+                            RendererBuilderFactory.createRendererBuilder(mContext, videoType, videoUrl));
             mPlayer.addListener(this);
             mPlayer.setCaptionListener(this);
             mPlayer.prepare();
@@ -289,10 +285,9 @@ public class MyTvInputService extends BaseTvInputService {
             mCaptionEnabled = enabled;
             if (mPlayer != null) {
                 if (mCaptionEnabled) {
-                    mPlayer.setSelectedTrack(TvTrackInfo.TYPE_SUBTITLE,
-                            mSelectedSubtitleTrackIndex);
+                    mPlayer.setSelectedTrack(TvTrackInfo.TYPE_SUBTITLE, mSelectedSubtitleTrackIndex);
                 } else {
-                    mPlayer.setSelectedTrack(TvTrackInfo.TYPE_SUBTITLE, DemoPlayer.TRACK_DISABLED);
+                    mPlayer.setSelectedTrack(TvTrackInfo.TYPE_SUBTITLE, MediaPlayer.TRACK_DISABLED);
                 }
             }
         }
@@ -342,11 +337,12 @@ public class MyTvInputService extends BaseTvInputService {
         }
 
         private float getCaptionFontSize() {
-            Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE))
-                    .getDefaultDisplay();
+            Display display =
+                    ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
             Point displaySize = new Point();
             display.getSize(displaySize);
-            return Math.max(getResources().getDimension(R.dimen.subtitle_minimum_font_size),
+            return Math.max(
+                    getResources().getDimension(R.dimen.subtitle_minimum_font_size),
                     CAPTION_LINE_HEIGHT_RATIO * Math.min(displaySize.x, displaySize.y));
         }
 
@@ -358,28 +354,29 @@ public class MyTvInputService extends BaseTvInputService {
 
             if (playWhenReady && playbackState == ExoPlayer.STATE_READY) {
                 notifyTracksChanged(getAllTracks());
-                String audioId = getTrackId(TvTrackInfo.TYPE_AUDIO,
-                        mPlayer.getSelectedTrack(TvTrackInfo.TYPE_AUDIO));
-                String videoId = getTrackId(TvTrackInfo.TYPE_VIDEO,
-                        mPlayer.getSelectedTrack(TvTrackInfo.TYPE_VIDEO));
-                String textId = getTrackId(TvTrackInfo.TYPE_SUBTITLE,
-                        mPlayer.getSelectedTrack(TvTrackInfo.TYPE_SUBTITLE));
+                String audioId =
+                        getTrackId(TvTrackInfo.TYPE_AUDIO, mPlayer.getSelectedTrack(TvTrackInfo.TYPE_AUDIO));
+                String videoId =
+                        getTrackId(TvTrackInfo.TYPE_VIDEO, mPlayer.getSelectedTrack(TvTrackInfo.TYPE_VIDEO));
+                String textId =
+                        getTrackId(
+                                TvTrackInfo.TYPE_SUBTITLE, mPlayer.getSelectedTrack(TvTrackInfo.TYPE_SUBTITLE));
 
                 notifyTrackSelected(TvTrackInfo.TYPE_AUDIO, audioId);
                 notifyTrackSelected(TvTrackInfo.TYPE_VIDEO, videoId);
                 notifyTrackSelected(TvTrackInfo.TYPE_SUBTITLE, textId);
                 notifyVideoAvailable();
-            } else
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                        Math.abs(mPlayer.getPlaybackSpeed() - 1) < 0.1 &&
-                        playWhenReady && playbackState == ExoPlayer.STATE_BUFFERING) {
-                    notifyVideoUnavailable(TvInputManager.VIDEO_UNAVAILABLE_REASON_BUFFERING);
-                }
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                    && Math.abs(mPlayer.getPlaybackSpeed() - 1) < 0.1
+                    && playWhenReady
+                    && playbackState == ExoPlayer.STATE_BUFFERING) {
+                notifyVideoUnavailable(TvInputManager.VIDEO_UNAVAILABLE_REASON_BUFFERING);
+            }
         }
 
         @Override
-        public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees,
-                float pixelWidthHeightRatio) {
+        public void onVideoSizeChanged(
+                int width, int height, int unappliedRotationDegrees, float pixelWidthHeightRatio) {
             // Do nothing.
         }
 
@@ -394,24 +391,27 @@ public class MyTvInputService extends BaseTvInputService {
         }
 
         public void requestEpgSync(final Uri channelUri) {
-            EpgSyncJobService.requestImmediateSync(MyTvInputService.this, mInputId,
-                    new ComponentName(MyTvInputService.this, MyJobService.class));
-            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    onTune(channelUri);
-                }
-            }, EPG_SYNC_DELAYED_PERIOD_MS);
+            EpgSyncJobService.requestImmediateSync(
+                    TvInputService.this, mInputId, new ComponentName(TvInputService.this, EpgJobService.class));
+            new Handler(Looper.getMainLooper())
+                    .postDelayed(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    onTune(channelUri);
+                                }
+                            },
+                            EPG_SYNC_DELAYED_PERIOD_MS);
         }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private class RichRecordingSession extends BaseTvInputService.RecordingSession {
+    private class TvInputServiceRecordingSession extends BaseTvInputService.RecordingSession {
         private static final String TAG = "RecordingSession";
         private String mInputId;
         private long mStartTimeMs;
 
-        public RichRecordingSession(Context context, String inputId) {
+        public TvInputServiceRecordingSession(Context context, String inputId) {
             super(context, inputId);
             mInputId = inputId;
         }
@@ -454,13 +454,13 @@ public class MyTvInputService extends BaseTvInputService {
             long currentTime = System.currentTimeMillis();
             InternalProviderData internalProviderData = programToRecord.getInternalProviderData();
             internalProviderData.setRecordingStartTime(mStartTimeMs);
-            RecordedProgram recordedProgram = new RecordedProgram.Builder(programToRecord)
-                    .setInputId(mInputId)
-                    .setRecordingDataUri(
-                            programToRecord.getInternalProviderData().getVideoUrl())
-                    .setRecordingDurationMillis(currentTime - mStartTimeMs)
-                    .setInternalProviderData(internalProviderData)
-                    .build();
+            RecordedProgram recordedProgram =
+                    new RecordedProgram.Builder(programToRecord)
+                            .setInputId(mInputId)
+                            .setRecordingDataUri(programToRecord.getInternalProviderData().getVideoUrl())
+                            .setRecordingDurationMillis(currentTime - mStartTimeMs)
+                            .setInternalProviderData(internalProviderData)
+                            .build();
             notifyRecordingStopped(recordedProgram);
         }
 

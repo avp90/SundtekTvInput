@@ -36,7 +36,9 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
+
 import androidx.annotation.RequiresApi;
+
 import android.util.Log;
 import android.util.LongSparseArray;
 import android.view.Surface;
@@ -49,6 +51,7 @@ import com.google.android.media.tv.companionlibrary.model.Program;
 import com.google.android.media.tv.companionlibrary.model.RecordedProgram;
 import com.google.android.media.tv.companionlibrary.utils.TvContractUtils;
 
+import org.tb.sundtektvinput.SundtekTvInputApp;
 import org.tb.sundtektvinput.model.ProgramsDB;
 
 import java.util.ArrayList;
@@ -66,6 +69,7 @@ import java.util.concurrent.TimeUnit;
 public abstract class BaseTvInputService extends TvInputService {
     private static final String TAG = BaseTvInputService.class.getSimpleName();
     private static final boolean DEBUG = false;
+    public SundtekTvInputApp app = (SundtekTvInputApp)getApplication();
 
     /**
      * Used for interacting with {@link SharedPreferences}.
@@ -229,7 +233,6 @@ public abstract class BaseTvInputService extends TvInputService {
         public boolean handleMessage(Message msg) {
             switch (msg.what) {
                 case MSG_PLAY_CONTENT:
-
                     // When sequential tuning messages arrived, it skips middle tuning messages in order
                     // to change to the last requested channel quickly.
                     if (mHandler.hasMessages(MSG_PLAY_CONTENT)) {
@@ -237,11 +240,12 @@ public abstract class BaseTvInputService extends TvInputService {
                             Log.d(TAG, "skip tuning request");
                         return true;
                     }
-                    mCurrentProgram = (Program) msg.obj;
+                    mCurrentProgram = (Program)msg.obj;
                     if (mCurrentProgram == null) {
-                        mCurrentProgram = ProgramsDB.getInstance().getDummyProgram(mCurrentChannel);
-                        if (DEBUG)
-                            Log.d(TAG, "DUMMYPROG" + mCurrentProgram.toString());
+                        //TODO: fix later if needed
+                        //mCurrentProgram = app.getProgramsDB().getDummyProgram(mCurrentChannel);
+                        //if (DEBUG)
+                        //    Log.d(TAG, "DUMMYPROG" + mCurrentProgram.toString());
                     }
                     playCurrentContent();
                     return true;
@@ -505,6 +509,7 @@ public abstract class BaseTvInputService extends TvInputService {
          * This method is called when the currently playing program has been blocked by parental
          * controls. Developers should release their {@link TvPlayer} immediately so unwanted
          * content is not displayed.
+         *
          * @param rating The rating for the program that was blocked.
          */
         public void onBlockContent(TvContentRating rating) {
@@ -639,11 +644,10 @@ public abstract class BaseTvInputService extends TvInputService {
                             // of the ad will be skipped by the AdControllerCallback.
                             mHandler.sendMessage(mHandler.obtainMessage(MSG_PLAY_AD, ad));
                             return false;
-                        } else
-                            if (adToPlay == null || timeTilAd < timeTilAdToPlay) {
-                                adToPlay = ad;
-                                timeTilAdToPlay = timeTilAd;
-                            }
+                        } else if (adToPlay == null || timeTilAd < timeTilAdToPlay) {
+                            adToPlay = ad;
+                            timeTilAdToPlay = timeTilAd;
+                        }
                     }
                 }
 
@@ -734,6 +738,7 @@ public abstract class BaseTvInputService extends TvInputService {
          * position. If there is not a program scheduled in the EPG, the parameter will be
          * {@code null}. Developers should check the null condition and handle that case, possibly
          * by manually resyncing the EPG.
+         *
          * @param program    The program that is set to be playing for a the currently tuned channel.
          * @param startPosMs Start position of content video.
          * @return Whether playing this program was successful.
@@ -743,6 +748,7 @@ public abstract class BaseTvInputService extends TvInputService {
         /**
          * This method is called when a particular recorded program is to begin playing. If the
          * program does not exist, the parameter will be {@code null}.
+         *
          * @param recordedProgram The program that is set to be playing for a the currently tuned
          *                        channel.
          * @return Whether playing this program was successful
@@ -753,6 +759,7 @@ public abstract class BaseTvInputService extends TvInputService {
          * This method is called when the user tunes to a given channel. Developers can override
          * this if they want specific behavior to occur after the user tunes but before the program
          * or channel ad begins playing.
+         *
          * @param channel The channel that the user wants to watch.
          */
         public void onPlayChannel(Channel channel) {
@@ -762,6 +769,7 @@ public abstract class BaseTvInputService extends TvInputService {
         /**
          * Called when ads player is about to be created. Developers should override this if they
          * want to enable ads insertion. Time shifting within ads is currently not supported.
+         *
          * @param advertisement The advertisement that should be played.
          */
         public void onPlayAdvertisement(Advertisement advertisement) {
@@ -775,6 +783,7 @@ public abstract class BaseTvInputService extends TvInputService {
          * channel ad played within the past minimum interval, tuning to a new channel will not
          * trigger the new channel's ads to be shown. This provides a better user experience.
          * The default value of the minimum interval is 5 minutes.
+         *
          * @param minimumOnTuneAdInterval The minimum interval between playing channel ads
          */
         public void setMinimumOnTuneAdInterval(long minimumOnTuneAdInterval) {
@@ -1028,12 +1037,14 @@ public abstract class BaseTvInputService extends TvInputService {
          * {@link RecordedProgram} and call {@link #notifyRecordingStopped(Uri)} with the URI to
          * that entry. If the stop request cannot be fulfilled, the session must call
          * {@link #notifyError(int)}.
+         *
          * @param channelToRecord The channel set by the user to be recorded.
          */
         public abstract void onStopRecordingChannel(Channel channelToRecord);
 
         /**
          * Notify the TV app that the recording has ended.
+         *
          * @param recordedProgram The program that was recorded and should be saved.
          */
         public void notifyRecordingStopped(final RecordedProgram recordedProgram) {

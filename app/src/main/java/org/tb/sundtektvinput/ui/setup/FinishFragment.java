@@ -17,7 +17,7 @@ public class FinishFragment extends SetupBaseFragment {
     @NonNull
     public GuidanceStylist.Guidance onCreateGuidance(@NonNull Bundle savedInstanceState) {
         String title = "Scan finished";
-        String description = "You are now ready to watch TV";
+        String description = "You are now ready to watch TV.";
         // Drawable icon = getActivity().getDrawable(R.drawable.ic_launcher);
         return new GuidanceStylist.Guidance(title, description, breadcrumb, null);
     }

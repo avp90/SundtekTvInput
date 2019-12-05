@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.tb.sundtektvinput.R;
-import org.tb.sundtektvinput.service.MyJobService;
+import org.tb.sundtektvinput.service.EpgJobService;
 import org.tb.sundtektvinput.service.base.EpgSyncJobService;
 
 import java.util.ArrayList;
@@ -102,7 +102,7 @@ public class SettingsHelper {
 
     public String getInputId() {
         SharedPreferences pSharedPref = context.getSharedPreferences(EpgSyncJobService.PREFERENCE_EPG_SYNC, Context.MODE_PRIVATE);
-        return pSharedPref.getString(MyJobService.BUNDLE_KEY_INPUT_ID, null);
+        return pSharedPref.getString(EpgJobService.BUNDLE_KEY_INPUT_ID, null);
     }
 
 }

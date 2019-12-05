@@ -4,11 +4,13 @@ import android.annotation.SuppressLint;
 import android.media.tv.TvInputInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
 import androidx.leanback.app.GuidedStepSupportFragment;
 import androidx.leanback.widget.GuidanceStylist;
 import androidx.leanback.widget.GuidedAction;
+
 import android.widget.Toast;
 
 import com.google.android.media.tv.companionlibrary.model.Channel;
@@ -30,20 +32,17 @@ import static androidx.leanback.widget.GuidedAction.ACTION_ID_CONTINUE;
 import static androidx.leanback.widget.GuidedAction.CHECKBOX_CHECK_SET_ID;
 
 public class ChannelSelectFragment extends SetupBaseFragment {
-
-    private ArrayList<Long> selectedChannels = new ArrayList<>();
-    private HashMap<Long, Channel> allChannels;
-    private String selectedList;
-
+    private ArrayList<Long> mSelectedChannels = new ArrayList<>();
+    private HashMap<Long, Channel> mAllChannels;
+    private String mSelectedList;
 
     @NonNull
     public GuidanceStylist.Guidance onCreateGuidance(@NonNull Bundle savedInstanceState) {
         String title = "Here we go";
-        String description = "Please select the channels you want to import";
+        String description = "Please select the channels you want to import.";
         //    Drawable icon = getActivity().getDrawable(R.drawable.ic_launcher);
         return new GuidanceStylist.Guidance(title, description, breadcrumb, null);
     }
-
 
     @Override
     public void onCreateButtonActions(@NonNull List<GuidedAction> actions, Bundle savedInstanceState) {
@@ -58,22 +57,19 @@ public class ChannelSelectFragment extends SetupBaseFragment {
                 .build());
     }
 
-
     @SuppressLint("UseSparseArrays")
     @Override
     public void onCreateActions(@NonNull List<GuidedAction> actions, Bundle savedInstanceState) {
-        selectedList = getArguments().getString((getContext().getString(R.string.active_list)));
-        if (selectedList.isEmpty()) {
+        mSelectedList = getArguments().getString((getContext().getString(R.string.active_list)));
+        if (mSelectedList.isEmpty()) {
             getFragmentManager().popBackStack();
             Toast.makeText(getActivity(), "No list selected", Toast.LENGTH_LONG).show();
         } else {
-
-
-            allChannels = getChannels(selectedList);
-            selectedChannels = new SettingsHelper(getActivity()).loadSelectedChannels(selectedList);
+            mAllChannels = getChannels(mSelectedList);
+            mSelectedChannels = new SettingsHelper(getActivity()).loadSelectedChannels(mSelectedList);
 
             long id;
-            for (Channel channel : allChannels.values()) {
+            for (Channel channel : mAllChannels.values()) {
                 id = (long) channel.getOriginalNetworkId();
 
                 actions.add(
@@ -82,12 +78,11 @@ public class ChannelSelectFragment extends SetupBaseFragment {
                                 .description(channel.getDisplayNumber())
                                 .id(id)
                                 .title(channel.getDisplayName())
-                                .checked(selectedChannels.contains(id))
+                                .checked(mSelectedChannels.contains(id))
                                 .build());
             }
         }
     }
-
 
     private HashMap<Long, Channel> getChannels(String selectedList) {
         ArrayList<Channel> resp = new ArrayList<>();
@@ -97,20 +92,19 @@ public class ChannelSelectFragment extends SetupBaseFragment {
             e.printStackTrace();
         }
 
-        allChannels = new HashMap<>();
+        mAllChannels = new HashMap<>();
         if (resp != null)
             for (Channel channel : resp)
-                allChannels.put((long) channel.getOriginalNetworkId(), channel);
+                mAllChannels.put((long) channel.getOriginalNetworkId(), channel);
 
-        return allChannels;
+        return mAllChannels;
     }
 
-    private static class getChannelsAsync extends AsyncTask<String, Void, ArrayList<Channel>> {
-
+    private class getChannelsAsync extends AsyncTask<String, Void, ArrayList<Channel>> {
         @Override
         protected ArrayList<Channel> doInBackground(String... params) {
             String selectedList = params[0];
-            return new SundtekJsonParser(SundtekTvInputApp.getContext()).getChannels(selectedList);
+            return getApp().getSundtekJsonParser().getChannels(selectedList);
         }
 
         @Override
@@ -126,19 +120,18 @@ public class ChannelSelectFragment extends SetupBaseFragment {
 
         long id = action.getId();
         if (action.isChecked()) {
-            selectedChannels.add(id);
+            mSelectedChannels.add(id);
         } else {
-            if (selectedChannels.contains(id)) {
-                selectedChannels.remove(id);
+            if (mSelectedChannels.contains(id)) {
+                mSelectedChannels.remove(id);
             }
         }
 
         if (action.getId() == ACTION_ID_CONTINUE) {
             new SettingsHelper(getActivity())
-                    .saveSelectedChannels(selectedList, selectedChannels);
+                    .saveSelectedChannels(mSelectedList, mSelectedChannels);
 
             String inputId = getActivity().getIntent().getStringExtra(TvInputInfo.EXTRA_INPUT_ID);
-
             if (inputId == null) {
                 Toast.makeText(getActivity(), "Settings Saved", Toast.LENGTH_LONG).show();
                 getActivity().finish();
@@ -146,9 +139,8 @@ public class ChannelSelectFragment extends SetupBaseFragment {
 
             SetupBaseFragment fragment = new EpgScanFragment();
             GuidedStepSupportFragment.add(fm, fragment);
-
-
         }
+
         if (action.getId() == ACTION_ID_CANCEL) {
             getFragmentManager().popBackStack();
         }

@@ -73,7 +73,7 @@
         multi-audio, parental controls, and overlay view.
         -->
         <service
-            android:name="org.tb.sundtektvinput.service.MyTvInputService"
+            android:name="org.tb.sundtektvinput.service.TvInputService"
             android:label="@string/sundtek_tvinput_label"
             android:permission="android.permission.BIND_TV_INPUT">
             <!-- Required filter used by the system to launch our account service. -->
@@ -89,7 +89,7 @@
 
         <!-- This service is for using JobScheduler to sync EPG data. -->
         <service
-            android:name="org.tb.sundtektvinput.service.MyJobService"
+            android:name="org.tb.sundtektvinput.service.EpgJobService"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE"/>
 

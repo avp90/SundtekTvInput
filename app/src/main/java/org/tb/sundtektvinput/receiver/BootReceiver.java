@@ -25,7 +25,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.util.Log;
 
-import org.tb.sundtektvinput.service.MyJobService;
+import org.tb.sundtektvinput.service.EpgJobService;
 import org.tb.sundtektvinput.service.base.EpgSyncJobService;
 
 import java.util.List;
@@ -48,7 +48,7 @@ public class BootReceiver extends BroadcastReceiver {
             if (inputId != null) {
                 // Set up periodic sync only when input has set up.
                 EpgSyncJobService.setUpPeriodicSync(context, inputId,
-                        new ComponentName(context, MyJobService.class));
+                        new ComponentName(context, EpgJobService.class));
                 Log.d(this.getClass().getSimpleName(), "Setup periodic sync with inputId " + inputId);
 
             } else {

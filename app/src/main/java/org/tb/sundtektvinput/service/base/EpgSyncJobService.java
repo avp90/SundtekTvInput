@@ -70,7 +70,7 @@ import java.util.List;
  */
 public abstract class EpgSyncJobService extends JobService {
     private static final String TAG = "EpgSyncJobService";
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     /**
      * The action that will be broadcast when the job service's status changes.

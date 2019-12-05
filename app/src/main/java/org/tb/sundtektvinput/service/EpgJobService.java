@@ -17,43 +17,43 @@ package org.tb.sundtektvinput.service;
 
 import android.net.Uri;
 import android.util.Log;
+import java.util.List;
 
 import com.google.android.media.tv.companionlibrary.model.Channel;
 import com.google.android.media.tv.companionlibrary.model.Program;
 
-import org.tb.sundtektvinput.model.ChannelsDB;
-import org.tb.sundtektvinput.model.ProgramsDB;
+import org.tb.sundtektvinput.SundtekTvInputApp;
 import org.tb.sundtektvinput.service.base.EpgSyncJobService;
 
-import java.util.List;
 
 /**
  * EpgSyncJobService that periodically runs to update channels and programs.
  */
-public class MyJobService extends EpgSyncJobService {
-
-    private static String TAG = MyJobService.class.getSimpleName();
-    private static final boolean DEBUG = false;
-
+public class EpgJobService extends EpgSyncJobService {
+    private static String TAG = EpgJobService.class.getSimpleName();
+    private static final boolean DEBUG = true;
+    public SundtekTvInputApp app = (SundtekTvInputApp)getApplication();
 
     @Override
     public List<Channel> getChannels() {
-        return ChannelsDB.getInstance().getChannels(getApplicationContext());
+        return app.getChannelsDB().getChannels(getApplicationContext());
     }
 
-
     @Override
-    public List<Program> getProgramsForChannel(Uri channelUri, Channel channel, long startMs,
-                                               long endMs) {
-        if (DEBUG)
-            Log.d(TAG, "Trying to get programs for " + channel.getDisplayName());
+    public List<Program> getProgramsForChannel(
+            Uri channelUri, Channel channel, long startMs, long endMs) {
+        if (DEBUG) Log.d(TAG, "Trying to get programs for " + channel.getDisplayName());
 
-        List<Program> programs = ProgramsDB.getInstance().getProgramsForChannel(getApplicationContext(), channel, startMs, endMs);
+        List<Program> programs = app.getProgramsDB()
+                .getProgramsForChannel(getApplicationContext(), channel, startMs, endMs);
 
         if (DEBUG)
-            Log.d(TAG, "got " + (programs == null ? "no" : programs.size()) + " programs for " + channel.getDisplayName());
+            Log.d(TAG,
+                    "got "
+                            + (programs == null ? "no" : programs.size())
+                            + " programs for "
+                            + channel.getDisplayName());
 
         return programs;
     }
-
 }

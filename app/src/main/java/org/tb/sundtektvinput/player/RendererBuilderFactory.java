@@ -24,18 +24,18 @@ import com.google.android.exoplayer.util.Util;
 import com.google.android.media.tv.companionlibrary.utils.TvContractUtils;
 
 /**
- * Factory used by {@link DemoPlayer} to create a new {@link DemoPlayer.RendererBuilder}.
+ * Factory used by {@link MediaPlayer} to create a new {@link MediaPlayer.RendererBuilder}.
  */
 public class RendererBuilderFactory {
     /**
-     * Create new instance of {@link DemoPlayer.RendererBuilder}.
+     * Create new instance of {@link MediaPlayer.RendererBuilder}.
      * @param context     The {@link Context} to use.
      * @param contentType The type of the video content: {@link Util#TYPE_SS},
      *                    {@link Util#TYPE_DASH}, {@link Util#TYPE_HLS} or {@link Util#TYPE_OTHER}.
      * @param contentUri  The URI of the video content.
-     * @return A {@link DemoPlayer.RendererBuilder} instance.
+     * @return A {@link MediaPlayer.RendererBuilder} instance.
      */
-    public static DemoPlayer.RendererBuilder createRendererBuilder(
+    public static MediaPlayer.RendererBuilder createRendererBuilder(
             Context context, int contentType, Uri contentUri) {
         String userAgent = Util.getUserAgent(context, "ExoVideoPlayer");
 

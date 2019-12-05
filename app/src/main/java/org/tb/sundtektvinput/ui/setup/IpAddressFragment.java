@@ -27,13 +27,13 @@ public class IpAddressFragment extends SetupBaseFragment {
     private static final Pattern IP_PATTERN = Pattern.compile(
             "^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
 
-    private String ip = "127.0.0.1";
+    private String ip = "192.168.178.20";
 
     @Override
     @NonNull
     public GuidanceStylist.Guidance onCreateGuidance(@NonNull Bundle savedInstanceState) {
         String title = "Enter IP";
-        String description = "Enter the IP of your streamingserver";
+        String description = "Enter the IP of your Streaming-Server.";
         //  Drawable icon = getActivity().getDrawable(R.drawable.ic_launcher);
         return new GuidanceStylist.Guidance(title, description, breadcrumb, null);
     }

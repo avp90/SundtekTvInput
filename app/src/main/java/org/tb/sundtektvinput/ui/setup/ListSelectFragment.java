@@ -2,16 +2,19 @@ package org.tb.sundtektvinput.ui.setup;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
 import androidx.leanback.app.GuidedStepFragment;
 import androidx.leanback.app.GuidedStepSupportFragment;
 import androidx.leanback.widget.GuidanceStylist;
 import androidx.leanback.widget.GuidedAction;
+
 import android.util.Log;
 import android.widget.Toast;
 
 import org.tb.sundtektvinput.R;
+import org.tb.sundtektvinput.SundtekTvInputApp;
 import org.tb.sundtektvinput.parser.SundtekJsonParser;
 import org.tb.sundtektvinput.ui.setup.base.SetupBaseFragment;
 import org.tb.sundtektvinput.util.SettingsHelper;
@@ -33,7 +36,7 @@ public class ListSelectFragment extends SetupBaseFragment {
     @NonNull
     public GuidanceStylist.Guidance onCreateGuidance(@NonNull Bundle savedInstanceState) {
         String title = "Select a list";
-        String description = "Please select the channellist you want to import";
+        String description = "Please select the Channel-List you want to import.";
         //    Drawable icon = getActivity().getDrawable(R.drawable.ic_launcher);
         return new GuidanceStylist.Guidance(title, description, breadcrumb, null);
     }
@@ -88,7 +91,7 @@ public class ListSelectFragment extends SetupBaseFragment {
 
         @Override
         protected ArrayList<String> doInBackground(Void... arg0) {
-            return listsAvailable = new SundtekJsonParser(getContext()).getListsAvailable();
+            return listsAvailable = getApp().getSundtekJsonParser().getListsAvailable();
         }
 
         @Override
@@ -118,7 +121,7 @@ public class ListSelectFragment extends SetupBaseFragment {
 
         if (action.getId() == ACTION_ID_CONTINUE) {
 
-            if(!selectedList.isEmpty()) {
+            if (!selectedList.isEmpty()) {
                 new SettingsHelper(getActivity())
                         .saveSelectedList(selectedList);
                 Bundle args = new Bundle();

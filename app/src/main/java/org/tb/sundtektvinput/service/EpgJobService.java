@@ -34,7 +34,6 @@ public class EpgJobService extends EpgSyncJobService {
     private static final boolean DEBUG = true;
     public SundtekTvInputApp app = null;
 
-
     @Override
     public void onCreate() {
         super.onCreate();

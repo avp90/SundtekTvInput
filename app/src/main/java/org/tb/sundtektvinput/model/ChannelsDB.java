@@ -7,7 +7,6 @@ import android.util.Log;
 import com.google.android.media.tv.companionlibrary.model.Channel;
 
 import org.tb.sundtektvinput.SundtekTvInputApp;
-import org.tb.sundtektvinput.parser.SundtekJsonParser;
 import org.tb.sundtektvinput.util.SettingsHelper;
 
 import java.util.ArrayList;
@@ -33,12 +32,12 @@ public class ChannelsDB {
 
     public List<Channel> getChannels(Context context) {
         SettingsHelper helper = new SettingsHelper(context);
-        String activeList = helper.loadSelectedList();
-        ArrayList<Long> filter = helper.loadSelectedChannels(activeList);
+        String selectedGroup = helper.loadSelectedGroup();
+        ArrayList<Long> filter = helper.loadSelectedChannels(selectedGroup);
 
         Log.d(TAG, "refreshing channels");
         List<Channel> channels =
-                new ArrayList<>(app.getSundtekJsonParser().getChannels(activeList));
+                new ArrayList<>(app.getSundtekJsonParser().getChannels(selectedGroup));
 
         channelMap.clear();
 

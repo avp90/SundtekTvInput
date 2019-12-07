@@ -135,18 +135,18 @@ public class SundtekJsonParser {
         BASE_URL = "http://" + ip + ":" + SERVER_PORT;
     }
 
-    private HashMap<Long, Channel> getChannelMap(String group) throws JSONException, IOException {
+    private HashMap<Long, Channel> getChannelMap(String groups) throws JSONException, IOException {
         if (channelMap == null) {
             channelMap = new HashMap<>();
             if (DEBUG) {
-                Log.d(TAG, "Fetch channels for list: " + group);
+                Log.d(TAG, "Fetch channels for groups: " + groups);
             }
             JSONArray channelsJson =
                     new JSONArray(
                             getJson(
                                     BASE_URL + BASE_SERVERCMD_URL,
                                     buildChannelPostBody(
-                                            group,
+                                            groups,
                                             CHANNEL_MODE_FAVLIST,
                                             Arrays.asList(
                                                     CHANNEL_FILTER_SD_FTA,
@@ -158,7 +158,7 @@ public class SundtekJsonParser {
             channelMap.putAll(parseChannels(channelsJson));
 
             if (DEBUG)
-                Log.d(TAG, "total channels found for list " + group + ": " + channelMap.size());
+                Log.d(TAG, "total channels found for groups " + groups + ": " + channelMap.size());
         }
         return channelMap;
     }

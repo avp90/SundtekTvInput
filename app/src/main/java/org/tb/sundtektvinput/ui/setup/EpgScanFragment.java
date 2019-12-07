@@ -121,6 +121,7 @@ public class EpgScanFragment extends SetupBaseFragment {
 
     private void onScanStarted() {
         if (DEBUG) Log.d(TAG, String.format("onScanStarted %s", mInputId));
+
         FragmentActivity activity = getActivity();
         EpgSyncJobService.cancelAllSyncRequests(activity);
         EpgSyncJobService.requestImmediateSync(activity,
@@ -230,7 +231,6 @@ public class EpgScanFragment extends SetupBaseFragment {
 
     private final BroadcastReceiver mSyncStatusChangedReceiver =
             new BroadcastReceiver() {
-
                 @Override
                 public void onReceive(Context context, final Intent intent) {
                     getActivity()

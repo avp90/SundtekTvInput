@@ -6,8 +6,6 @@ import android.content.SharedPreferences;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.tb.sundtektvinput.R;
-import org.tb.sundtektvinput.service.EpgJobService;
-import org.tb.sundtektvinput.service.base.EpgSyncJobService;
 
 import java.util.ArrayList;
 
@@ -24,9 +22,9 @@ public class SettingsHelper {
         this.context = context;
     }
 
-    public void saveSelectedChannels(String list, ArrayList<Long> input) {
+    public void saveSelectedChannels(String groups, ArrayList<Long> input) {
         SharedPreferences pSharedPref = context.getSharedPreferences(CONFIG_FILE, Context.MODE_PRIVATE);
-        String saveString = context.getString(R.string.save_channels_prefix) + list;
+        String saveString = context.getString(R.string.save_channels_prefix) + groups;
 
         if (pSharedPref != null) {
             JSONArray jsonArray = new JSONArray(input);
@@ -38,10 +36,10 @@ public class SettingsHelper {
         }
     }
 
-    public ArrayList<Long> loadSelectedChannels(String list) {
+    public ArrayList<Long> loadSelectedChannels(String groups) {
         ArrayList<Long> output = new ArrayList<>();
         SharedPreferences pSharedPref = context.getSharedPreferences(CONFIG_FILE, Context.MODE_PRIVATE);
-        String saveString = context.getString(R.string.save_channels_prefix) + list;
+        String saveString = context.getString(R.string.save_channels_prefix) + groups;
         try {
             if (pSharedPref != null) {
                 String jsonString = pSharedPref.getString(saveString, new JSONArray().toString());
@@ -55,17 +53,17 @@ public class SettingsHelper {
         return output;
     }
 
-    public void saveSelectedList(String selectedList) {
+    public void saveSelectedGroup(String group) {
         SharedPreferences pSharedPref = context.getSharedPreferences(CONFIG_FILE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pSharedPref.edit();
-        editor.remove(context.getString(R.string.active_list));
-        editor.putString(context.getString(R.string.active_list), selectedList);
+        editor.remove(context.getString(R.string.selected_group));
+        editor.putString(context.getString(R.string.selected_group), group);
         editor.apply();
     }
 
-    public String loadSelectedList() {
+    public String loadSelectedGroup() {
         SharedPreferences pSharedPref = context.getSharedPreferences(CONFIG_FILE, Context.MODE_PRIVATE);
-        return pSharedPref.getString(context.getString(R.string.active_list), "");
+        return pSharedPref.getString(context.getString(R.string.selected_group), "");
     }
 
     public void saveLastUpdateTimestamp(long timestamp) {

@@ -15,7 +15,7 @@ public class SetupActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.guide_layout);
-        GuidedStepSupportFragment.addAsRoot(this, new IpAddressFragment(), android.R.id.content);
+        GuidedStepSupportFragment.addAsRoot(this, new IpAddressInputFragment(), android.R.id.content);
     }
 
     @Override

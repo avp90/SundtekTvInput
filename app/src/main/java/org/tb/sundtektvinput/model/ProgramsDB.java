@@ -27,8 +27,8 @@ public class ProgramsDB {
     private final HashMap<String, Program> allProgramMap;
     // channelProgramsMap channelNetworkId-program
     private final HashMap<String, ArrayList<Program>> channelProgramsMap;
-    private String lastUpdateList;
-    private String activeList;
+    private String lastSelectedGroup;
+    private String selectedGroup;
 
     private long lastUpdate;
     private static long MAX_AGE_MILLIS = 1000 * 60 * 60; // 1h
@@ -43,7 +43,7 @@ public class ProgramsDB {
         this.app = app;
         allProgramMap = new HashMap<>();
         channelProgramsMap = new HashMap<>();
-        lastUpdateList = new SettingsHelper(app.getApplicationContext()).loadSelectedList();
+        lastSelectedGroup = new SettingsHelper(app.getApplicationContext()).loadSelectedGroup();
         lastUpdate = new SettingsHelper(app.getApplicationContext()).loadLastUpdateTimestamp();
     }
 
@@ -56,9 +56,9 @@ public class ProgramsDB {
         SundtekJsonParser parser = app.getSundtekJsonParser();
 
         Log.d(TAG, "fetch new EPG data from server");
-        programs.addAll(parser.getPrograms(SundtekJsonParser.EPG_MODE_NOW, true, activeList));
-        programs.addAll(parser.getPrograms(SundtekJsonParser.EPG_MODE_TODAY, false, activeList));
-        programs.addAll(parser.getPrograms(SundtekJsonParser.EPG_MODE_TOMORROW, false, activeList));
+        programs.addAll(parser.getPrograms(SundtekJsonParser.EPG_MODE_NOW, true, selectedGroup));
+        programs.addAll(parser.getPrograms(SundtekJsonParser.EPG_MODE_TODAY, false, selectedGroup));
+        programs.addAll(parser.getPrograms(SundtekJsonParser.EPG_MODE_TOMORROW, false, selectedGroup));
 
         String channelId;
         String eventId;
@@ -124,17 +124,17 @@ public class ProgramsDB {
 
     public ArrayList<Program> getProgramsForChannel(
             Context context, Channel channel, long startMs, long endMs) {
-        activeList = new SettingsHelper(app.getApplicationContext()).loadSelectedList();
+        selectedGroup = new SettingsHelper(app.getApplicationContext()).loadSelectedGroup();
         boolean fullSync = false;
         if (channelProgramsMap.isEmpty()
                 || ((lastUpdate + MAX_AGE_MILLIS) <= (System.currentTimeMillis()))
-                || !lastUpdateList.equals(activeList)) {
+                || !lastSelectedGroup.equals(selectedGroup)) {
 
             Log.d(
                     TAG,
                     "Reasons for EPG update:"
                             + "\n new list: \t"
-                            + (!activeList.equals(lastUpdateList))
+                            + (!selectedGroup.equals(lastSelectedGroup))
                             + "\n DB empty: \t"
                             + channelProgramsMap.isEmpty()
                             + "\n data too old: \t"
@@ -143,11 +143,10 @@ public class ProgramsDB {
             lastUpdate = System.currentTimeMillis();
             new SettingsHelper(app.getApplicationContext()).saveLastUpdateTimestamp(lastUpdate);
             getPrograms(context, channel, startMs, endMs);
-            lastUpdateList = activeList;
+            lastSelectedGroup = selectedGroup;
         }
 
         String channelId = String.valueOf(channel.getOriginalNetworkId());
-
         ArrayList<Program> programList = channelProgramsMap.get(channelId);
         if (programList == null) programList = new ArrayList<>();
 

@@ -17,8 +17,6 @@ import android.widget.Toast;
 import com.google.android.media.tv.companionlibrary.model.Channel;
 
 import org.tb.sundtektvinput.R;
-import org.tb.sundtektvinput.SundtekTvInputApp;
-import org.tb.sundtektvinput.parser.SundtekJsonParser;
 import org.tb.sundtektvinput.ui.setup.base.SetupBaseFragment;
 import org.tb.sundtektvinput.util.SettingsHelper;
 
@@ -35,7 +33,7 @@ import static androidx.leanback.widget.GuidedAction.CHECKBOX_CHECK_SET_ID;
 public class ChannelSelectFragment extends SetupBaseFragment {
     private ArrayList<Long> mSelectedChannels = new ArrayList<>();
     private HashMap<Long, Channel> mAllChannels;
-    private String mSelectedList;
+    private String mGroup;
 
     @NonNull
     public GuidanceStylist.Guidance onCreateGuidance(@NonNull Bundle savedInstanceState) {
@@ -61,13 +59,13 @@ public class ChannelSelectFragment extends SetupBaseFragment {
     @SuppressLint("UseSparseArrays")
     @Override
     public void onCreateActions(@NonNull List<GuidedAction> actions, Bundle savedInstanceState) {
-        mSelectedList = getArguments().getString((getContext().getString(R.string.active_list)));
-        if (mSelectedList.isEmpty()) {
+        mGroup = getArguments().getString((getContext().getString(R.string.selected_group)));
+        if (mGroup == null || mGroup.isEmpty()) {
             getFragmentManager().popBackStack();
             Toast.makeText(getActivity(), "No list selected", Toast.LENGTH_LONG).show();
         } else {
-            mAllChannels = getChannels(mSelectedList);
-            mSelectedChannels = new SettingsHelper(getActivity()).loadSelectedChannels(mSelectedList);
+            mAllChannels = getChannels(mGroup);
+            mSelectedChannels = new SettingsHelper(getActivity()).loadSelectedChannels(mGroup);
 
             long id;
             for (Channel channel : mAllChannels.values()) {
@@ -85,10 +83,11 @@ public class ChannelSelectFragment extends SetupBaseFragment {
         }
     }
 
+    //TODO: do it async
     private HashMap<Long, Channel> getChannels(String selectedList) {
         ArrayList<Channel> resp = new ArrayList<>();
         try {
-            resp = new getChannelsAsync().execute(selectedList).get();
+            resp = new FetchChannelsAsync().execute(selectedList).get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
@@ -101,11 +100,11 @@ public class ChannelSelectFragment extends SetupBaseFragment {
         return mAllChannels;
     }
 
-    private class getChannelsAsync extends AsyncTask<String, Void, ArrayList<Channel>> {
+    private class FetchChannelsAsync extends AsyncTask<String, Void, ArrayList<Channel>> {
         @Override
         protected ArrayList<Channel> doInBackground(String... params) {
-            String selectedList = params[0];
-            return getApp().getSundtekJsonParser().getChannels(selectedList);
+            String groups = params[0];
+            return getApp().getSundtekJsonParser().getChannels(groups);
         }
 
         @Override
@@ -130,7 +129,7 @@ public class ChannelSelectFragment extends SetupBaseFragment {
         FragmentActivity activity = getActivity();
         if (action.getId() == ACTION_ID_CONTINUE) {
             new SettingsHelper(activity)
-                    .saveSelectedChannels(mSelectedList, mSelectedChannels);
+                    .saveSelectedChannels(mGroup, mSelectedChannels);
 
             String inputId = activity.getIntent().getStringExtra(TvInputInfo.EXTRA_INPUT_ID);
             if (inputId == null) {

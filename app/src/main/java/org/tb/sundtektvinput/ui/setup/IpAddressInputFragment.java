@@ -19,7 +19,7 @@ import static androidx.leanback.widget.GuidedAction.ACTION_ID_CANCEL;
 import static androidx.leanback.widget.GuidedAction.ACTION_ID_CONTINUE;
 import static androidx.leanback.widget.GuidedAction.ACTION_ID_CURRENT;
 
-public class IpAddressFragment extends SetupBaseFragment {
+public class IpAddressInputFragment extends SetupBaseFragment {
     private static final int ACTION_EDIT_IP = 333;
 
     private static final Pattern IP_PATTERN = Pattern.compile(
@@ -96,7 +96,7 @@ public class IpAddressFragment extends SetupBaseFragment {
         FragmentManager fm = getFragmentManager();
 
         if (action.getId() == ACTION_ID_CONTINUE) {
-            GuidedStepSupportFragment.add(fm, new ListSelectFragment());
+            GuidedStepSupportFragment.add(fm, new ChannelGroupSelectFragment());
         }
         if (action.getId() == ACTION_ID_CANCEL) {
             finishGuidedStepSupportFragments();

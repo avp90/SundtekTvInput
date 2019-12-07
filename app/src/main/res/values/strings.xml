@@ -27,7 +27,7 @@
     <string name="sync_error_no_channels">No channels found. Check your connection.</string>
     <string name="sync_error_other">Error code %1$d</string>
     <string name="save_ip">ip_address</string>
-    <string name="active_list">active_list</string>
+    <string name="selected_group">selected_group</string>
     <string name="ip_not_valid">INVALID IP</string>
     <string name="ip_valid">VALID IP</string>
     <string name="default_ip">127.0.0.1</string>

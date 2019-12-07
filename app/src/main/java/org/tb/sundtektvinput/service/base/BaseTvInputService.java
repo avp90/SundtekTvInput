@@ -148,6 +148,7 @@ public abstract class BaseTvInputService extends TvInputService {
      * @return The session that was created.
      */
     public Session sessionCreated(Session session) {
+        session.SetApp((SundtekTvInputApp)getApplication());
         mSessions.add(session);
         return session;
     }
@@ -181,6 +182,7 @@ public abstract class BaseTvInputService extends TvInputService {
          */
         private static final long PAST_AD_BUFFER_MILLIS = 2000L;
 
+        private SundtekTvInputApp mApp;
         private final Context mContext;
         private final TvInputManager mTvInputManager;
         private Channel mCurrentChannel;
@@ -220,6 +222,10 @@ public abstract class BaseTvInputService extends TvInputService {
             mHandler = new Handler(this);
         }
 
+        public void SetApp(SundtekTvInputApp app) {
+            mApp = app;
+        }
+
         @Override
         public void onRelease() {
             mDbHandler.removeCallbacksAndMessages(null);
@@ -241,10 +247,9 @@ public abstract class BaseTvInputService extends TvInputService {
                     }
                     mCurrentProgram = (Program)msg.obj;
                     if (mCurrentProgram == null) {
-                        //TODO: fix later if needed
-                        //mCurrentProgram = app.getProgramsDB().getDummyProgram(mCurrentChannel);
-                        //if (DEBUG)
-                        //    Log.d(TAG, "DUMMYPROG" + mCurrentProgram.toString());
+                        mCurrentProgram = mApp.getProgramsDB().getDummyProgram(mCurrentChannel);
+                        if (DEBUG)
+                            Log.d(TAG, "DUMMYPROG" + mCurrentProgram.toString());
                     }
                     playCurrentContent();
                     return true;

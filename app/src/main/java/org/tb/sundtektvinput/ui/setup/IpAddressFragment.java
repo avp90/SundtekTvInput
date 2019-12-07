@@ -45,7 +45,7 @@ public class IpAddressFragment extends SetupBaseFragment {
                 .title(validateIp(ip) ? ip : getString(R.string.setup_enter_ip))
                 .editTitle(ip)
                 .description(validateIp(ip) ? getString(R.string.ip_valid) : getString(R.string.ip_not_valid))
-                .editDescription(R.string.setup_ipaddress)
+                .editDescription(R.string.setup_ip_address)
                 .editable(true)
                 .build()
         );

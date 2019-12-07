@@ -17,15 +17,12 @@ import java.util.ArrayList;
  */
 
 public class SettingsHelper {
-
     private static final String CONFIG_FILE = "channelConfig";
-
     private final Context context;
 
     public SettingsHelper(Context context) {
         this.context = context;
     }
-
 
     public void saveSelectedChannels(String list, ArrayList<Long> input) {
         SharedPreferences pSharedPref = context.getSharedPreferences(CONFIG_FILE, Context.MODE_PRIVATE);
@@ -85,7 +82,6 @@ public class SettingsHelper {
     }
 
 
-
     public void saveIp(String ip) {
         SharedPreferences pSharedPref = context.getSharedPreferences(CONFIG_FILE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pSharedPref.edit();
@@ -98,11 +94,4 @@ public class SettingsHelper {
         SharedPreferences pSharedPref = context.getSharedPreferences(CONFIG_FILE, Context.MODE_PRIVATE);
         return pSharedPref.getString(context.getString(R.string.save_ip), context.getString(R.string.default_ip));
     }
-
-
-    public String getInputId() {
-        SharedPreferences pSharedPref = context.getSharedPreferences(EpgSyncJobService.PREFERENCE_EPG_SYNC, Context.MODE_PRIVATE);
-        return pSharedPref.getString(EpgJobService.BUNDLE_KEY_INPUT_ID, null);
-    }
-
 }

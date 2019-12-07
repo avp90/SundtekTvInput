@@ -54,8 +54,8 @@
         >
 
 
-        <!-- Launched by the TV app before it uses MyTvInputService. This registers channels and
-        sets up MyJobService to provide program information in the background. -->
+        <!-- Launched by the TV app before it uses TvInputService. This registers channels and
+        sets up EpgJobService to provide program information in the background. -->
         <activity
             android:name="org.tb.sundtektvinput.ui.setup.SetupActivity"
             android:theme="@style/Theme.Transparent">

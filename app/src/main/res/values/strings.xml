@@ -28,6 +28,16 @@
     <string name="sync_error_other">Error code %1$d</string>
     <string name="save_ip">ip_address</string>
     <string name="selected_group">selected_group</string>
+
+    <string name="channels_select_title">Here we go</string>
+    <string name="channels_select_description">Please select the channels you want to import.</string>
+    <string name="channels_select_action_fetch_all">Fetch all</string>
+    <string name="channels_select_action_fetch_selected">Fetch selected</string>
+    <string name="channels_select_action_go_back">Back</string>
+
+    <string name="settings_saved">Settings Saved</string>
+    <string name="no_group_selected">No Group selected</string>
+
     <string name="ip_not_valid">INVALID IP</string>
     <string name="ip_valid">VALID IP</string>
     <string name="default_ip">127.0.0.1</string>

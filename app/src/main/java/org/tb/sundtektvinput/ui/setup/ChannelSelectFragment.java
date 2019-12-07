@@ -34,11 +34,12 @@ public class ChannelSelectFragment extends SetupBaseFragment {
     private ArrayList<Long> mSelectedChannels = new ArrayList<>();
     private HashMap<Long, Channel> mAllChannels;
     private String mGroup;
+    private ArrayList<GuidedAction> mChannelActions = new ArrayList<>();
 
     @NonNull
     public GuidanceStylist.Guidance onCreateGuidance(@NonNull Bundle savedInstanceState) {
-        String title = "Here we go";
-        String description = "Please select the channels you want to import.";
+        String title = getString(R.string.channels_select_title);
+        String description = getString(R.string.channels_select_description);
         //    Drawable icon = getActivity().getDrawable(R.drawable.ic_launcher);
         return new GuidanceStylist.Guidance(title, description, breadcrumb, null);
     }
@@ -47,12 +48,16 @@ public class ChannelSelectFragment extends SetupBaseFragment {
     public void onCreateButtonActions(@NonNull List<GuidedAction> actions, Bundle savedInstanceState) {
         actions.add(new GuidedAction.Builder(getActivity())
                 .id(ACTION_ID_CONTINUE)
-                .title("Fetch EPG")
+                .title(getString(R.string.channels_select_action_fetch_selected))
+                .build());
+        actions.add(new GuidedAction.Builder(getActivity())
+                .id(ACTION_ID_CONTINUE)
+                .title(getString(R.string.channels_select_action_fetch_all))
                 .build());
 
         actions.add(new GuidedAction.Builder(getActivity())
                 .id(ACTION_ID_CANCEL)
-                .title("Back")
+                .title(getString(R.string.channels_select_action_go_back))
                 .build());
     }
 
@@ -62,23 +67,24 @@ public class ChannelSelectFragment extends SetupBaseFragment {
         mGroup = getArguments().getString((getContext().getString(R.string.selected_group)));
         if (mGroup == null || mGroup.isEmpty()) {
             getFragmentManager().popBackStack();
-            Toast.makeText(getActivity(), "No list selected", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), R.string.no_group_selected, Toast.LENGTH_LONG).show();
         } else {
             mAllChannels = getChannels(mGroup);
             mSelectedChannels = new SettingsHelper(getActivity()).loadSelectedChannels(mGroup);
+            mChannelActions.clear();
 
             long id;
             for (Channel channel : mAllChannels.values()) {
-                id = (long) channel.getOriginalNetworkId();
-
-                actions.add(
-                        new GuidedAction.Builder(getActivity())
-                                .checkSetId(CHECKBOX_CHECK_SET_ID)
-                                .description(channel.getDisplayNumber())
-                                .id(id)
-                                .title(channel.getDisplayName())
-                                .checked(mSelectedChannels.contains(id))
-                                .build());
+                id = (long)channel.getOriginalNetworkId();
+                GuidedAction action = new GuidedAction.Builder(getActivity())
+                        .checkSetId(CHECKBOX_CHECK_SET_ID)
+                        .description(channel.getDisplayNumber())
+                        .id(id)
+                        .title(channel.getDisplayName())
+                        .checked(mSelectedChannels.contains(id))
+                        .build();
+                actions.add(action);
+                mChannelActions.add(action);
             }
         }
     }
@@ -116,32 +122,36 @@ public class ChannelSelectFragment extends SetupBaseFragment {
     @Override
     public void onGuidedActionClicked(GuidedAction action) {
         FragmentManager fm = getFragmentManager();
-
+        FragmentActivity activity = getActivity();
         long id = action.getId();
+
         if (action.isChecked()) {
             mSelectedChannels.add(id);
-        } else {
-            if (mSelectedChannels.contains(id)) {
-                mSelectedChannels.remove(id);
+        } else if (mSelectedChannels.contains(id)) {
+            mSelectedChannels.remove(id);
+        } else if (id == ACTION_ID_CONTINUE) {
+            if (action.getTitle() == getString(R.string.channels_select_action_fetch_selected)) {
+                new SettingsHelper(activity).saveSelectedChannels(mGroup, mSelectedChannels);
+            } else if (action.getTitle() == getString(R.string.channels_select_action_fetch_all)) {
+                //select all channels
+                mSelectedChannels.clear();
+                for (GuidedAction channelAction : mChannelActions) {
+                    channelAction.setChecked(true);
+                    long channelId = channelAction.getId();
+                    mSelectedChannels.add(channelId);
+                }
+                new SettingsHelper(activity).saveSelectedChannels(mGroup, mSelectedChannels);
             }
-        }
-
-        FragmentActivity activity = getActivity();
-        if (action.getId() == ACTION_ID_CONTINUE) {
-            new SettingsHelper(activity)
-                    .saveSelectedChannels(mGroup, mSelectedChannels);
 
             String inputId = activity.getIntent().getStringExtra(TvInputInfo.EXTRA_INPUT_ID);
             if (inputId == null) {
-                Toast.makeText(activity, "Settings Saved", Toast.LENGTH_LONG).show();
+                Toast.makeText(activity, R.string.settings_saved, Toast.LENGTH_LONG).show();
                 activity.finish();
             }
 
             SetupBaseFragment fragment = new EpgScanFragment();
             GuidedStepSupportFragment.add(fm, fragment);
-        }
-
-        if (action.getId() == ACTION_ID_CANCEL) {
+        } else if (id == ACTION_ID_CANCEL) {
             getFragmentManager().popBackStack();
         }
     }

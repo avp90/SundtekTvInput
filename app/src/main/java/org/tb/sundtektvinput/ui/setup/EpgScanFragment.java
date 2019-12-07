@@ -41,7 +41,7 @@ public class EpgScanFragment extends SetupBaseFragment {
     private static final int ACTION_ID_PROCESSING = 1;
 
     private String title = "Scanning EPG";
-    private String description = "This can take some time... please wait";
+    private String description = "This can take some time ... please wait";
 
     private static final long FULL_SYNC_FREQUENCY_MILLIS = 1000 * 60 * 60 * 3; // 3 hour
     private static final long FULL_SYNC_WINDOW_SEC = 1000 * 60 * 60 * 24 * 14; // 2 weeks
